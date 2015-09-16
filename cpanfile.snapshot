@@ -408,6 +408,27 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       perl 5.006002
+  Locale-Codes-3.36
+    pathname: S/SB/SBECK/Locale-Codes-3.36.tar.gz
+    provides:
+      Locale::Codes 3.36
+      Locale::Codes::Constants 3.36
+      Locale::Codes::Country 3.36
+      Locale::Codes::Currency 3.36
+      Locale::Codes::LangExt 3.36
+      Locale::Codes::LangFam 3.36
+      Locale::Codes::LangVar 3.36
+      Locale::Codes::Language 3.36
+      Locale::Codes::Script 3.36
+      Locale::Country 3.36
+      Locale::Currency 3.36
+      Locale::Language 3.36
+      Locale::Script 3.36
+    requirements:
+      Carp 0
+      Module::Build 0.21
+      perl 5.006
+      utf8 0
   MIME-Types-2.11
     pathname: M/MA/MARKOV/MIME-Types-2.11.tar.gz
     provides:
