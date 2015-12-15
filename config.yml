@@ -18,11 +18,11 @@ charset: "UTF-8"
 # simple: default and very basic template engine
 # template_toolkit: TT
 
-template: "simple"
+template: "template_toolkit"
 
 # template: "template_toolkit"
-# engines:
-#   template_toolkit:
-#     start_tag: '[%'
-#     end_tag:   '%]'
+engines:
+  template_toolkit:
+    start_tag: '[%'
+    end_tag:   '%]'
 
