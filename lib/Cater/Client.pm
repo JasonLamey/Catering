@@ -1,6 +1,7 @@
 package Cater::Client;
 
 use base 'Cater::DBI';
+use Dancer2 appname => 'Cater';
 
 use strict;
 use warnings;

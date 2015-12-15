@@ -1,16 +1,12 @@
 package Cater;
-use Dancer ':syntax';
+use Dancer2;
 
 use strict;
 use warnings;
 
-use Cater::DBI;
-use Cater::User;
-use Cater::Marketer;
-
 use Const::Fast;
 
-use version; our $VERSION = qv( 'v0.1.0' );
+use version; our $VERSION = qv( 'v0.1.1' );
 
 
 =head1 NAME
@@ -32,7 +28,8 @@ Root route.
 
 =cut
 
-get '/' => sub {
+get '/' => sub
+{
     template 'index';
 };
 
@@ -51,4 +48,4 @@ or use by other parties without express written permission.
 
 =cut;
 
-true;
+1;
