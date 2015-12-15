@@ -253,6 +253,30 @@ DISTRIBUTIONS
       Module::Build 0.38
       URI::Escape 0
       perl 5.008001
+  Crypt-CBC-2.33
+    pathname: L/LD/LDS/Crypt-CBC-2.33.tar.gz
+    provides:
+      Crypt::CBC 2.33
+    requirements:
+      Digest::MD5 2.00
+      ExtUtils::MakeMaker 0
+  Crypt-Rijndael-1.13
+    pathname: L/LE/LEONT/Crypt-Rijndael-1.13.tar.gz
+    provides:
+      Crypt::Rijndael 1.13
+    requirements:
+      ExtUtils::MakeMaker 0
+      perl 5.006
+  Crypt-URandom-0.36
+    pathname: D/DD/DDICK/Crypt-URandom-0.36.tar.gz
+    provides:
+      Crypt::URandom 0.36
+    requirements:
+      Carp 0
+      English 0
+      ExtUtils::MakeMaker 0
+      FileHandle 0
+      Test::More 0
   DBI-1.634
     pathname: T/TI/TIMB/DBI-1.634.tar.gz
     provides:
@@ -570,6 +594,20 @@ DISTRIBUTIONS
       Template::Tiny 0
       URI::Escape 0
       parent 0
+  Dancer2-Session-Cookie-0.006
+    pathname: Y/YA/YANICK/Dancer2-Session-Cookie-0.006.tar.gz
+    provides:
+      Dancer2::Session::Cookie 0.006
+    requirements:
+      Dancer2 0.140001
+      Dancer2::Core::Role::SessionFactory 0
+      Dancer2::Core::Types 0
+      Module::Build 0.3601
+      Moo 0
+      Session::Storage::Secure 0.010
+      perl 5.008001
+      strict 0
+      warnings 0
   Data-Faker-0.10
     pathname: W/WS/WSHELDAHL/Data-Faker-0.10.tar.gz
     provides:
@@ -1247,6 +1285,17 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 6.59
       Test::More 0.47
+      perl 5.006
+  Math-Random-ISAAC-XS-1.004
+    pathname: J/JA/JAWNSY/Math-Random-ISAAC-XS-1.004.tar.gz
+    provides:
+      Math::Random::ISAAC::XS 1.004
+    requirements:
+      ExtUtils::CBuilder 0
+      ExtUtils::ParseXS 0
+      Module::Build 0.2808_01
+      Test::More 0.62
+      Test::NoWarnings 0.084
       perl 5.006
   Module-Build-Tiny-0.039
     pathname: L/LE/LEONT/Module-Build-Tiny-0.039.tar.gz
@@ -2125,6 +2174,52 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0
+  Sereal-Decoder-3.014
+    pathname: Y/YV/YVES/Sereal-Decoder-3.014.tar.gz
+    provides:
+      Sereal::Decoder 3.014
+      Sereal::Decoder::Constants 3.014
+      Sereal::Performance undef
+    requirements:
+      ExtUtils::MakeMaker 7.0
+      ExtUtils::ParseXS 2.21
+      File::Find 0
+      File::Path 0
+      XSLoader 0
+      perl 5.008
+  Sereal-Encoder-3.014
+    pathname: Y/YV/YVES/Sereal-Encoder-3.014.tar.gz
+    provides:
+      Sereal::Encoder 3.014
+      Sereal::Encoder::Constants 3.014
+    requirements:
+      ExtUtils::MakeMaker 7.0
+      ExtUtils::ParseXS 2.21
+      File::Find 0
+      File::Path 0
+      XSLoader 0
+      perl 5.008
+  Session-Storage-Secure-0.010
+    pathname: D/DA/DAGOLDEN/Session-Storage-Secure-0.010.tar.gz
+    provides:
+      Session::Storage::Secure 0.010
+    requirements:
+      Carp 0
+      Crypt::CBC 0
+      Crypt::Rijndael 0
+      Crypt::URandom 0
+      Digest::SHA 0
+      ExtUtils::MakeMaker 6.17
+      MIME::Base64 3.12
+      Math::Random::ISAAC::XS 0
+      Moo 0
+      MooX::Types::MooseLike::Base 0.16
+      Sereal::Decoder 0
+      Sereal::Encoder 0
+      String::Compare::ConstantTime 0
+      namespace::clean 0
+      strict 0
+      warnings 0
   Stream-Buffered-0.03
     pathname: D/DO/DOY/Stream-Buffered-0.03.tar.gz
     provides:
@@ -2135,6 +2230,12 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 6.30
       IO::File 1.14
+  String-Compare-ConstantTime-0.311
+    pathname: F/FR/FRACTAL/String-Compare-ConstantTime-0.311.tar.gz
+    provides:
+      String::Compare::ConstantTime 0.311
+    requirements:
+      ExtUtils::MakeMaker 0
   String-RewritePrefix-0.007
     pathname: R/RJ/RJBS/String-RewritePrefix-0.007.tar.gz
     provides:
@@ -2397,6 +2498,17 @@ DISTRIBUTIONS
       Test::Harness 3.21
       Test::More 0.88
       Test::Warn 0.23
+  Test-NoWarnings-1.04
+    pathname: A/AD/ADAMK/Test-NoWarnings-1.04.tar.gz
+    provides:
+      Test::NoWarnings 1.04
+      Test::NoWarnings::Warning 1.04
+    requirements:
+      ExtUtils::MakeMaker 0
+      Test::Builder 0.86
+      Test::More 0.47
+      Test::Tester 0.107
+      perl 5.006
   Test-SharedFork-0.34
     pathname: E/EX/EXODIST/Test-SharedFork-0.34.tar.gz
     provides:
@@ -2411,6 +2523,28 @@ DISTRIBUTIONS
       Test::Builder::Module 0
       Test::More 0.88
       perl 5.008_001
+  Test-Simple-1.001014
+    pathname: E/EX/EXODIST/Test-Simple-1.001014.tar.gz
+    provides:
+      Test::Builder 1.001014
+      Test::Builder::IO::Scalar 2.113
+      Test::Builder::Module 1.001014
+      Test::Builder::Tester 1.28
+      Test::Builder::Tester::Color 1.290001
+      Test::Builder::Tester::Tie 1.28
+      Test::More 1.001014
+      Test::Simple 1.001014
+      Test::Tester 0.114
+      Test::Tester::Capture undef
+      Test::Tester::CaptureRunner undef
+      Test::Tester::Delegate undef
+      Test::use::ok 0.16
+      ok 0.16
+    requirements:
+      ExtUtils::MakeMaker 0
+      Scalar::Util 1.13
+      Test::Harness 2.03
+      perl 5.006
   Test-TCP-2.14
     pathname: T/TO/TOKUHIROM/Test-TCP-2.14.tar.gz
     provides:
