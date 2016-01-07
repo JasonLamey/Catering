@@ -501,71 +501,72 @@ DISTRIBUTIONS
       strict 0
       vars 0
       warnings 0
-  Dancer2-0.163000
-    pathname: X/XS/XSAWYERX/Dancer2-0.163000.tar.gz
+  Dancer2-0.165000
+    pathname: X/XS/XSAWYERX/Dancer2-0.165000.tar.gz
     provides:
-      Dancer2 0.163000
-      Dancer2::CLI 0.163000
-      Dancer2::CLI::Command::gen 0.163000
-      Dancer2::CLI::Command::version 0.163000
-      Dancer2::Core 0.163000
-      Dancer2::Core::App 0.163000
-      Dancer2::Core::Cookie 0.163000
-      Dancer2::Core::DSL 0.163000
-      Dancer2::Core::Dispatcher 0.163000
-      Dancer2::Core::Error 0.163000
-      Dancer2::Core::Factory 0.163000
-      Dancer2::Core::HTTP 0.163000
-      Dancer2::Core::Hook 0.163000
-      Dancer2::Core::MIME 0.163000
-      Dancer2::Core::Request 0.163000
-      Dancer2::Core::Request::Upload 0.163000
-      Dancer2::Core::Response 0.163000
-      Dancer2::Core::Response::Delayed 0.163000
-      Dancer2::Core::Role::ConfigReader 0.163000
-      Dancer2::Core::Role::DSL 0.163000
-      Dancer2::Core::Role::Engine 0.163000
-      Dancer2::Core::Role::Handler 0.163000
-      Dancer2::Core::Role::HasLocation 0.163000
-      Dancer2::Core::Role::Hookable 0.163000
-      Dancer2::Core::Role::Logger 0.163000
-      Dancer2::Core::Role::Serializer 0.163000
-      Dancer2::Core::Role::SessionFactory 0.163000
-      Dancer2::Core::Role::SessionFactory::File 0.163000
-      Dancer2::Core::Role::StandardResponses 0.163000
-      Dancer2::Core::Role::Template 0.163000
-      Dancer2::Core::Route 0.163000
-      Dancer2::Core::Runner 0.163000
-      Dancer2::Core::Session 0.163000
-      Dancer2::Core::Time 0.163000
-      Dancer2::Core::Types 0.163000
-      Dancer2::FileUtils 0.163000
-      Dancer2::Handler::AutoPage 0.163000
-      Dancer2::Handler::File 0.163000
-      Dancer2::Logger::Capture 0.163000
-      Dancer2::Logger::Capture::Trap 0.163000
-      Dancer2::Logger::Console 0.163000
-      Dancer2::Logger::Diag 0.163000
-      Dancer2::Logger::File 0.163000
-      Dancer2::Logger::Note 0.163000
-      Dancer2::Logger::Null 0.163000
-      Dancer2::Plugin 0.163000
-      Dancer2::Serializer::Dumper 0.163000
-      Dancer2::Serializer::JSON 0.163000
-      Dancer2::Serializer::Mutable 0.163000
-      Dancer2::Serializer::YAML 0.163000
-      Dancer2::Session::Simple 0.163000
-      Dancer2::Session::YAML 0.163000
-      Dancer2::Template::Implementation::ForkedTiny 0.163000
-      Dancer2::Template::Simple 0.163000
-      Dancer2::Template::TemplateToolkit 0.163000
-      Dancer2::Template::Tiny 0.163000
-      Dancer2::Test 0.163000
+      Dancer2 0.165000
+      Dancer2::CLI 0.165000
+      Dancer2::CLI::Command::gen 0.165000
+      Dancer2::CLI::Command::version 0.165000
+      Dancer2::Core 0.165000
+      Dancer2::Core::App 0.165000
+      Dancer2::Core::Cookie 0.165000
+      Dancer2::Core::DSL 0.165000
+      Dancer2::Core::Dispatcher 0.165000
+      Dancer2::Core::Error 0.165000
+      Dancer2::Core::Factory 0.165000
+      Dancer2::Core::HTTP 0.165000
+      Dancer2::Core::Hook 0.165000
+      Dancer2::Core::MIME 0.165000
+      Dancer2::Core::Request 0.165000
+      Dancer2::Core::Request::Upload 0.165000
+      Dancer2::Core::Response 0.165000
+      Dancer2::Core::Response::Delayed 0.165000
+      Dancer2::Core::Role::ConfigReader 0.165000
+      Dancer2::Core::Role::DSL 0.165000
+      Dancer2::Core::Role::Engine 0.165000
+      Dancer2::Core::Role::Handler 0.165000
+      Dancer2::Core::Role::HasLocation 0.165000
+      Dancer2::Core::Role::Hookable 0.165000
+      Dancer2::Core::Role::Logger 0.165000
+      Dancer2::Core::Role::Serializer 0.165000
+      Dancer2::Core::Role::SessionFactory 0.165000
+      Dancer2::Core::Role::SessionFactory::File 0.165000
+      Dancer2::Core::Role::StandardResponses 0.165000
+      Dancer2::Core::Role::Template 0.165000
+      Dancer2::Core::Route 0.165000
+      Dancer2::Core::Runner 0.165000
+      Dancer2::Core::Session 0.165000
+      Dancer2::Core::Time 0.165000
+      Dancer2::Core::Types 0.165000
+      Dancer2::FileUtils 0.165000
+      Dancer2::Handler::AutoPage 0.165000
+      Dancer2::Handler::File 0.165000
+      Dancer2::Logger::Capture 0.165000
+      Dancer2::Logger::Capture::Trap 0.165000
+      Dancer2::Logger::Console 0.165000
+      Dancer2::Logger::Diag 0.165000
+      Dancer2::Logger::File 0.165000
+      Dancer2::Logger::Note 0.165000
+      Dancer2::Logger::Null 0.165000
+      Dancer2::Plugin 0.165000
+      Dancer2::Serializer::Dumper 0.165000
+      Dancer2::Serializer::JSON 0.165000
+      Dancer2::Serializer::Mutable 0.165000
+      Dancer2::Serializer::YAML 0.165000
+      Dancer2::Session::Simple 0.165000
+      Dancer2::Session::YAML 0.165000
+      Dancer2::Template::Implementation::ForkedTiny 0.165000
+      Dancer2::Template::Simple 0.165000
+      Dancer2::Template::TemplateToolkit 0.165000
+      Dancer2::Template::Tiny 0.165000
+      Dancer2::Test 0.165000
     requirements:
       App::Cmd::Setup 0
       Carp 0
       Class::Load 0
       Config::Any 0
+      Digest::SHA 0
       Encode 0
       Exporter 5.57
       ExtUtils::MakeMaker 0
@@ -585,7 +586,7 @@ DISTRIBUTIONS
       Moo::Role 0
       MooX::Types::MooseLike 0
       POSIX 0
-      Plack 1.0029
+      Plack 1.0035
       Plack::Middleware::FixMissingBodyInRedirect 0
       Plack::Middleware::RemoveRedundantBody 0
       Return::MultiLevel 0

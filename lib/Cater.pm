@@ -4,27 +4,29 @@ use Dancer2;
 use strict;
 use warnings;
 
+use Dancer2::Session::Cookie;
+
 use Const::Fast;
 
-use version; our $VERSION = qv( 'v0.1.1' );
+use version; our $VERSION = qv( 'v0.1.2' );
 
 
 =head1 NAME
 
 Cater
 
+
 =head1 SYNOPSIS AND USAGE
 
 Primary web application library, providing all routes and data calls.
 
-=head1 ROUTES
 
-=cut
+=head1 ROUTES
 
 
 =head2 '/'
 
-Root route.
+Root route. Presents user with main landing page.
 
 =cut
 
@@ -33,6 +35,27 @@ get '/' => sub
     template 'index';
 };
 
+
+=head2 '/login'
+
+User login route.
+
+=cut
+
+get '/login' => sub
+{
+};
+
+
+=head2 '/register'
+
+User registration route.
+
+=cut
+
+get '/register' => sub
+{
+};
 
 
 =head1 AUTHOR

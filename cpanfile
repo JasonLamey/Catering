@@ -1,13 +1,13 @@
 # cpanfile
 requires 'perl', '>= 5.18.2';
 
-requires 'Dancer2',                  '0.163000';
-requires 'Dancer2::Session::Cookie', '0.006';
-requires 'Locale::Country',          '3.36';
-requires 'Class::DBI',               '3.0.17';
-requires 'Const::Fast',              '0.014';
-requires 'Time::Piece',              '1.31';
-requires 'version',                  '0.9912';
+requires 'Dancer2',                '0.163000';
+requires 'Dancer2::Session::YAML', '0.165000';
+requires 'Locale::Country',        '3.36';
+requires 'Class::DBI',             '3.0.17';
+requires 'Const::Fast',            '0.014';
+requires 'Time::Piece',            '1.31';
+requires 'version',                '0.9912';
 
 on 'develop' => sub
 {
@@ -19,4 +19,7 @@ on 'test' => sub
 {
     requires   'Test::More';
     requires   'Data::Faker';
+    requires   'Plack::Test';
+    requires   'HTTP::Request::Common';
+    requires   'HTTP::Cookies';
 };
