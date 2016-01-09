@@ -40,13 +40,30 @@ This module handles all of the login verification, registration, and logout func
 
 sub process_login_credentials
 {
-    my ( $self, $params ) = @_;
+    my ( $self, %params ) = @_;
 
-    my $username   = $params->{'username'}   // undef;
-    my $password   = $params->{'password'}   // undef;
-    my $login_type = $params->{'login_type'} // 'User';
+    my $username   = $params{'username'}   // undef;
+    my $password   = $params{'password'}   // undef;
+    my $login_type = $params{'login_type'} // 'User';
 
     my %return  = ( success => 0, error_message => '', log_message => '' );
+
+    foreach my $key ( keys %params ) { debug "$key = >$params{$key}<"; }
+
+    # If we're missing a username or password, let's fail it right now.
+    if ( not defined $username )
+    {
+        $return{'error_message'} = 'You must provide a username.';
+        $return{'log_message'}   = 'Failed Login: Username not defined.';
+        return \%return;
+    }
+    if ( not defined $password )
+    {
+        $return{'error_message'} = 'You must provide a password.';
+        $return{'log_message'}   = 'Failed Login: Password not defined.';
+        return \%return;
+    }
+
     my $account = undef;
     # Look up username and verify password based on the login-type.
     if ( uc( $login_type ) eq 'USER' )
@@ -113,10 +130,10 @@ Generates a new random string for use with a new account or for a password reset
 
 sub generate_random_string
 {
-    my ( $self, $params ) = @_;
+    my ( $self, %params ) = @_;
 
-    my $string_length = delete $params->{'string_length'} // 32;
-    my $char_set      = delete $params->{'char_set'}      // ['a'..'z', 'A'..'Z', 0..9];
+    my $string_length = delete $params{'string_length'} // 32;
+    my $char_set      = delete $params{'char_set'}      // ['a'..'z', 'A'..'Z', 0..9];
 
     return passphrase->generate_random( { length => $string_length, charset => $char_set } );
 }

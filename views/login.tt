@@ -1,0 +1,12 @@
+<form method='post' action='/login'>
+<label for='username'>Username:</label>
+<input type='text' name='username' value='[% data.username %]'><br>
+<label for='password'>Password:</label>
+<input type='password' name='password'><br>
+<select name='user_type'>
+    <option value='User'>User</option>
+    <option value='Client'>Client</option>
+    <option value='Marketer'>Marketer</option>
+</select>
+<input type='submit' value='login'>
+</form>

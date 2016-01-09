@@ -198,6 +198,22 @@ DISTRIBUTIONS
       base 0
       strict 0
       warnings 0
+  Class-Mix-0.005
+    pathname: Z/ZE/ZEFRAM/Class-Mix-0.005.tar.gz
+    provides:
+      Class::Mix 0.005
+    requirements:
+      Carp 0
+      Exporter 0
+      Module::Build 0
+      Params::Classify 0
+      Test::More 0
+      constant 0
+      if 0
+      parent 0
+      perl 5.006
+      strict 0
+      warnings 0
   Class-Trigger-0.14
     pathname: M/MI/MIYAGAWA/Class-Trigger-0.14.tar.gz
     provides:
@@ -260,6 +276,28 @@ DISTRIBUTIONS
     requirements:
       Digest::MD5 2.00
       ExtUtils::MakeMaker 0
+  Crypt-Eksblowfish-0.009
+    pathname: Z/ZE/ZEFRAM/Crypt-Eksblowfish-0.009.tar.gz
+    provides:
+      Crypt::Eksblowfish 0.009
+      Crypt::Eksblowfish::Bcrypt 0.009
+      Crypt::Eksblowfish::Blowfish 0.009
+      Crypt::Eksblowfish::Family 0.009
+      Crypt::Eksblowfish::Subkeyed 0.009
+      Crypt::Eksblowfish::Uklblowfish 0.009
+    requirements:
+      Carp 0
+      Class::Mix 0.001
+      Exporter 0
+      ExtUtils::CBuilder 0.15
+      MIME::Base64 2.21
+      Module::Build 0
+      Test::More 0
+      XSLoader 0
+      parent 0
+      perl 5.006
+      strict 0
+      warnings 0
   Crypt-Rijndael-1.13
     pathname: L/LE/LEONT/Crypt-Rijndael-1.13.tar.gz
     provides:
@@ -277,6 +315,21 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       FileHandle 0
       Test::More 0
+  DBD-mysql-4.033
+    pathname: C/CA/CAPTTOFU/DBD-mysql-4.033.tar.gz
+    provides:
+      Bundle::DBD::mysql 4.033
+      DBD::mysql 4.033
+      DBD::mysql::GetInfo undef
+      DBD::mysql::db 4.033
+      DBD::mysql::dr 4.033
+      DBD::mysql::st 4.033
+    requirements:
+      DBI 1.08
+      Data::Dumper 0
+      Test::Deep 0
+      Test::Simple 0.90
+      perl 5.008001
   DBI-1.634
     pathname: T/TI/TIMB/DBI-1.634.tar.gz
     provides:
@@ -383,124 +436,6 @@ DISTRIBUTIONS
       DBI 1.35
       ExtUtils::MakeMaker 0
       Test::More 0.11
-  Dancer-1.3140
-    pathname: Y/YA/YANICK/Dancer-1.3140.tar.gz
-    provides:
-      Dancer 1.3140
-      Dancer::App 1.3140
-      Dancer::Config 1.3140
-      Dancer::Config::Object 1.3140
-      Dancer::Continuation 1.3140
-      Dancer::Continuation::Halted 1.3140
-      Dancer::Continuation::Route 1.3140
-      Dancer::Continuation::Route::ErrorSent 1.3140
-      Dancer::Continuation::Route::FileSent 1.3140
-      Dancer::Continuation::Route::Forwarded 1.3140
-      Dancer::Continuation::Route::Passed 1.3140
-      Dancer::Continuation::Route::Templated 1.3140
-      Dancer::Cookie 1.3140
-      Dancer::Cookies 1.3140
-      Dancer::Deprecation 1.3140
-      Dancer::Engine 1.3140
-      Dancer::Error 1.3140
-      Dancer::Exception 1.3140
-      Dancer::Exception::Base 1.3140
-      Dancer::Factory::Hook 1.3140
-      Dancer::FileUtils 1.3140
-      Dancer::GetOpt 1.3140
-      Dancer::HTTP 1.3140
-      Dancer::Handler 1.3140
-      Dancer::Handler::Debug 1.3140
-      Dancer::Handler::PSGI 1.3140
-      Dancer::Handler::Standalone 1.3140
-      Dancer::Hook 1.3140
-      Dancer::Hook::Properties 1.3140
-      Dancer::Logger 1.3140
-      Dancer::Logger::Abstract 1.3140
-      Dancer::Logger::Capture 1.3140
-      Dancer::Logger::Capture::Trap 1.3140
-      Dancer::Logger::Console 1.3140
-      Dancer::Logger::Diag 1.3140
-      Dancer::Logger::File 1.3140
-      Dancer::Logger::Note 1.3140
-      Dancer::Logger::Null 1.3140
-      Dancer::MIME 1.3140
-      Dancer::ModuleLoader 1.3140
-      Dancer::Object 1.3140
-      Dancer::Object::Singleton 1.3140
-      Dancer::Plugin 1.3140
-      Dancer::Plugin::Ajax 1.3140
-      Dancer::Renderer 1.3140
-      Dancer::Request 1.3140
-      Dancer::Request::Upload 1.3140
-      Dancer::Response 1.3140
-      Dancer::Route 1.3140
-      Dancer::Route::Cache 1.3140
-      Dancer::Route::Registry 1.3140
-      Dancer::Serializer 1.3140
-      Dancer::Serializer::Abstract 1.3140
-      Dancer::Serializer::Dumper 1.3140
-      Dancer::Serializer::JSON 1.3140
-      Dancer::Serializer::JSONP 1.3140
-      Dancer::Serializer::Mutable 1.3140
-      Dancer::Serializer::XML 1.3140
-      Dancer::Serializer::YAML 1.3140
-      Dancer::Session 1.3140
-      Dancer::Session::Abstract 1.3140
-      Dancer::Session::Simple 1.3140
-      Dancer::Session::YAML 1.3140
-      Dancer::SharedData 1.3140
-      Dancer::Template 1.3140
-      Dancer::Template::Abstract 1.3140
-      Dancer::Template::Simple 1.3140
-      Dancer::Template::TemplateToolkit 1.3140
-      Dancer::Test 1.3140
-      Dancer::Timer 1.3140
-    requirements:
-      Carp 0
-      Cwd 0
-      Data::Dumper 0
-      Encode 0
-      Exporter 0
-      ExtUtils::MakeMaker 0
-      Fcntl 0
-      File::Basename 0
-      File::Copy 0
-      File::Path 0
-      File::Spec 0
-      File::Spec::Functions 0
-      File::Temp 0
-      File::stat 0
-      FindBin 0
-      Getopt::Long 0
-      HTTP::Body 0
-      HTTP::Date 0
-      HTTP::Headers 0
-      HTTP::Server::Simple::PSGI 0
-      Hash::Merge::Simple 0
-      IO::File 0
-      LWP::UserAgent 0
-      MIME::Types 0
-      Module::Runtime 0
-      POSIX 0
-      Pod::Usage 0
-      Scalar::Util 0
-      Test::Builder 0
-      Test::More 0
-      Time::HiRes 0
-      Try::Tiny 0
-      URI 0
-      URI::Escape 0
-      base 0
-      bytes 0
-      constant 0
-      lib 0
-      overload 0
-      parent 0
-      perl 5.006
-      strict 0
-      vars 0
-      warnings 0
   Dancer2-0.165000
     pathname: X/XS/XSAWYERX/Dancer2-0.165000.tar.gz
     provides:
@@ -595,6 +530,20 @@ DISTRIBUTIONS
       Template::Tiny 0
       URI::Escape 0
       parent 0
+  Dancer2-Plugin-Passphrase-3.2.2
+    pathname: H/HV/HVOERS/Dancer2-Plugin-Passphrase-3.2.2.tar.gz
+    provides:
+      Dancer2::Plugin::Passphrase 3.002002
+      Dancer2::Plugin::Passphrase::Core undef
+      Dancer2::Plugin::Passphrase::Hashed undef
+    requirements:
+      Dancer2 0.164
+      Data::Entropy 0.007
+      Digest::Bcrypt 0
+      Digest::SHA 5.74
+      ExtUtils::MakeMaker 0
+      Test::More 0
+      perl 5.010001
   Dancer2-Session-Cookie-0.006
     pathname: Y/YA/YANICK/Dancer2-Session-Cookie-0.006.tar.gz
     provides:
@@ -603,10 +552,46 @@ DISTRIBUTIONS
       Dancer2 0.140001
       Dancer2::Core::Role::SessionFactory 0
       Dancer2::Core::Types 0
+      File::Spec 0
+      File::Temp 0.22
+      HTTP::Date 0
+      IO::Handle 0
+      IPC::Open3 0
+      LWP::UserAgent 0
       Module::Build 0.3601
       Moo 0
       Session::Storage::Secure 0.010
+      Test::More 0.96
+      Test::TCP 1.30
+      YAML 0
       perl 5.008001
+      strict 0
+      warnings 0
+  Data-Entropy-0.007
+    pathname: Z/ZE/ZEFRAM/Data-Entropy-0.007.tar.gz
+    provides:
+      Data::Entropy 0.007
+      Data::Entropy::Algorithms 0.007
+      Data::Entropy::RawSource::CryptCounter 0.007
+      Data::Entropy::RawSource::Local 0.007
+      Data::Entropy::RawSource::RandomOrg 0.007
+      Data::Entropy::RawSource::RandomnumbersInfo 0.007
+      Data::Entropy::Source 0.007
+    requirements:
+      Carp 0
+      Crypt::Rijndael 0
+      Data::Float 0.008
+      Errno 1.00
+      Exporter 0
+      HTTP::Lite 2.2
+      IO::File 1.03
+      Module::Build 0
+      Params::Classify 0
+      Test::More 0
+      constant 0
+      integer 0
+      parent 0
+      perl 5.006
       strict 0
       warnings 0
   Data-Faker-0.10
@@ -622,6 +607,21 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       POSIX 0
+  Data-Float-0.012
+    pathname: Z/ZE/ZEFRAM/Data-Float-0.012.tar.gz
+    provides:
+      Data::Float 0.012
+    requirements:
+      Carp 0
+      Exporter 0
+      Module::Build 0
+      Test::More 0
+      constant 0
+      integer 0
+      parent 0
+      perl 5.006
+      strict 0
+      warnings 0
   Data-Munge-0.095
     pathname: M/MA/MAUKE/Data-Munge-0.095.tar.gz
     provides:
@@ -720,6 +720,21 @@ DISTRIBUTIONS
       Filter::Util::Call 0
       Test::More 0
       perl 5.008001
+  Digest-Bcrypt-1.0.1
+    pathname: J/JA/JAITKEN/Digest-Bcrypt-1.0.1.tar.gz
+    provides:
+      Digest::Bcrypt 1.000001
+    requirements:
+      Carp 0
+      Crypt::Eksblowfish::Bcrypt 0
+      Digest 0
+      Digest::base 0
+      ExtUtils::MakeMaker 6.30
+      Test::More 0
+      bytes 0
+      parent 0
+      strict 0
+      warnings 0
   Dist-CheckConflicts-0.11
     pathname: D/DO/DOY/Dist-CheckConflicts-0.11.tar.gz
     provides:
@@ -1013,6 +1028,17 @@ DISTRIBUTIONS
       HTTP::Date 0
       Module::Build 0.38
       perl 5.008001
+  HTTP-Lite-2.44
+    pathname: N/NE/NEILB/HTTP-Lite-2.44.tar.gz
+    provides:
+      HTTP::Lite 2.44
+    requirements:
+      ExtUtils::MakeMaker 0
+      Fcntl 0
+      Socket 1.3
+      perl 5.005
+      strict 0
+      warnings 0
   HTTP-Message-6.11
     pathname: E/ET/ETHER/HTTP-Message-6.11.tar.gz
     provides:
@@ -1054,27 +1080,6 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       HTTP::Headers 6
       perl 5.008001
-  HTTP-Server-Simple-0.50
-    pathname: F/FA/FALCONE/HTTP-Server-Simple-0.50.tar.gz
-    provides:
-      HTTP::Server::Simple 0.50
-      HTTP::Server::Simple::CGI undef
-      HTTP::Server::Simple::CGI::Environment undef
-    requirements:
-      CGI 0
-      ExtUtils::MakeMaker 6.36
-      Socket 1.94
-      Test::More 0
-  HTTP-Server-Simple-PSGI-0.16
-    pathname: M/MI/MIYAGAWA/HTTP-Server-Simple-PSGI-0.16.tar.gz
-    provides:
-      HTTP::Server::Simple::PSGI 0.16
-      HTTP::Server::Simple::PSGI::Writer 0.16
-      Plack::Handler::HTTP::Server::Simple 0.16
-      Plack::Handler::HTTP::Server::Simple::PSGIServer 0.16
-    requirements:
-      ExtUtils::MakeMaker 6.30
-      HTTP::Server::Simple 0.42
   HTTP-Tiny-0.056
     pathname: D/DA/DAGOLDEN/HTTP-Tiny-0.056.tar.gz
     provides:
@@ -1223,6 +1228,8 @@ DISTRIBUTIONS
     requirements:
       Carp 0
       Module::Build 0.21
+      Storable 0
+      Test::More 0
       perl 5.006
       utf8 0
   Log-Dispatch-2.51
@@ -1266,19 +1273,8 @@ DISTRIBUTIONS
       Log::Dispatch::TestDiag 0.01
     requirements:
       Log::Dispatch::Output 0
+      Module::Build 0.38
       Test::More 0
-  MIME-Types-2.11
-    pathname: M/MA/MARKOV/MIME-Types-2.11.tar.gz
-    provides:
-      MIME::Type 2.11
-      MIME::Types 2.11
-      MojoX::MIME::Types 2.11
-    requirements:
-      ExtUtils::MakeMaker 0
-      File::Basename 0
-      File::Spec 0
-      List::Util 0
-      Test::More 0.47
   MRO-Compat-0.12
     pathname: B/BO/BOBTFISH/MRO-Compat-0.12.tar.gz
     provides:
@@ -1958,6 +1954,20 @@ DISTRIBUTIONS
       XSLoader 0
       strict 0
       warnings 0
+  Params-Classify-0.013
+    pathname: Z/ZE/ZEFRAM/Params-Classify-0.013.tar.gz
+    provides:
+      Params::Classify 0.013
+    requirements:
+      Exporter 0
+      ExtUtils::ParseXS 2.2006
+      Module::Build 0
+      Scalar::Util 1.01
+      Test::More 0
+      parent 0
+      perl 5.006001
+      strict 0
+      warnings 0
   Params-Util-1.07
     pathname: A/AD/ADAMK/Params-Util-1.07.tar.gz
     provides:
@@ -1978,12 +1988,24 @@ DISTRIBUTIONS
       Params::Validate::XS 1.21
     requirements:
       Carp 0
+      Devel::Peek 0
       Exporter 0
       ExtUtils::CBuilder 0
+      ExtUtils::MakeMaker 0
+      File::Spec 0
+      File::Temp 0
       Module::Build 0.28
       Module::Implementation 0
       Scalar::Util 1.10
+      Test::Fatal 0
+      Test::More 0.96
+      Test::Requires 0
+      Tie::Array 0
+      Tie::Hash 0
       XSLoader 0
+      base 0
+      lib 0
+      overload 0
       perl 5.008001
       strict 0
       vars 0
@@ -2010,9 +2032,12 @@ DISTRIBUTIONS
       Module::Build 0.3601
       Perl::OSType 0
       Scalar::Util 0
+      Test 0
+      Test::More 0
       overload 0
       parent 0
       strict 0
+      warnings 0
   Plack-1.0039
     pathname: M/MI/MIYAGAWA/Plack-1.0039.tar.gz
     provides:
@@ -2401,6 +2426,7 @@ DISTRIBUTIONS
     requirements:
       Capture::Tiny 0.24
       Data::Dumper 2.126
+      ExtUtils::MakeMaker 0
       Test::More 0
       Text::Diff 0.35
   Test-Exception-0.40
@@ -2509,6 +2535,15 @@ DISTRIBUTIONS
       Test::Builder 0.86
       Test::More 0.47
       Test::Tester 0.107
+      perl 5.006
+  Test-Requires-0.10
+    pathname: T/TO/TOKUHIROM/Test-Requires-0.10.tar.gz
+    provides:
+      Test::Requires 0.10
+    requirements:
+      ExtUtils::MakeMaker 6.64
+      Test::Builder::Module 0
+      Test::More 0.47
       perl 5.006
   Test-SharedFork-0.34
     pathname: E/EX/EXODIST/Test-SharedFork-0.34.tar.gz
@@ -2706,6 +2741,34 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Fcntl 0
       URI 1.10
+      perl 5.008001
+  YAML-1.15
+    pathname: I/IN/INGY/YAML-1.15.tar.gz
+    provides:
+      YAML 1.15
+      YAML::Any 1.15
+      YAML::Dumper undef
+      YAML::Dumper::Base undef
+      YAML::Error undef
+      YAML::Loader undef
+      YAML::Loader::Base undef
+      YAML::Marshall undef
+      YAML::Mo 0.88
+      YAML::Node undef
+      YAML::Tag undef
+      YAML::Type::blessed undef
+      YAML::Type::code undef
+      YAML::Type::glob undef
+      YAML::Type::ref undef
+      YAML::Type::regexp undef
+      YAML::Type::undef undef
+      YAML::Types undef
+      YAML::Warning undef
+      yaml_mapping undef
+      yaml_scalar undef
+      yaml_sequence undef
+    requirements:
+      ExtUtils::MakeMaker 0
       perl 5.008001
   libwww-perl-6.13
     pathname: E/ET/ETHER/libwww-perl-6.13.tar.gz
