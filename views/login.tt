@@ -4,9 +4,11 @@
 <label for='password'>Password:</label>
 <input type='password' name='password'><br>
 <select name='user_type'>
-    <option value='User'>User</option>
-    <option value='Client'>Client</option>
-    <option value='Marketer'>Marketer</option>
+    [% FOREACH user_type IN [ 'User', 'Client', 'Marketer' ] %]
+    [% IF user_type == data.user_type %][% selected = ' selected' %]
+    [% ELSE %][% selected = '' %][% END %]
+    <option value='[% user_type %]'[% selected %]>[% user_type %]</option>
+    [% END %]
 </select>
 <input type='submit' value='login'>
 </form>

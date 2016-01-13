@@ -11,6 +11,10 @@ requires 'Class::DBI',                  '3.0.17';
 requires 'Const::Fast',                 '0.014';
 requires 'Time::Piece',                 '1.31';
 requires 'version',                     '0.9912';
+requires 'Email::Valid',                '1.198';
+requires 'Net::DNS',                    '1.04';
+requires 'Try::Tiny',                   '0.24';
+requires 'DateTime',                    '1.21';
 
 on 'develop' => sub
 {

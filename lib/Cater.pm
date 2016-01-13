@@ -46,12 +46,15 @@ User login route. Presents user with a login page.
 
 get '/login' => sub
 {
+
     template 'login',
                     {
                         data => {
-                                    username      => query_parameters->get('username'),
-                                    user_type     => query_parameters->get('user_type'),
-                                    error_message => query_parameters->get('error_message'),
+                                    username      => ( param 'username'      // '' ),
+                                    user_type     => ( param 'user_type'     // '' ),
+                                },
+                        msgs => {
+                                    error_message => ( param 'error_message' // '' ),
                                 },
                     };
 };
@@ -73,30 +76,84 @@ post '/login' => sub
 
     if ( $login_result->{'success'} )
     {
-        forward '/';
+        # TODO: Send Confirmation Email
+        info 'Successful Login: >' . body_parameters->get('username') . '< from IP: >' .
+             request->remote_address . ' - ' . request->remote_host . '<';
+        session user => body_parameters->get('username');
+        redirect '/';
     }
     else
     {
-        warn $login_result->{'log_message'};
+        warning $login_result->{'log_message'};
         forward '/login',
                         {
                             username      => body_parameters->get('username'),
                             user_type     => body_parameters->get('user_type'),
                             error_message => $login_result->{'error_message'},
                         },
-                        { method => 'GET' }
+                        { method => 'GET' };
     }
 };
 
 
-=head2 '/register'
+=head2 'GET /register'
 
-User registration route.
+User registration route. Provides the appropriate registration form for signup.
 
 =cut
 
 get '/register' => sub
 {
+    template 'register',
+                    {
+                        data => {
+                                    username  => ( param 'username'  // '' ),
+                                    full_name => ( param 'full_name' // '' ),
+                                    email     => ( param 'email'     // '' ),
+                                    user_type => ( param 'user_type' // '' ),
+                                },
+                        msgs => {
+                                    error_message => ( param 'error_message' // '' ),
+                                },
+                    };
+};
+
+
+=head2 'POST /register'
+
+User registration processing route.
+
+=cut
+
+post '/register' => sub
+{
+    my $registration_result = Cater::Login->process_registration_data(
+                                                                       username         => body_parameters->get('username'),
+                                                                       full_name        => body_parameters->get('full_name'),
+                                                                       email            => body_parameters->get('email'),
+                                                                       password         => body_parameters->get('password'),
+                                                                       password_confirm => body_parameters->get('password_confirm'),
+                                                                       user_type        => body_parameters->get('user_type'),
+                                                                     );
+
+    if ( $registration_result->{'success'} )
+    {
+        #redirect '/registration_confirmation';
+        redirect '/';
+    }
+    else
+    {
+        warning $registration_result->{'log_message'};
+        forward '/register',
+                        {
+                            username      => body_parameters->get('username'),
+                            full_name     => body_parameters->get('full_name'),
+                            email         => body_parameters->get('email'),
+                            user_type     => body_parameters->get('user_type'),
+                            error_message => $registration_result->{'error_message'},
+                        },
+                        { method => 'GET' };
+    }
 };
 
 

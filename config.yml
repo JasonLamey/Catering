@@ -31,3 +31,9 @@ engines:
   session:
     YAML:
       session_dir: ./sessions
+
+plugins:
+  Passphrase:
+    default: Bcrypt
+    Bcrypt:
+      cost: 8
