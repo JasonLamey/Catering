@@ -1,21 +1,22 @@
 package Cater::Login;
 
-use Dancer2 appname => 'Cater';
-use Dancer2::Plugin::Passphrase;
-use Email::Valid;
-use Try::Tiny;
-use DateTime;
-
-use Cater::User;
-use Cater::Marketer;
-use Cater::Client;
-
-use Data::Dumper;
-
 use strict;
 use warnings;
 
+use Dancer2 appname => 'Cater';
+use Dancer2::Plugin::Passphrase;
+
+use Email::Valid;
+use Try::Tiny;
+use DateTime;
+use Const::Fast;
+use Data::Dumper;
+
+use Cater::DBSchema;
+
 use version; our $VERSION = qv( "v0.1.0" );
+
+const my $SCHEMA => Cater::DBSchema->get_schema_connection();
 
 =head1 NAME
 
@@ -53,8 +54,6 @@ sub process_login_credentials
 
     my %return  = ( success => 0, error_message => '', log_message => '' );
 
-    foreach my $key ( keys %params ) { debug "$key = >$params{$key}<"; }
-
     # If we're missing a username or password, let's fail it right now.
     if ( not defined $username )
     {
@@ -73,7 +72,7 @@ sub process_login_credentials
     # Look up username and verify password based on the login-type.
     if ( uc( $login_type ) eq 'USER' )
     {
-        $account = Cater::User->retrieve( username => $username );
+        $account = $SCHEMA->resultset('User')->find( { username => $username } );
     }
     elsif ( uc( $login_type ) eq 'MARKETER' )
     {
@@ -98,9 +97,8 @@ sub process_login_credentials
     }
 
     # Encrypt the supplied password to see if it matches the found account.
-    my $enc_password = passphrase( $password )->generate;
 
-    if ( ! passphrase( $password )->matches( $account->{'password'} ) )
+    if ( ! passphrase( $password )->matches( $account->password ) )
     {
         $return{'error_message'} = 'Invalid username, password, or user type.  Please try again.';
         $return{'log_message'}   = "Failed Login: Invalid password provided for account >$username< within >$login_type< accounts.";
@@ -205,7 +203,7 @@ sub process_registration_data
     my $it_exists = '';
     if ( uc( $user_type ) eq 'USER' )
     {
-        $it_exists = Cater::User->retrieve( username => $username );
+        $it_exists = $SCHEMA->resultset('User')->search( { username => $username } );
     }
     elsif ( uc( $user_type ) eq 'MARKETER' )
     {
@@ -257,7 +255,6 @@ sub process_registration_data
     my $saved = '';
     my $enc_password = passphrase( $password )->generate;
     my %account_data = (
-                            id         => undef,
                             username   => $username,
                             full_name  => $full_name,
                             email      => $email,
@@ -267,7 +264,7 @@ sub process_registration_data
 
     if ( uc( $user_type ) eq 'USER' )
     {
-        $saved = Cater::User->insert( \%account_data );
+        $saved = $SCHEMA->resultset('User')->create( \%account_data );
     }
     elsif ( uc( $user_type ) eq 'MARKETER' )
     {

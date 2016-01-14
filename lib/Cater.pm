@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 use Dancer2::Session::Cookie;
+use Dancer2::Plugin::DBIC;
 
 use Const::Fast;
 

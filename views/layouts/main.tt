@@ -14,6 +14,7 @@
 
 </head>
 <body>
+<div>[% IF session.user %]Logged in, <b>[% session.user %]</b>[% ELSE %]<a href="/login">Login</a>[% END %]
 [% IF msgs.error_message %]
 <div>ERROR: [% msgs.error_message %]</div>
 [% END %]

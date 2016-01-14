@@ -37,3 +37,12 @@ plugins:
     default: Bcrypt
     Bcrypt:
       cost: 8
+  DBIC:
+    default:
+      dsn: dbi:mysql:catering
+      schema_class: Cater::DBSchema
+      user: caterit
+      password: CoMeCaTeR4Me
+      options:
+        RaiseError: 1
+        PrintError: 1
