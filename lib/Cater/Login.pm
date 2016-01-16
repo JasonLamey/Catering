@@ -257,6 +257,7 @@ sub process_registration_data
     my %account_data = (
                             username   => $username,
                             full_name  => $full_name,
+                            poc_name   => $full_name,
                             email      => $email,
                             password   => $enc_password->rfc2307(),
                             created_on => DateTime->now( time_zone => 'UTC' )->datetime,
@@ -264,15 +265,18 @@ sub process_registration_data
 
     if ( uc( $user_type ) eq 'USER' )
     {
+        delete $account_data{'poc_name'};
         $saved = $SCHEMA->resultset('User')->create( \%account_data );
     }
     elsif ( uc( $user_type ) eq 'MARKETER' )
     {
-        $saved = Cater::Marketer->insert( \%account_data );
+        delete $account_data{'full_name'};
+        $saved = $SCHEMA->resultset('Marketer')->create( \%account_data );
     }
     elsif ( uc( $user_type ) eq 'CLIENT' )
     {
-        $saved = Cater::Client->insert( \%account_data );
+        delete $account_data{'full_name'};
+        $saved = $SCHEMA->resultset('Client')->create( \%account_data );
     }
 
     if ( not defined $saved->id )
@@ -286,6 +290,136 @@ sub process_registration_data
     {
         $return{'success'} = 1;
         $return{'ccode'}   = Cater::Login->generate_random_string();
+        return \%return;
+    }
+}
+
+
+=head2 save_confirmation_code()
+
+Saves account confirmation codes to the database prior to sending the Account Confirmation e-mail.
+
+=over 4
+
+=item Input: A hash containing [ C<username>, C<user_type>, C<ccode> ]
+
+=item Output: A hashref containing [ C<success>, C<error_message>, C<log_message> ]
+
+=back
+
+    my $saved_ccode = Cater::Login->save_confirmation_code(
+                                                            username  => $username,
+                                                            user_type => $user_type,
+                                                            ccode     => $ccode,
+                                                          );
+
+=cut
+
+sub save_confirmation_code
+{
+    my ( $self, %params ) = @_;
+
+    my $username  = delete $params{'username'}  // undef;
+    my $user_type = delete $params{'user_type'} // undef;
+    my $ccode     = delete $params{'ccode'}     // undef;
+
+    my %return = ( success => 0, log_message => '', error_message => '' );
+
+    if ( not defined $ccode )
+    {
+        $return{'log_message'}   = 'CCode Save Failure: No confirmation code was supplied.';
+        $return{'error_message'} = 'There was a problem sending out your account confirmation e-mail. Please try again, or contact us.';
+        return \%return;
+    }
+
+    if ( not defined $username )
+    {
+        $return{'log_message'}   = 'CCode Save Failure: No username was supplied.';
+        $return{'error_message'} = 'There was a problem sending out your account confirmation e-mail. Please try again, or contact us.';
+        return \%return;
+    }
+
+    if ( not defined $user_type )
+    {
+        $return{'log_message'}   = 'CCode Save Failure: No user_type was supplied.';
+        $return{'error_message'} = 'There was a problem sending out your account confirmation e-mail. Please try again, or contact us.';
+        return \%return;
+    }
+
+    my $account = '';
+    if ( uc( $user_type ) eq 'USER' )
+    {
+        $account = $SCHEMA->resultset('User')->find( { username => $username } );
+    }
+    elsif ( uc( $user_type ) eq 'MARKETER' )
+    {
+        $account = $SCHEMA->resultset('Marketer')->find( { username => $username } );
+    }
+    elsif ( uc( $user_type ) eq 'CLIENT' )
+    {
+        $account = $SCHEMA->resultset('CLIENT')->find( { username => $username } );
+    }
+    else
+    {
+        $return{'log_message'}   = 'CCode Save Failure: Invalid user_type of >' . $user_type . '< was supplied.';
+        $return{'error_message'} = 'There was a problem sending out your account confirmation e-mail. Please try again, or contact us.';
+        return \%return;
+    }
+
+    my %save_data = (
+                        account_id        => $account->id,
+                        account_type      => $user_type,
+                        confirmation_code => $ccode,
+                        confirmed         => 0,
+                        created_on        => DateTime->now( time_zone => 'UTC' )->datetime,
+                    );
+
+    my $saved = $SCHEMA->resultset('Confirmation_Code')->create( \%save_data );
+
+    $return{'success'} = 1;
+
+    return \%return;
+}
+
+
+=head2 confirm_ccode()
+
+Verifies that the confirmation code provided is (a) valid, and (b) not already confirmed.
+
+=over 4
+
+=item Input: string containing the confirmation code ( C<ccode> )
+
+=item Output: Hashref containing [ C<success>, C<error_message>, C<log_message> ]
+
+=back
+
+    my $confirmed = Cater::Login->confirm_ccode( ccode => $ccode );
+
+=cut
+
+sub confirm_ccode
+{
+    my ( $self, %params ) = @_;
+
+    my $ccode = delete $params{'ccode'} // undef;
+
+    my %return = ( success => 0, log_message => '', error_message => '' );
+
+    if ( not defined $ccode )
+    {
+        $return{'log_message'}   = 'CCode Confirmation Failure: undefined confirmation_code provided.';
+        $return{'error_message'} = 'We encountered a problem with your confirmation code.  Please try again.';
+        return \%return;
+    }
+
+    my $found_ccode = $SCHEMA->resultset('Confirmation_Code')->find( { confirmation_code => $ccode } );
+
+    if ( not defined $found_ccode->account_id )
+    {
+        $return{'log_message'}   = 'CCode Confirmation Failure: Did not find any record for confirmation code >' . $ccode . '<.';
+        $return{'error_message'} = 'We encountered a problem with your confirmation code. ' .
+                                   "Could not find a record for %quot;<strong>$ccode</strong>%quot;. Please check your code and try again.";
         return \%return;
     }
 }

@@ -52,7 +52,7 @@ __PACKAGE__->add_columns(
                                 {
                                     data_type         => 'varchar',
                                     size              => 255,
-                                    is_nullable       => 0,
+                                    is_nullable       => 1,
                                 },
                             email =>
                                 {
@@ -64,49 +64,49 @@ __PACKAGE__->add_columns(
                                 {
                                     data_type         => 'varchar',
                                     size              => 25,
-                                    is_nullable       => 0,
+                                    is_nullable       => 1,
                                 },
                             street1 =>
                                 {
                                     data_type         => 'varchar',
                                     size              => 255,
-                                    is_nullable       => 0,
+                                    is_nullable       => 1,
                                 },
                             street2 =>
                                 {
                                     data_type         => 'varchar',
                                     size              => 255,
-                                    is_nullable       => 0,
+                                    is_nullable       => 1,
                                 },
                             city =>
                                 {
                                     data_type         => 'varchar',
                                     size              => 100,
-                                    is_nullable       => 0,
+                                    is_nullable       => 1,
                                 },
                             state =>
                                 {
                                     data_type         => 'varchar',
                                     size              => 50,
-                                    is_nullable       => 0,
+                                    is_nullable       => 1,
                                 },
                             zip =>
                                 {
                                     data_type         => 'varchar',
                                     size              => 15,
-                                    is_nullable       => 0,
+                                    is_nullable       => 1,
                                 },
                             country =>
                                 {
                                     data_type         => 'char',
                                     size              => 2,
-                                    is_nullable       => 0,
+                                    is_nullable       => 1,
                                 },
                             website =>
                                 {
                                     data_type         => 'varchar',
                                     size              => 255,
-                                    is_nullable       => 0,
+                                    is_nullable       => 1,
                                 },
                             created_on =>
                                 {

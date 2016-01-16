@@ -140,6 +140,12 @@ post '/register' => sub
 
     if ( $registration_result->{'success'} )
     {
+        # Save confirmation code in the DB.
+        my $ccode_saved = Cater::Login->save_confirmation_code(
+                                                                username  => body_parameters->get('username'),
+                                                                user_type => body_parameters->get('user_type'),
+                                                                ccode     => $registration_result->{'ccode'},
+                                                              );
         # Send registration confirmation e-mail.
         my $sent_email = Cater::Email->send_registration_confirmation(
                                                                         username  => body_parameters->get('username'),
@@ -184,14 +190,44 @@ User post-registration instructions route.
 
 any [ 'get', 'post' ] => '/post_register' => sub
 {
-    template 'post_register.tt', {
-                                    data => {
-                                                username  => ( param 'username'  // '' ),
-                                                full_name => ( param 'full_name' // '' ),
-                                                email     => ( param 'email'     // '' ),
-                                                user_type => ( param 'user_type' // '' ),
-                                            },
-                                 };
+    template 'post_registration.tt', {
+                                        data => {
+                                                    username  => ( param 'username'  // '' ),
+                                                    full_name => ( param 'full_name' // '' ),
+                                                    email     => ( param 'email'     // '' ),
+                                                    user_type => ( param 'user_type' // '' ),
+                                                },
+                                     };
+};
+
+
+=head2 'GET or post /account_confirmation'
+
+User account confirmation page.
+
+=cut
+
+any [ 'get', 'post' ] => '/account_confirmation/:ccode?' => sub
+{
+    my $ccode => param 'ccode' // '';
+
+    my $ccode_confirmed = Cater::Login->confirm_ccode( ccode => $ccode );
+
+    if ( ! $ccode_confirmed->{'success'} )
+    {
+        warning $ccode_confirmed->{'log_message'};
+    }
+
+    template 'account_confirmation.tt', {
+                                            data => {
+                                                        ccode   => $ccode,
+                                                        success => $ccode_confirmed->{'success'},
+                                                        user    => $ccode_confirmed->{'user'},
+                                                    },
+                                            msgs => {
+                                                        error_message => $ccode_confirmed->{'error_message'},
+                                                    },
+                                        };
 };
 
 
