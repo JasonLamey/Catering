@@ -4,12 +4,19 @@ use strict;
 use warnings;
 
 use Dancer2 appname => 'Cater';
-use Dancer2::Plugin::Emailesque;
+use Emailesque;
 
 use Const::Fast;
 
-const my $SYSTEM_FROM => 'Catering Online System <cateringonline@gmail.com>';
-
+const my $SYSTEM_FROM  => 'Catering Online System <cateringonline@gmail.com>';
+const my %EMAIL_CONFIG => (
+                            ssl    => 1,
+                            driver => 'smtp',
+                            host   => 'smtp.googlemail.com',
+                            port   => 465,
+                            user   => 'jasonlamey@gmail.com',
+                            pass   => 'Phant0m9',
+                          );
 
 =head1 NAME
 
@@ -38,9 +45,10 @@ has been provided. These checks are common to all of the e-mail sending function
 =back
 
     my $preflight = Cater::Email->preflight_checklist(
-                                                       username  => $username,
-                                                       email     => $email_address,
-                                                       full_name => $full_name,
+                                                       username   => $username,
+                                                       email      => $email_address,
+                                                       full_name  => $full_name,
+                                                       email_type => $email_type,
                                                      );
 
 =cut
@@ -56,7 +64,7 @@ sub preflight_checklist
 
     my %return = ( success => 0, log_message => '', error_message => '' );
     # Need a username or a full_name for addressing an e-mail to a recipient.
-    if ( not defined $username && not defined $full_name )
+    if ( ( not defined $username ) and ( not defined $full_name ) )
     {
         $return{'error_message'} = "Could not send the $email_type because you didn't provide a username or full name.";
         $return{'log_message'}   = "Email Preflight Failed: Could not send $email_type because no username or full name was provided.";
@@ -125,21 +133,32 @@ sub send_registration_confirmation
         return \%return;
     }
 
-    email{
-            to      => Cater::Email->format_address(
-                                                        username  => $username,
-                                                        full_name => $full_name,
-                                                        email     => $email,
-                                                   ),
-            from    => $SYSTEM_FROM,
-            subject => 'Catering Site Registration Confirmation',
-            message => { html => template( 'email/registration_confirm.tt', {
+    my $send_email = Emailesque->new(
+                                ssl     => $EMAIL_CONFIG{'ssl'},
+                                driver  => $EMAIL_CONFIG{'driver'},
+                                host    => $EMAIL_CONFIG{'host'},
+                                port    => $EMAIL_CONFIG{'port'},
+                                user    => $EMAIL_CONFIG{'user'},
+                                pass    => $EMAIL_CONFIG{'pass'},
+                                to      => Cater::Email->format_address(
+                                                                        username  => $username,
+                                                                        full_name => $full_name,
+                                                                        email     => $email,
+                                                                       ),
+                                from    => $SYSTEM_FROM,
+                                subject => 'Catering Site Registration Confirmation',
+                                type    => 'html',
+    );
+
+    $send_email->send( { message => template( 'email/registration_confirm.tt', {
                                                                                 username  => $username,
                                                                                 full_name => $full_name,
                                                                                 ccode     => $ccode,
-                                                                            } ),
-                       },
-    };
+                                                                               },
+                                                                               { layout => undef },
+                                            ),
+                       }
+    );
 
     $return{'success'} = 1;
     return \%return;

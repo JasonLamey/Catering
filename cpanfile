@@ -6,6 +6,7 @@ requires 'Dancer2::Session::YAML',      '0.165000';
 requires 'Dancer2::Plugin::Passphrase', '3.2.2';
 requires 'Dancer2::Plugin::DBIC',       '0.0011';
 requires 'Dancer2::Plugin::Emailesque', '0.03';
+requires 'Dancer2::Plugin::Deferred',   '0.007016';
 requires 'Locale::Country',             '3.36';
 requires 'Net::LibIDN',                 '0.12';
 requires 'Net::DNS',                    '1.04';

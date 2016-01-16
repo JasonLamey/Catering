@@ -15,8 +15,11 @@
 </head>
 <body>
 <div>[% IF session.user %]Logged in, <b>[% session.user %]</b>[% ELSE %]<a href="/login">Login</a>[% END %]
-[% IF msgs.error_message %]
-<div>ERROR: [% msgs.error_message %]</div>
+[% IF deferred.error_message %]
+<div>ERROR: [% deferred.error_message %]</div>
+[% END %]
+[% IF deferred.notify %]
+<div>[% deferred.notify %]</div>
 [% END %]
 [% content %]
 <div id="footer">

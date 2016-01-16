@@ -46,3 +46,11 @@ plugins:
       options:
         RaiseError: 1
         PrintError: 1
+  Emailesque:
+    from: jasonlamey@gmail.com
+    ssl: 1
+    driver: smtp
+    host: smtp.googlemail.com
+    port: 465
+    user: jasonlamey@gmail.com
+    pass: Phant0m9

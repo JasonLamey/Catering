@@ -76,11 +76,11 @@ sub process_login_credentials
     }
     elsif ( uc( $login_type ) eq 'MARKETER' )
     {
-        $account = Cater::Marketer->retrieve( username => $username );
+        $account = $SCHEMA->resultset('Marketer')->find( { username => $username } );
     }
     elsif ( uc( $login_type ) eq 'CLIENT' )
     {
-        $account = Cater::Client->retrieve( username => $username );
+        $account = $SCHEMA->resultset('Client')->find( { username => $username } );
     }
     else
     {
@@ -199,19 +199,19 @@ sub process_registration_data
         return \%return;
     }
 
-    # Ensure the Username doens't already exist in the DB
+    # Ensure the Username and email address don't already exist in the DB
     my $it_exists = '';
     if ( uc( $user_type ) eq 'USER' )
     {
-        $it_exists = $SCHEMA->resultset('User')->search( { username => $username } );
+        $it_exists = $SCHEMA->resultset('User')->search( { [ username => $username, email => $email ] } );
     }
     elsif ( uc( $user_type ) eq 'MARKETER' )
     {
-        $it_exists = Cater::Marketer->retrieve( username => $username );
+        $it_exists = $SCHEMA->resultset('Marketer')->search( { [ username => $username, email => $email ] } );
     }
     elsif ( uc( $user_type ) eq 'CLIENT' )
     {
-        $it_exists = Cater::Client->retrieve( username => $username );
+        $it_exists = $SCHEMA->resultset('Client')->search( { [ username => $username, email => $email ] } );
     }
     else
     {
@@ -275,8 +275,6 @@ sub process_registration_data
         $saved = Cater::Client->insert( \%account_data );
     }
 
-    debug Data::Dumper::Dumper( $saved );
-
     if ( not defined $saved->id )
     {
         $return{'error_message'} = 'An error occured in saving your account. Please try again.';
@@ -287,6 +285,7 @@ sub process_registration_data
     else
     {
         $return{'success'} = 1;
+        $return{'ccode'}   = Cater::Login->generate_random_string();
         return \%return;
     }
 }

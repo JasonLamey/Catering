@@ -6,12 +6,14 @@ use warnings;
 
 use Dancer2::Session::Cookie;
 use Dancer2::Plugin::DBIC;
+use Dancer2::Plugin::Deferred;
 
 use Const::Fast;
 
 use version; our $VERSION = qv( 'v0.1.2' );
 
 use Cater::Login;
+use Cater::Email;
 
 
 =head1 NAME
@@ -77,7 +79,6 @@ post '/login' => sub
 
     if ( $login_result->{'success'} )
     {
-        # TODO: Send Confirmation Email
         info 'Successful Login: >' . body_parameters->get('username') . '< from IP: >' .
              request->remote_address . ' - ' . request->remote_host . '<';
         session user => body_parameters->get('username');
@@ -139,28 +140,65 @@ post '/register' => sub
 
     if ( $registration_result->{'success'} )
     {
-        #redirect '/registration_confirmation';
-        redirect '/';
+        # Send registration confirmation e-mail.
+        my $sent_email = Cater::Email->send_registration_confirmation(
+                                                                        username  => body_parameters->get('username'),
+                                                                        full_name => body_parameters->get('full_name'),
+                                                                        email     => body_parameters->get('email'),
+                                                                        ccode     => $registration_result->{'ccode'},
+                                                                     );
+        if ( ! $sent_email->{'success'} )
+        {
+            deferred error_message => $sent_email->{'error_message'} if defined $sent_email->{'error_message'};
+            error $sent_email->{'log_message'};
+        }
+
+        forward '/post_register', {
+                                    username  => body_parameters->get('username'),
+                                    full_name => body_parameters->get('full_name'),
+                                    email     => body_parameters->get('email'),
+                                    user_type => body_parameters->get('user_type'),
+                                  };
     }
     else
     {
-        warning $registration_result->{'log_message'};
+        error $registration_result->{'log_message'};
+        deferred error_message => $registration_result->{'error_message'} if defined $registration_result->{'error_message'};
         forward '/register',
                         {
-                            username      => body_parameters->get('username'),
-                            full_name     => body_parameters->get('full_name'),
-                            email         => body_parameters->get('email'),
-                            user_type     => body_parameters->get('user_type'),
-                            error_message => $registration_result->{'error_message'},
+                            username  => body_parameters->get('username'),
+                            full_name => body_parameters->get('full_name'),
+                            email     => body_parameters->get('email'),
+                            user_type => body_parameters->get('user_type'),
                         },
                         { method => 'GET' };
     }
 };
 
 
+=head2 'GET or POST /post_register'
+
+User post-registration instructions route.
+
+=cut
+
+any [ 'get', 'post' ] => '/post_register' => sub
+{
+    template 'post_register.tt', {
+                                    data => {
+                                                username  => ( param 'username'  // '' ),
+                                                full_name => ( param 'full_name' // '' ),
+                                                email     => ( param 'email'     // '' ),
+                                                user_type => ( param 'user_type' // '' ),
+                                            },
+                                 };
+};
+
+
 =head1 AUTHOR
 
 Jason Lamey E<lt>jasonlamey@gmail.comE<gt>
+
 
 =head1 COPYRIGHT AND LICENSE
 
