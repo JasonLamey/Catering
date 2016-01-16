@@ -1,0 +1,9 @@
+<p>Greetings [% full_name %]!</p>
+
+<p>Thank you for registering on <strong>Catering Online</strong>! Your next step is to activate your account. To do that, please go to the following link:</p>
+
+<p>[% uri_base %]/confirmation/[% ccode %]</p>
+
+<p>Follow the above link to confirm your account with us, and you will be able to log in and use your account.</p>
+
+<p>Thank you for signing up!</p>
