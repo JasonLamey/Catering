@@ -82,7 +82,7 @@ post '/login' => sub
         info 'Successful Login: >' . body_parameters->get('username') . '< from IP: >' .
              request->remote_address . ' - ' . request->remote_host . '<';
         session user => body_parameters->get('username');
-        deferred notify => 'Successfully logged in.  Welcome back, <b>' . session( "user" ) . '</b>!';
+        deferred success => 'Successfully logged in.  Welcome back, <b>' . session( "user" ) . '</b>!';
         redirect '/';
     }
     else
@@ -109,7 +109,7 @@ get '/logout' => sub
 {
     my $user = session( "user" );
     app->destroy_session;
-    deferred notify => 'You have been successfully logged out. Come back soon!';
+    deferred success => 'You have been successfully logged out. Come back soon!';
     info 'Successful Logout of >' . $user . '<';
     redirect '/';
 };
@@ -235,14 +235,13 @@ any [ 'get', 'post' ] => '/account_confirmation/:ccode?' => sub
         warning $ccode_confirmed->{'log_message'};
     }
 
+    deferred error_message => $ccode_confirmed->{'error_message'} if $ccode_confirmed->{'error_message'};
+
     template 'account_confirmation.tt', {
                                             data => {
                                                         ccode   => $ccode,
                                                         success => $ccode_confirmed->{'success'},
                                                         user    => $ccode_confirmed->{'user'},
-                                                    },
-                                            msgs => {
-                                                        error_message => $ccode_confirmed->{'error_message'},
                                                     },
                                         };
 };

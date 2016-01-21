@@ -29,7 +29,11 @@
                         </ul>
                     </li>
                     <li><a href="#">FAQ</a></li>
-                    <li><a href="#">Sign In / Register</a></li>
+                    [% IF session.user %]
+                    <li><a href="/logout">Log Out</a></li>
+                    [% ELSE %]
+                    <li><a href="/login">Sign In / Register</a></li>
+                    [% END %]
                 </ul>
             </div>
             <div class="top-bar-right">
@@ -39,16 +43,39 @@
                 </ul>
             </div>
         </div>
-        <div>[% IF session.user %]Logged in, <b>[% session.user %]</b>[% ELSE %]<a href="/login">Login</a>[% END %]
         [% IF deferred.error_message %]
-                <div>ERROR: [% deferred.error_message %]</div>
+        <div class="row">
+            <div class="alert callout small data-closable">
+                ERROR: [% deferred.error_message %]
+                <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
         [% END %]
         [% IF deferred.notify %]
-                <div>[% deferred.notify %]</div>
+        <div class="row">
+            <div class="primary callout small data-closable">
+                [% deferred.notify %]
+                <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+        [% END %]
+        [% IF deferred.success %]
+        <div class="row">
+            <div class="success callout small data-closable">
+                [% deferred.success %]
+                <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
         [% END %]
 
 
-<% content %>
+        [% content %]
 
 
         <footer class="row">
@@ -81,6 +108,7 @@
         <script type="text/javascript">/* <![CDATA[ */
             !window.jQuery && document.write('<script type="text/javascript" src="http://localhost:3000/javascripts/jquery.js"><\/script>')
         /* ]]> */</script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.1.0/foundation.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.1.0/foundation.min.js"></script>
         <script>
             $(document).foundation();

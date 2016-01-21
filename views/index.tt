@@ -1,148 +1,66 @@
-
-<!--
-    Credit goes to the Ruby on Rails team for this page
-    has been heavily based on the default Rails page that is
-    built with a scaffolded application.
-
-    Thanks a lot to them for their work.
-
-    See Ruby on Rails if you want a kickass framework in Ruby:
-    http://www.rubyonrails.org/
--->
-
-<div id="page">
-      <div id="sidebar">
-        <ul id="sidebar-items">
-          <li>
-            <h3>Join the community</h3>
-            <ul class="links">
-
-              <li><a href="http://perldancer.org/">PerlDancer</a></li>
-              <li><a href="http://twitter.com/PerlDancer/">Official Twitter</a></li>
-              <li><a href="https://github.com/PerlDancer/Dancer/">GitHub Community</a></li>
-            </ul>
-          </li>
-
-          <li>
-            <h3>Browse the documentation</h3>
-
-            <ul class="links">
-              <li><a
-              href="http://search.cpan.org/dist/Dancer/lib/Dancer/Introduction.pod">Introduction</a></li>
-              <li><a href="http://search.cpan.org/dist/Dancer/lib/Dancer/Cookbook.pod">Cookbook</a></li>
-              <li><a href="http://search.cpan.org/dist/Dancer/lib/Dancer/Deployment.pod">Deployment Guide</a></li>
-              <li><a
-              href="http://search.cpan.org/dist/Dancer/lib/Dancer/Tutorial.pod"
-              title="a tutorial to build a small blog engine with Dancer">Tutorial</a></li>
-            </ul>
-          </li>
-
-          <li>
-            <h3>Your application's environment</h3>
-
-            <ul>
-                <li>Location: <code>/usr/home/badkarma/src/dancer_projects/catering/Cater</code></li>
-                <li>Template engine: <code>[% settings.template %]</code></li>
-                <li>Logger: <code>[% settings.logger %]</code></li>
-                <li>Environment: <code>[% settings.environment %]</code></li>
-            </ul>
-
-          </li>
-        </ul>
-
-      </div>
-
-      <div id="content">
-        <div id="header">
-          <h1>Perl is dancing</h1>
-          <h2>You&rsquo;ve joined the dance floor!</h2>
+        <div class="row">
+            <div class="small-12 orbit columns text-center" role="region" aria-label="Hightlights" data-orbit
+                data-options="animInFromLeft:fade-in; animInFromRight:fade-in; animOutToLeft:fade-out; animOutToRight:fade-out;">
+                <ul class="orbit-container">
+                    <button class="orbit-previous" aria-label="previous"><span class="show-for-sr">Previous Slide</span>&#9664;</button>
+                    <button class="orbit-next" aria-label="next"><span class="show-for-sr">Next Slide</span>&#9654;</button>
+                    <li class="is-active orbit-slide">
+                        <div>
+                            <img src="http://placehold.it/1000x400&amp;text=[%20img%201%20]">
+                        </div>
+                    </li>
+                    <li class="is-active orbit-slide">
+                        <div>
+                            <img src="http://placehold.it/1000x400&amp;text=[%20img%202%20]">
+                        </div>
+                    </li>
+                    <li class="is-active orbit-slide">
+                        <div>
+                            <img src="http://placehold.it/1000x400&amp;text=[%20img%203%20]">
+                        </div>
+                    </li>
+                </ul>
+                <nav class="orbit-bullets">
+                    <button class="is-active" data-slide="0"><span class="show-for-sr">Hightlight 1</span></button>
+                    <button data-slide="1"><span class="show-for-sr">Hightlight 2</span></button>
+                    <button data-slide="2"><span class="show-for-sr">Hightlight 3</span></button>
+                </nav>
+            </div>
         </div>
+        <hr/>
 
-        <div id="getting-started">
-          <h1>Getting started</h1>
-          <h2>Here&rsquo;s how to get dancing:</h2>
-
-          <h3><a href="#" id="about_env_link">About your application's environment</a></h3>
-
-          <div id="about-content" style="display: none;">
-            <table>
-                <tbody>
-                <tr>
-                    <td>Perl version</td>
-                    <td><tt>[% perl_version %]</tt></td>
-                </tr>
-                <tr>
-                    <td>Dancer version</td>
-                    <td><tt>[% dancer_version %]</tt></td>
-                </tr>
-                <tr>
-                    <td>Backend</td>
-                    <td><tt>[% settings.apphandler %]</tt></td>
-                </tr>
-                <tr>
-                    <td>Appdir</td>
-                    <td><tt>/usr/home/badkarma/src/dancer_projects/catering/Cater</tt></td>
-                </tr>
-                <tr>
-                    <td>Template engine</td>
-                    <td><tt>[% settings.template %]</tt></td>
-                </tr>
-                <tr>
-                    <td>Logger engine</td>
-                    <td><tt>[% settings.logger %]</tt></td>
-                </tr>
-                <tr>
-                    <td>Running environment</td>
-                    <td><tt>[% settings.environment %]</tt></td>
-                </tr>
-                </tbody>
-            </table>
-          </div>
-
-    <script type="text/javascript">
-    $('#about_env_link').click(function() {
-        $('#about-content').slideToggle('fast', function() {
-            // ok
-        });
-        return( false );
-    });
-    </script>
-
-
-          <ol>
-            <li>
-              <h2>Tune your application</h2>
-
-              <p>
-              Your application is configured via a global configuration file,
-              <tt>config.yml</tt> and an "environment" configuration file,
-              <tt>environments/development.yml</tt>. Edit those files if you
-              want to change the settings of your application.
-              </p>
-            </li>
-
-            <li>
-              <h2>Add your own routes</h2>
-
-              <p>
-              The default route that displays this page can be removed,
-              it's just here to help you get started. The template used to
-              generate this content is located in
-              <code>views/index.tt</code>.
-              You can add some routes to <tt>lib/Cater.pm</tt>.
-              </p>
-            </li>
-
-            <li>
-                <h2>Enjoy web development again</h2>
-
-                <p>
-                Once you've made your changes, restart your standalone server
-                (bin/app.pl) and you're ready to test your web application.
-                </p>
-            </li>
-
-          </ol>
+        <div class="row">
+            <div class="small-4 columns">
+                <img src="http://placehold.it/400x300&text=[img]"/>
+                <h4>This is a content section.</h4>
+                <p>Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit, dolore aliqua non est magna in labore pig pork biltong.  Eiusmod swine spare ribs reprehenderit culpa. Boudin aliqua adipisicing rump corned beef.</p>
+            </div>
+            <div class="small-4 columns">
+                <img src="http://placehold.it/400x300&text=[img]"/>
+                <h4>This is a content section.</h4>
+                <p>Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit, dolore aliqua non est magna in labore pig pork biltong.  Eiusmod swine spare ribs reprehenderit culpa. Boudin aliqua adipisicing rump corned beef.</p>
+            </div>
+            <div class="small-4 columns">
+                <img src="http://placehold.it/400x300&text=[img]"/>
+                <h4>This is a content section.</h4>
+                <p>Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit, dolore aliqua non est magna in labore pig pork biltong.  Eiusmod swine spare ribs reprehenderit culpa. Boudin aliqua adipisicing rump corned beef.</p>
+            </div>
         </div>
-      </div>
-    </div>
+        <hr/>
+
+        <div class="row">
+            <div class="small-12 columns">
+                <div class="panel">
+                    <h4>Get in touch!</h4>
+                    <div class="row">
+                        <div class="large-9 columns">
+                            <p>We'd love to hear from you, you attractive
+                            person you.</p>
+                        </div>
+                        <div class="large-3 columns">
+                            <a href="#" class="radius button right">Contact Us</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
