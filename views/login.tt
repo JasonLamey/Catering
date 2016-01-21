@@ -1,0 +1,15 @@
+<form method='post' action='/login'>
+<label for='username'>Username:</label>
+<input type='text' name='username' value='[% data.username %]'><br>
+<label for='password'>Password:</label>
+<input type='password' name='password'><br>
+<label for='user_type'>Account Type:</label>
+<select name='user_type'>
+    [% FOREACH user_type IN [ 'User', 'Client', 'Marketer' ] %]
+    [% IF user_type == data.user_type %][% selected = ' selected' %]
+    [% ELSE %][% selected = '' %][% END %]
+    <option value='[% user_type %]'[% selected %]>[% user_type %]</option>
+    [% END %]
+</select>
+<input type='submit' value='login'>
+</form>

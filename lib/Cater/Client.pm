@@ -11,6 +11,7 @@ use warnings;
 
 Cater::Client
 
+
 =head1 DESCRIPTION AND USAGE
 
 Database representation of a client object within the web app.
@@ -19,20 +20,20 @@ Database representation of a client object within the web app.
 
 
 
-Cater::Client->table( 'clients' );
-Cater::Client->columns(
+__PACKAGE__->table( 'clients' );
+__PACKAGE__->columns(
                             All => qw/
                                         id username password poc_name company email
                                         phone street1 street2 city state zip country
                                         website created_on updated_on
                                      /
                       );
-Cater::Client->has_a(
+__PACKAGE__->has_a(
                         created_on => 'Time::Piece',
                         inflate    => sub { Time::Piece->strptime( shift, "%Y-%m-%d" ) },
                         deflate    => 'ymd',
 );
-Cater::Client->has_a(
+__PACKAGE__->has_a(
                         updated_on => 'Time::Piece',
                         inflate    => sub { Time::Piece->strptime( shift, "%Y-%m-%d" ) },
                         deflate    => 'ymd',

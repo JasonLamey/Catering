@@ -20,3 +20,5 @@ nytprof.out
 /_eumm/
 local/
 /public/cached_files/
+sessions/
+cpanfile.snapshot

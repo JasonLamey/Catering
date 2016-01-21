@@ -20,15 +20,37 @@ charset: "UTF-8"
 
 template: "template_toolkit"
 
-session: Cookie
+session: YAML
 
 engines:
   template:
     template_toolkit:
-      WRAPPER: layouts/main.tt
+      WRAPPER: views/layouts/main.tt
       start_tag: '[%'
       end_tag:   '%]'
   session:
-    Cookie:
-      secret_key: feed the people
-      default_duration: 604800 # 7 days in seconds
+    YAML:
+      session_dir: ./sessions
+
+plugins:
+  Passphrase:
+    default: Bcrypt
+    Bcrypt:
+      cost: 8
+  DBIC:
+    default:
+      dsn: dbi:mysql:catering
+      schema_class: Cater::DBSchema
+      user: caterit
+      password: CoMeCaTeR4Me
+      options:
+        RaiseError: 1
+        PrintError: 1
+  Emailesque:
+    from: jasonlamey@gmail.com
+    ssl: 1
+    driver: smtp
+    host: smtp.googlemail.com
+    port: 465
+    user: jasonlamey@gmail.com
+    pass: Phant0m9

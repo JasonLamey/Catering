@@ -1,0 +1,7 @@
+<div>
+    <p>Thank you, [% data.username %], for signing up!  We hope you will find our service useful and will recommend it to friends.</p>
+    <p>However, you are not <em>quite</em> done.  We have sent an account confirmation e-mail to you at <strong>[% data.email %]</strong>.
+       It should arrive within the next 5-10 minutes at most.  If you do not see it, please check any spam folders you may have.</p>
+    <p>Once the e-mail arrives, please follow the link in the e-mail to confirm your account, and activate it.</p>
+    <p>And again, thank you for signing up!</p>
+</div>
