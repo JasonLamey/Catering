@@ -1,29 +1,95 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-type" content="text/html; charset=[% settings.charset %]" />
-<title>Cater</title>
-<link rel="stylesheet" href="[% request.uri_base %]/css/style.css" />
+<!DOCTYPE html>
+<!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
+<html class="no-js" lang="en">
+    <head>
+        <meta charset="utf-8">
 
-<!-- Grab Google CDN's jQuery. fall back to local if necessary -->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
-<script type="text/javascript">/* <![CDATA[ */
-    !window.jQuery && document.write('<script type="text/javascript" src="[% request.uri_base %]/javascripts/jquery.js"><\/script>')
-/* ]]> */</script>
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Catering Services</title>
 
-</head>
-<body>
-<div>[% IF session.user %]Logged in, <b>[% session.user %]</b>[% ELSE %]<a href="/login">Login</a>[% END %]
-[% IF deferred.error_message %]
-<div>ERROR: [% deferred.error_message %]</div>
-[% END %]
-[% IF deferred.notify %]
-<div>[% deferred.notify %]</div>
-[% END %]
-[% content %]
-<div id="footer">
-Powered by <a href="http://perldancer.org/">Dancer</a> [% dancer_version %]
-</div>
-</body>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.1.0/foundation.min.css">
+        <link rel="stylesheet" href="/css/app.css">
+        <link href='http://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.css' rel='stylesheet' type='text/css'>
+
+        <!-- Grab Google CDN's jQuery. fall back to local if necessary -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    </head>
+    <body>
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <ul class="dropdown menu" data-dropdown-menu>
+                    <li class="menu-text">
+                        <a href="/"><img src="http://placehold.it/250x50&text=Catering Logo"></a></li>
+                    <li class="has-submenu">
+                        <a href="#">Browse Caterers</a>
+                        <ul class="submenu menu vertical" data-submenu>
+                            <li><a href="#">By Location</a></li>
+                            <li><a href="#">By Cuisine</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Sign In / Register</a></li>
+                </ul>
+            </div>
+            <div class="top-bar-right">
+                <ul class="menu">
+                    <li class="menu-text"><input type="search" placeholder="Search"></li>
+                    <li class="menu-text"><button type="button" class="button">Search</button></li>
+                </ul>
+            </div>
+        </div>
+        <div>[% IF session.user %]Logged in, <b>[% session.user %]</b>[% ELSE %]<a href="/login">Login</a>[% END %]
+        [% IF deferred.error_message %]
+                <div>ERROR: [% deferred.error_message %]</div>
+        [% END %]
+        [% IF deferred.notify %]
+                <div>[% deferred.notify %]</div>
+        [% END %]
+
+
+<% content %>
+
+
+        <footer class="row">
+            <div class="small-12 columns">
+                <hr/>
+                <div class="row">
+                    <div class="small-12 medium-4 columns">
+                        <p>&copy; 2016 MRM</p>
+                    </div>
+                    <div class="small-12 medium-8 columns">
+                        <div class="row">
+                            <div class="small-3 columns">
+                                <a href="/tos.html">Terms of Service</a>
+                            </div>
+                            <div class="small-3 columns">
+                                <a href="/privacy.html">Privacy Policy</a>
+                            </div>
+                            <div class="small-3 columns">
+                                <a href="/contact_us.html">Contact Us</a>
+                            </div>
+                            <div class="small-3 columns">
+                                <a href="/about_us.html">About Us</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript">/* <![CDATA[ */
+            !window.jQuery && document.write('<script type="text/javascript" src="http://localhost:3000/javascripts/jquery.js"><\/script>')
+        /* ]]> */</script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.1.0/foundation.min.js"></script>
+        <script>
+            $(document).foundation();
+        </script>
+
+        <!-- post footer starts -->
+
+        <script>
+            // Your code goes here
+        </script>
+    </body>
 </html>
