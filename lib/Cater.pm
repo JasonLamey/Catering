@@ -82,6 +82,7 @@ post '/login' => sub
         info 'Successful Login: >' . body_parameters->get('username') . '< from IP: >' .
              request->remote_address . ' - ' . request->remote_host . '<';
         session user => body_parameters->get('username');
+        deferred notify => 'Successfully logged in.  Welcome back, <b>' . session( "user" ) . '</b>!';
         redirect '/';
     }
     else
@@ -95,6 +96,22 @@ post '/login' => sub
                         },
                         { method => 'GET' };
     }
+};
+
+
+=head2 'GET /logout'
+
+User logout route. Destroys the user's session, effectively logging them out of their account.
+
+=cut
+
+get '/logout' => sub
+{
+    my $user = session( "user" );
+    app->destroy_session;
+    deferred notify => 'You have been successfully logged out. Come back soon!';
+    info 'Successful Logout of >' . $user . '<';
+    redirect '/';
 };
 
 
@@ -209,7 +226,7 @@ User account confirmation page.
 
 any [ 'get', 'post' ] => '/account_confirmation/:ccode?' => sub
 {
-    my $ccode => param 'ccode' // '';
+    my $ccode = param 'ccode' // '';
 
     my $ccode_confirmed = Cater::Login->confirm_ccode( ccode => $ccode );
 

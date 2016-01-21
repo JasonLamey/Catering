@@ -13,6 +13,7 @@ use Const::Fast;
 use Data::Dumper;
 
 use Cater::DBSchema;
+use Cater::Account;
 
 use version; our $VERSION = qv( "v0.1.0" );
 
@@ -22,7 +23,7 @@ const my $SCHEMA => Cater::DBSchema->get_schema_connection();
 
 Cater::Login
 
-=head1 DESCRIPTION AND USAGE
+=head1 DESCRIPTION AND SYNOPSIS
 
 This module handles all of the login verification, registration, and logout functionality.
 
@@ -68,33 +69,14 @@ sub process_login_credentials
         return \%return;
     }
 
-    my $account = undef;
-    # Look up username and verify password based on the login-type.
-    if ( uc( $login_type ) eq 'USER' )
+    my $found_account = Cater::Account->find_account( { username => $username }, user_type => $login_type );
+
+    if ( not $found_account->{'success'} )
     {
-        $account = $SCHEMA->resultset('User')->find( { username => $username } );
-    }
-    elsif ( uc( $login_type ) eq 'MARKETER' )
-    {
-        $account = $SCHEMA->resultset('Marketer')->find( { username => $username } );
-    }
-    elsif ( uc( $login_type ) eq 'CLIENT' )
-    {
-        $account = $SCHEMA->resultset('Client')->find( { username => $username } );
-    }
-    else
-    {
-        $return{'error_message'} = 'Please select either a User account, Client account, or Marketer account.';
-        $return{'log_message'}   = "Failed Login: Invalid user type. Received >$login_type<.";
-        return \%return;
+        return $found_account;
     }
 
-    if ( not defined $account )
-    {
-        $return{'error_message'} = 'Invalid username, password, or user type.  Please try again.';
-        $return{'log_message'}   = "Failed Login: Could not find account >$username< within >$login_type< accounts.";
-        return \%return;
-    }
+    my $account = $found_account->{'account'}; # Pull the account object out of the returned hashref.
 
     # Encrypt the supplied password to see if it matches the found account.
 
@@ -167,6 +149,7 @@ sub process_registration_data
     my $user_type = delete $params{'user_type'}        // 'User';
 
     my %return = ( success => 0, error_message => '', log_message => '' );
+
     # Ensure we have all the necessary data.
     if ( not defined $username || $username eq '' )
     {
@@ -200,29 +183,15 @@ sub process_registration_data
     }
 
     # Ensure the Username and email address don't already exist in the DB
-    my $it_exists = '';
-    if ( uc( $user_type ) eq 'USER' )
-    {
-        $it_exists = $SCHEMA->resultset('User')->search( { [ username => $username, email => $email ] } );
-    }
-    elsif ( uc( $user_type ) eq 'MARKETER' )
-    {
-        $it_exists = $SCHEMA->resultset('Marketer')->search( { [ username => $username, email => $email ] } );
-    }
-    elsif ( uc( $user_type ) eq 'CLIENT' )
-    {
-        $it_exists = $SCHEMA->resultset('Client')->search( { [ username => $username, email => $email ] } );
-    }
-    else
-    {
-        $return{'error_message'} = 'You must select a User Type.';
-        $return{'log_message'}   = 'Registration Error: Invalid user_type provided: >' . $user_type . '<.';
-        return \%return;
-    }
-    if ( defined $it_exists && ref( $it_exists ) eq 'HASH' )
+    my $it_exists = Cater::Account->search_account( [ { username => $username }, { email => $email } ], user_type => $user_type );
+
+    my $found_account = $it_exists->{'account'};
+
+    if ( defined $found_account && ref( $found_account ) eq 'HASH' )
     {
         $return{'error_message'} = 'The username >' . $username . '< already exists.  You will have to choose a different one.';
-        $return{'log_message'}   = 'Registration Error: Username >' . $username . '< already exists in >' . $user_type . '<  database.';
+        $return{'log_message'}   = 'Registration Error: Username >' . $username . '< already exists in >' . $user_type . '<  database.' .
+                                   ">>ID: >$found_account->id<, >username: >$found_account->username< <<";
         return \%return;
     }
 
@@ -252,7 +221,6 @@ sub process_registration_data
     };
 
     # Everything passes. Save the account.
-    my $saved = '';
     my $enc_password = passphrase( $password )->generate;
     my %account_data = (
                             username   => $username,
@@ -263,21 +231,14 @@ sub process_registration_data
                             created_on => DateTime->now( time_zone => 'UTC' )->datetime,
                        );
 
-    if ( uc( $user_type ) eq 'USER' )
+    my $was_saved = Cater::Account->save_basic_account_data( \%account_data, user_type => $user_type );
+
+    if ( not $was_saved->{'success'} )
     {
-        delete $account_data{'poc_name'};
-        $saved = $SCHEMA->resultset('User')->create( \%account_data );
+        return $was_saved;
     }
-    elsif ( uc( $user_type ) eq 'MARKETER' )
-    {
-        delete $account_data{'full_name'};
-        $saved = $SCHEMA->resultset('Marketer')->create( \%account_data );
-    }
-    elsif ( uc( $user_type ) eq 'CLIENT' )
-    {
-        delete $account_data{'full_name'};
-        $saved = $SCHEMA->resultset('Client')->create( \%account_data );
-    }
+
+    my $saved = $was_saved->{'saved'}; # Pull out the saved account object.
 
     if ( not defined $saved->id )
     {
@@ -422,6 +383,32 @@ sub confirm_ccode
                                    "Could not find a record for %quot;<strong>$ccode</strong>%quot;. Please check your code and try again.";
         return \%return;
     }
+
+    # Retrieve account from DB, and set it as confirmed.
+    my $pulled_account = Cater::Account->find_account( { id => $found_ccode->account_id }, user_type => $found_ccode->account_type );
+
+    # Error check that we actually pulled an account, just in case the account was deleted before confirmation attempt.
+    if ( not $pulled_account->{'success'} )
+    {
+        $return{'log_message'}   = 'CCode Confirmation Failure: Found confirmation code record, but associated account is missing. >' .
+                                    $ccode . '<.';
+        $return{'error_message'} = 'We encountered a problem with your confirmation code. ' .
+                                   "Could not find an account record associated with %quot;<strong>$ccode</strong>%quot;.";
+        return \%return;
+    }
+
+    my $account = $pulled_account->{'account'};
+    $account->confirmed(1);
+    $account->updated_on(DateTime->now( time_zone => 'UTC' )->datetime);
+    $account->update;
+    $found_ccode->confirmed(1);
+    $found_ccode->updated_on(DateTime->now( time_zone => 'UTC' )->datetime);
+    $found_ccode->update;
+
+    $return{'success'} = 1;
+    $return{'account'} = $account;
+
+    return \%return;
 }
 
 

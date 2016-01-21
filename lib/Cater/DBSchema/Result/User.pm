@@ -54,6 +54,13 @@ __PACKAGE__->add_columns(
                                     size              => 255,
                                     is_nullable       => 0,
                                 },
+                            confirmed =>
+                                {
+                                    data_type         => 'integer',
+                                    size              => 1,
+                                    is_nullable       => 0,
+                                    default_value     => 0,
+                                },
                             created_on =>
                                 {
                                     data_type         => 'DateTime',
