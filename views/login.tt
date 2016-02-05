@@ -1,15 +1,55 @@
-<form method='post' action='/login'>
-<label for='username'>Username:</label>
-<input type='text' name='username' value='[% data.username %]'><br>
-<label for='password'>Password:</label>
-<input type='password' name='password'><br>
-<label for='user_type'>Account Type:</label>
-<select name='user_type'>
-    [% FOREACH user_type IN [ 'User', 'Client', 'Marketer' ] %]
-    [% IF user_type == data.user_type %][% selected = ' selected' %]
-    [% ELSE %][% selected = '' %][% END %]
-    <option value='[% user_type %]'[% selected %]>[% user_type %]</option>
-    [% END %]
-</select>
-<input type='submit' value='login'>
-</form>
+<div class="row">
+    <div class="medium-9 medium-centered columns">
+        <div class="row">
+            <div class="medium-6 columns">
+                <h3>Register</h3>
+                <form method="post" action="/register">
+                    <label for="username">Username:
+                        <input type="text" name="username" value="[% data.username %]">
+                    </label>
+                    <label for="full_name">Full Name/POC Name:
+                        <input type="text" name="full_name" value="[% data.full_name %]">
+                    </label>
+                    <label for="email">Email Address:
+                        <input type="text" name="email" value="[% data.email %]">
+                    </label>
+                    <label for="password">Password:
+                        <input type="password" name="password">
+                    </label>
+                    <label for="password_confirm">Confirm Password:
+                        <input type="password" name="password_confirm">
+                    </label>
+                    <fieldset>
+                        <label>Account Type:</label>
+                        [% FOREACH user_type IN [ 'User', 'Client', 'Marketer' ] %]
+                        [% IF user_type == data.user_type %][% checked = ' checked' %]
+                        [% ELSE %][% checked = '' %][% END %]
+                        <input type="radio" name='user_type' id='user_type_[% user_type %]' value='[% user_type %]'[% checked %]><label for='user_type_[% user_type %]'>[% user_type %]</label>
+                        [% END %]
+                    </fieldset>
+                    <input type="submit" class="button" value="Register">
+                </form>
+            </div>
+            <div class="medium-6 columns">
+                <h3>Login</h3>
+                <form method='post' action='/login'>
+                    <label for='username'>Username:
+                        <input type='text' name='username' value='[% data.username %]'>
+                    </label>
+                    <label for='password'>Password:
+                        <input type='password' name='password'>
+                    </label>
+                    <fieldset>
+                        <label>Account Type:</label>
+                        [% FOREACH user_type IN [ 'User', 'Client', 'Marketer' ] %]
+                        [% IF user_type == data.user_type %][% checked = ' checked' %]
+                        [% ELSE %][% checked = '' %][% END %]
+                        <input type="radio" name='user_type' id='user_type_[% user_type %]' value='[% user_type %]'[% checked %]><label for='user_type_[% user_type %]'>[% user_type %]</label>
+                        [% END %]
+                    </fieldset>
+                    <input type='submit' class='button' value='login'>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

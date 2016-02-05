@@ -7,16 +7,19 @@
                     <li class="is-active orbit-slide">
                         <div>
                             <img src="http://placehold.it/1000x400&amp;text=[%20img%201%20]">
+                            <figcaption class="orbit-caption">Caption Numero Uno.</figcaption>
                         </div>
                     </li>
                     <li class="is-active orbit-slide">
                         <div>
                             <img src="http://placehold.it/1000x400&amp;text=[%20img%202%20]">
+                            <figcaption class="orbit-caption">Caption # 2.</figcaption>
                         </div>
                     </li>
                     <li class="is-active orbit-slide">
                         <div>
                             <img src="http://placehold.it/1000x400&amp;text=[%20img%203%20]">
+                            <figcaption class="orbit-caption">Caption for the third image.</figcaption>
                         </div>
                     </li>
                 </ul>
@@ -29,6 +32,7 @@
         </div>
         <hr/>
 
+        <h2>Featured Updates</h2>
         <div class="row">
             <div class="small-4 columns">
                 <img src="http://placehold.it/400x300&text=[img]"/>
@@ -46,7 +50,6 @@
                 <p>Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit, dolore aliqua non est magna in labore pig pork biltong.  Eiusmod swine spare ribs reprehenderit culpa. Boudin aliqua adipisicing rump corned beef.</p>
             </div>
         </div>
-        <hr/>
 
         <div class="row">
             <div class="small-12 columns">
@@ -54,11 +57,10 @@
                     <h4>Get in touch!</h4>
                     <div class="row">
                         <div class="large-9 columns">
-                            <p>We'd love to hear from you, you attractive
-                            person you.</p>
+                            <p>Have a question or comment? Send us a message.</p>
                         </div>
                         <div class="large-3 columns">
-                            <a href="#" class="radius button right">Contact Us</a>
+                            <a href="/contact_us" class="radius button right">Contact Us</a>
                         </div>
                     </div>
                 </div>

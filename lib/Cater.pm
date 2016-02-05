@@ -59,6 +59,9 @@ get '/login' => sub
                         msgs => {
                                     error_message => ( param 'error_message' // '' ),
                                 },
+                        breadcrumbs => [
+                                    { current => 1, name => 'Login/Register' },
+                                ],
                     };
 };
 

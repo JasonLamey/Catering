@@ -37,15 +37,17 @@
                 </ul>
             </div>
             <div class="top-bar-right">
+                <form action="/search" method="post" style="display: inline;">
                 <ul class="menu">
                     <li class="menu-text"><input type="search" placeholder="Search"></li>
-                    <li class="menu-text"><button type="button" class="button">Search</button></li>
+                    <li class="menu-text"><input type="submit" value="Search" class="button">Search</button></li>
                 </ul>
+                </form>
             </div>
         </div>
         [% IF deferred.error_message %]
         <div class="row">
-            <div class="alert callout small data-closable">
+            <div class="alert callout small" data-closable>
                 ERROR: [% deferred.error_message %]
                 <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
                     <span aria-hidden="true">&times;</span>
@@ -55,7 +57,7 @@
         [% END %]
         [% IF deferred.notify %]
         <div class="row">
-            <div class="primary callout small data-closable">
+            <div class="primary callout small" data-closable>
                 [% deferred.notify %]
                 <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
                     <span aria-hidden="true">&times;</span>
@@ -65,13 +67,31 @@
         [% END %]
         [% IF deferred.success %]
         <div class="row">
-            <div class="success callout small data-closable">
+            <div class="success callout small" data-closable>
                 [% deferred.success %]
                 <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
         </div>
+        [% END %]
+        [% IF breadcrumbs %]
+        <nav aria-label="You are here:" role="navigation">
+            <ul class="breadcrumbs">
+                <li><a href="/">Home</a></li>
+                [% FOREACH crumb IN breadcrumbs %]
+                [% IF crumb.disabled %]
+                <li class="disabled">[% crumb.name %]</li>
+                [% ELSIF crumb.current %]
+                <li>
+                    <span class="show-for-sr">Current: </span> [% crumb.name %]
+                </li>
+                [% ELSE %]
+                <li><a href="[% crumb.link %]">[% crumb.name %]</a></li>
+                [% END %]
+                [% END %]
+            </ul>
+        </nav>
         [% END %]
 
 
