@@ -40,7 +40,7 @@
                 <form action="/search" method="post" style="display: inline;">
                 <ul class="menu">
                     <li class="menu-text"><input type="search" placeholder="Search"></li>
-                    <li class="menu-text"><input type="submit" value="Search" class="button">Search</button></li>
+                    <li class="menu-text"><input type="submit" value="Search" class="button"></li>
                 </ul>
                 </form>
             </div>

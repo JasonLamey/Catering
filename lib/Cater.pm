@@ -10,10 +10,11 @@ use Dancer2::Plugin::Deferred;
 
 use Const::Fast;
 
-use version; our $VERSION = qv( 'v0.1.2' );
+use version; our $VERSION = qv( 'v0.1.3' );
 
 use Cater::Login;
 use Cater::Email;
+use Cater::Admin;
 
 
 =head1 NAME
@@ -247,6 +248,70 @@ any [ 'get', 'post' ] => '/account_confirmation/:ccode?' => sub
                                                         user    => $ccode_confirmed->{'user'},
                                                     },
                                         };
+};
+
+
+=head2 Admin-based routes
+
+prefix '/admin' => sub
+{
+
+=head2 get /admin/login
+
+Provides the admin-specific login screen to the user.
+
+=cut
+
+    get '/login' => sub
+    {
+        template 'admin/login',
+                        {
+                            data => {
+                                        username      => ( param 'username'      // '' ),
+                                    },
+                            msgs => {
+                                        error_message => ( param 'error_message' // '' ),
+                                    },
+                            breadcrumbs => [
+                                        { disabled => 1, name => 'ADMIN' },
+                                        { current  => 1, name => 'Login/Register' },
+                                    ],
+                        };
+    };
+
+=head2 post /admin/login
+
+Processes the login attempt.
+
+=cut
+
+    put '/login' => sub
+    {
+        my $login_result = Cater::Admin->process_login_credentials(
+                                                                   username  => body_parameters->get('username'),
+                                                                   password  => body_parameters->get('password'),
+                                                                  );
+
+        if ( $login_result->{'success'} )
+        {
+            info 'Successful Admin Login: >' . body_parameters->get('username') . '< from IP: >' .
+                 request->remote_address . ' - ' . request->remote_host . '<';
+            session admin_user => body_parameters->get('username');
+            deferred success => 'Successfully logged in.  Welcome back, <b>' . session( "user" ) . '</b>!';
+            redirect '/';
+        }
+        else
+        {
+            warning $login_result->{'log_message'};
+            forward '/login',
+                            {
+                                username      => body_parameters->get('username'),
+                                error_message => $login_result->{'error_message'},
+                            },
+                            { method => 'GET' };
+        }
+    };
+
 };
 
 
