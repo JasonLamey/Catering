@@ -3,7 +3,8 @@
         <div class="row">
             <div class="medium-6 columns">
                 <h3>Admin Login</h3>
-                <form method='post' action='/login'>
+                <form method='post' action='/admin/login'>
+                    <input type='hidden' name='requested_path' value='[% data.requested_path %]'>
                     <label for='username'>Username:
                         <input type='text' name='username' value='[% data.username %]'>
                     </label>

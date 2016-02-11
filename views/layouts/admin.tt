@@ -6,7 +6,7 @@
 
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Catering Services</title>
+        <title>Catering Services Admin</title>
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.1.0/foundation.min.css">
         <link rel="stylesheet" href="/css/app.css">
@@ -54,22 +54,25 @@
                     <li class="menu-text">
                         <a href="/"><img src="http://placehold.it/250x50&text=Catering Logo"></a></li>
                     <li class="has-submenu">
-                        <a href="#">Browse Caterers</a>
+                        <a href="#">Manage</a>
                         <ul class="submenu menu vertical" data-submenu>
-                            <li><a href="#">By Location</a></li>
-                            <li><a href="#">By Cuisine</a></li>
+                            <li><a href="/admin/manage/caterers">Caterers</a></li>
+                            <li><a href="/admin/manage/marketers">Marketers</a></li>
+                            <li><a href="/admin/manage/users">Users</a></li>
+                            [% IF vars.is_admin == 1 %]
+                            <li><a href="/admin/manage/admins">Admins & Ops</a></li>
+                            [% END %]
                         </ul>
                     </li>
-                    <li><a href="#">FAQ</a></li>
-                    [% IF session.user %]
-                    <li><a href="/logout">Log Out</a></li>
+                    [% IF session.admin_user %]
+                    <li><a href="/admin/logout">Log Out ([% session.admin_user %])</a></li>
                     [% ELSE %]
-                    <li><a href="/login">Sign In / Register</a></li>
+                    <li><a href="/admin/login">Sign In</a></li>
                     [% END %]
                 </ul>
             </div>
             <div class="top-bar-right">
-                <form action="/search" method="post" style="display: inline;">
+                <form action="/admin/search" method="post" style="display: inline;">
                 <ul class="menu">
                     <li class="menu-text"><input type="search" placeholder="Search"></li>
                     <li class="menu-text"><input type="submit" value="Search" class="button"></li>

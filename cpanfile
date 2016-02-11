@@ -2,6 +2,8 @@
 requires 'perl', '>= 5.18.2';
 
 requires 'Dancer2',                     '0.163000';
+requires 'URL::Encode::XS',             '0.03';
+requires 'CGI::Deurl::XS',              '0.08';
 requires 'Dancer2::Session::YAML',      '0.165000';
 requires 'Dancer2::Plugin::Passphrase', '3.2.2';
 requires 'Dancer2::Plugin::DBIC',       '0.0011';

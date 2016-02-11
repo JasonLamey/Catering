@@ -253,10 +253,60 @@ any [ 'get', 'post' ] => '/account_confirmation/:ccode?' => sub
 
 =head2 Admin-based routes
 
+=cut
+
 prefix '/admin' => sub
 {
+    hook before => sub
+    {
+        if (
+            ! session( 'admin_user' )
+            &&
+            request->dispatch_path =~ m{^/admin}
+            &&
+            request->dispatch_path !~ m{^/admin/login}
+            &&
+            request->is_get()
+        )
+        {
+            forward '/admin/login', { requested_path => request->dispatch_path };
+        }
 
-=head2 get /admin/login
+        # Fetch the admin user and admin/op status if we're serving an admin page and the admin is logged in.
+        if ( request->dispatch_path =~ m{^/admin} && session( 'admin_user' ) )
+        {
+            my $admin_user = Cater::Admin->get_admin_user( username => session( 'admin_user' ) );
+            var admin_user => $admin_user;
+            var is_admin   => ( defined $admin_user && $admin_user->admin_type eq 'Admin' ) ? 1 : 0;
+            session->expires( 600 ); # Admin session auto-expires after 10 minutes of inactivity.
+        }
+    };
+
+
+=head2 get '/'
+
+Root admin route
+
+=cut
+
+    get '/?' => sub
+    {
+        my $stats = Cater::Admin->get_index_stats();
+
+        template 'admin/index', {
+                                    data        => {
+                                                        stats => $stats,
+                                                   },
+                                    breadcrumbs => [
+                                                        { disabled => 1, name => 'ADMIN' },
+                                                        { current  => 1, name => 'Main' },
+                                                   ],
+                                },
+                                { layout => 'admin' };
+    };
+
+
+=head2 get '/admin/login'
 
 Provides the admin-specific login screen to the user.
 
@@ -267,16 +317,18 @@ Provides the admin-specific login screen to the user.
         template 'admin/login',
                         {
                             data => {
-                                        username      => ( param 'username'      // '' ),
+                                        username       => ( param 'username'       // '' ),
+                                        requested_path => ( param 'requested_path' // '/admin/' ),
                                     },
                             msgs => {
-                                        error_message => ( param 'error_message' // '' ),
+                                        error_message  => ( param 'error_message' // '' ),
                                     },
                             breadcrumbs => [
                                         { disabled => 1, name => 'ADMIN' },
-                                        { current  => 1, name => 'Login/Register' },
+                                        { current  => 1, name => 'Login' },
                                     ],
-                        };
+                        },
+                        { layout => 'admin' };
     };
 
 =head2 post /admin/login
@@ -285,7 +337,7 @@ Processes the login attempt.
 
 =cut
 
-    put '/login' => sub
+    post '/login' => sub
     {
         my $login_result = Cater::Admin->process_login_credentials(
                                                                    username  => body_parameters->get('username'),
@@ -297,13 +349,14 @@ Processes the login attempt.
             info 'Successful Admin Login: >' . body_parameters->get('username') . '< from IP: >' .
                  request->remote_address . ' - ' . request->remote_host . '<';
             session admin_user => body_parameters->get('username');
-            deferred success => 'Successfully logged in.  Welcome back, <b>' . session( "user" ) . '</b>!';
-            redirect '/';
+            deferred success => 'Successfully logged in.  Welcome back, <b>' . session( "admin_user" ) . '</b>!';
+            redirect '/admin/';
         }
         else
         {
             warning $login_result->{'log_message'};
-            forward '/login',
+            deferred error_message => $login_result->{'error_message'};
+            forward '/admin/login',
                             {
                                 username      => body_parameters->get('username'),
                                 error_message => $login_result->{'error_message'},
@@ -312,7 +365,63 @@ Processes the login attempt.
         }
     };
 
+
+=head2 'GET /admin/logout'
+
+Admin logout route. Destroys the user's session, effectively logging them out of their account.
+
+=cut
+
+    get '/logout' => sub
+    {
+        my $user = session( "admin_user" );
+        app->destroy_session;
+        deferred success => 'You have been successfully logged out. Come back soon!';
+        info 'Successful Admin Logout of >' . $user . '<';
+        redirect '/';
+    };
+
+
+=head2 'GET /admin/manage/caterers'
+
+Route to the Caterer Management page.
+
+=cut
+
+    get '/manage/caterers' => sub
+    {
+        my $caterers = Cater::Admin->get_all_caterers();
+        template 'admin/manage/caterers', {
+                                            data => {
+                                                        caterers => $caterers,
+                                                    },
+                                          },
+                                        { layout => 'admin' };
+    };
+
+
+=head2 'GET /admin/manage/marketers'
+
+Route to the Marketer Management page.
+
+=cut
+
+
+=head2 'GET /admin/manage/users'
+
+Route to the User Management page.
+
+=cut
+
+
+=head2 'GET /admin/manage/admins'
+
+Route to the Admin Management page.
+
+=cut
+
 };
+
 
 
 =head1 AUTHOR

@@ -7,7 +7,8 @@ appname: "Cater"
 
 # The default layout to use for your application (located in
 # views/layouts/main.tt)
-# layout: "main" ## commented out to allow for using Template Toolkit's wrapper, defined below.
+## commented out to allow for using Template Toolkit's wrapper, defined below.#
+layout: "main"
 
 # when the charset is set to UTF-8 Dancer will handle for you
 # all the magic of encoding and decoding. You should not care
@@ -25,7 +26,7 @@ session: YAML
 engines:
   template:
     template_toolkit:
-      WRAPPER: views/layouts/main.tt
+      #WRAPPER: views/layouts/main.tt
       start_tag: '[%'
       end_tag:   '%]'
   session:
