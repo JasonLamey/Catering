@@ -1,0 +1,86 @@
+[% USE date %]
+[% account_id = data.user.id %][% account_type = 'users' %]
+<div class="row">
+    <div class="small-12 columns">
+        <h1>Edit User Record</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="small-9 columns">
+        <a href="/admin/manage/users" class="button">Manage Users</a>
+    </div>
+    <div class="small-3 text-right columns">
+        [% IF vars.is_admin %]
+        <a class="alert button" data-toggle="deleteConfirm">Delete This User</a>
+        [% END %]
+    </div>
+</div>
+
+[% PROCESS 'views/admin/manage/_account_deletion_confirm.tt' %]
+
+<form action="/admin/manage/users/[% data.user.id %]/save" method="post" data-abide novalidate>
+    <div class="row">
+        <div class="small-12 columns">
+            <div data-abide-error class="alert callout" style="display: none;">
+                <p><i class="fi-alert"></i> There are some errors in your form. Please fix them and re-submit.</p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-12 columns callout">
+            <div class="row">
+                <div class="medium-6 columns">
+                    <label for="id">User ID
+                        <input type="text" name="id" value="[% data.user.id %]" data-abide-ignore disabled>
+                    </label>
+
+                    <label for="full_name">Full Name <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="full_name" value="[% data.user.full_name %]" placeholder="Bob Jones" required>
+                        <span class="form-error">
+                            A Full Contact Name is required.
+                        </span>
+                    </label>
+
+                    <label for="username">Username <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="username" value="[% data.user.username %]" placeholder="bjones" required>
+                        <span class="form-error">
+                            A Username is required.
+                        </span>
+                    </label>
+                </div>
+
+                <div class="medium-6 columns">
+                    <label for="email">E-mail Address <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="email" name="email" value="[% data.user.email %]" placeholder="bob@company.com" required pattern="email">
+                        <span class="form-error">
+                            A valid E-mail Address is required.
+                        </span>
+                    </label>
+
+                    <label for="confirmed">Account Confirmed
+                        [% IF data.user.confirmed == 1 %][% confirmed_set = ' checked' %][% ELSE %][% confirmed_set = '' %][% END %]
+                        <div class="switch">
+                            <input class="switch-input" id="confirmed_switch" type="checkbox" name="confirmed" value="1"[% confirmed_set %] data-abide-ignore>
+                            <label class="switch-paddle" for="confirmed_switch">
+                                <span class="show-for-sr">Account Confirmed</span>
+                                <span class="switch-active" aria-hidden="true">Yes</span>
+                                <span class="switch-inactive" aria-hidden="true">No</span>
+                            </label>
+                        </div>
+                    </label>
+
+                    <label for="created_on">Created On
+                        <input type="datetime" name="created_on" value="[% data.user.created_on %]" data-abide-ignore disabled>
+                    </label>
+
+                    <label for="updated_on">Updated On
+                        <input type="datetime" name="updated_on" value="[% data.user.updated_on %]" placeholder="Never" data-abide-ignore disabled>
+                    </label>
+
+                    <input type="submit" value="Save Account" class="button">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

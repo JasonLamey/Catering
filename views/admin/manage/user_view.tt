@@ -1,0 +1,88 @@
+[% USE date %]
+[% account_id = data.user.id %][% account_type = 'users' %]
+<div class="row">
+    <div class="small-12 columns">
+        <h1>User Record</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="small-9 columns">
+        <a href="/admin/manage/users" class="button">Manage Users</a>
+        <a href="/admin/manage/users/[% data.user.id %]/edit" class="button">Edit This User</a>
+    </div>
+    <div class="small-3 text-right columns">
+        [% IF vars.is_admin %]
+        <a class="alert button" data-toggle="deleteConfirm">Delete This User</a>
+        [% END %]
+    </div>
+</div>
+
+[% PROCESS 'views/admin/manage/_account_deletion_confirm.tt' %]
+
+<div class="row">
+    <div class="small-12 columns callout">
+        <div class="row">
+    <div class="medium-6 columns">
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="idLabel">User ID</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="idLabel">[% data.user.id %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="usernameLabel">Username</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="usernameLabel">[% data.user.username %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="emailLabel">Email</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="emailLabel">[% ( data.user.email || 'Not defined' ) %]</span>
+            </div>
+        </div>
+    </div>
+    <div class="medium-6 columns">
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="fullLabel">Full Name</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="fullLabel">[% ( data.user.full_name || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="confirmedLabel">Account Confirmed</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="confirmedLabel">[% IF data.user.confirmed == 1 %]Yes[% ELSE %]<strong>No</strong>[% END %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="createdLabel">Account Created</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="createdLabel">[% date.format(format="%d %B, %Y %I:%M%p", data.user.created_on) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="updatedLabel">Last Updated</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="updatedLabel">[% IF date.user.updated_on %][% date.format(format="%d %B, %Y %I:%M%p", data.user.updated_on) %][% ELSE %]Never[% END %]</span>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>

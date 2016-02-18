@@ -1,0 +1,74 @@
+[% USE date %]
+[% USE LocaleCountry %]
+<div class="row">
+    <div class="small-12 columns">
+        <h1>Add User Record</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="small-12 columns">
+        <a href="/admin/manage/users" class="button">Manage Users</a>
+    </div>
+</div>
+
+<form action="/admin/manage/users/create" method="post" data-abide novalidate>
+    <div class="row">
+        <div class="small-12 columns">
+            <div data-abide-error class="alert callout" style="display: none;">
+                <p><i class="fi-alert"></i> There are some errors in your form. Please fix them and re-submit.</p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-12 columns callout">
+            <div class="row">
+                <div class="medium-6 columns">
+                    <label for="username">Username <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="username" value="[% data.user.username %]" placeholder="bjones" required>
+                        <span class="form-error">
+                            A Username is required.
+                        </span>
+                    </label>
+
+                    <label for="password">Password <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="password" value="[% data.user.password %]" placeholder="AFdDir2z" required>
+                        <span class="form-error">
+                            A Password is required.
+                        </span>
+                    </label>
+
+                    <label for="email">E-mail Address <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="email" name="email" value="[% data.user.email %]" placeholder="bob@company.com" required pattern="email">
+                        <span class="form-error">
+                            A valid E-mail Address is required.
+                        </span>
+                    </label>
+                </div>
+
+                <div class="medium-6 columns">
+                    <label for="poc_name">Full Name <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="full_name" value="[% data.user.full_name %]" placeholder="Bob Jones" required>
+                        <span class="form-error">
+                            A Full Name is required.
+                        </span>
+                    </label>
+
+                    <label for="confirmed">Account Confirmed
+                        [% IF data.user.confirmed == 1 %][% confirmed_set = ' checked' %][% ELSE %][% confirmed_set = '' %][% END %]
+                        <div class="switch">
+                            <input class="switch-input" id="confirmed_switch" type="checkbox" name="confirmed" value="1"[% confirmed_set %] data-abide-ignore>
+                            <label class="switch-paddle" for="confirmed_switch">
+                                <span class="show-for-sr">Account Confirmed</span>
+                                <span class="switch-active" aria-hidden="true">Yes</span>
+                                <span class="switch-inactive" aria-hidden="true">No</span>
+                            </label>
+                        </div>
+                    </label>
+
+                    <input type="submit" value="Save Account" class="button">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

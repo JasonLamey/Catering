@@ -1,0 +1,45 @@
+[% USE date %]
+<div class="row">
+    <div class="small-12 columns">
+        <h2>User Management <small>([% ( data.users.size || 0 ) %] on record)</h2>
+        <a href="/admin/manage/users/add" class="button">Add New User</a>
+        <div class="row">
+            <div class="small-12 columns callout">
+                [% IF data.users.size > 0 %]
+                <table class="hover" width="100%">
+                    <thead>
+                        <tr>
+                            <th width="50">ID</th>
+                            <th>Username</th>
+                            <th width="200">Full Name</th>
+                            <th width="200">Email</th>
+                            <th width="100">Created On</th>
+                            <th width="100">Utility</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    [% FOREACH user IN data.users %]
+                        <tr>
+                            <td>[% user.id %]</td>
+                            <td>[% ( user.username || 'N/A' ) %]
+                                [% IF user.confirmed != 1 %] <span data-tooltip aria-haspopup="true" class="has-tip" data-disable-hover='false' tabindex=[% user.id %] title="Account not confirmed." style="font-size: 1rem; color: red;"><i class="fi-alert"></i></span>[% END %]
+                            </td>
+                            <td>[% user.full_name %]</td>
+                            <td><a href="mailto:[% user.email %]">[% user.email %]</a></td>
+                            <td>[% date.format(format="%d %b, %Y %I:%M%p", user.created_on ) %]</td>
+                            <td>
+                                <a href="/admin/manage/users/[% user.id %]/view">Details</a>
+                                |
+                                <a href="/admin/manage/users/[% user.id %]/edit">Edit</a>
+                            </td>
+                        </tr>
+                    [% END %]
+                    </tbody>
+                </table>
+                [% ELSE %]
+                <div class="error callout">No users found.</div>
+                [% END %]
+            </div>
+        </div>
+    </div>
+</div>
