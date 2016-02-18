@@ -105,7 +105,10 @@
                 <hr/>
                 <div class="row">
                     <div class="small-12 medium-4 columns">
-                        <p>&copy; 2016 MRM</p>
+                        <p>
+                            &copy; 2016 MRM<br>
+                            <small>This product includes GeoLite2 data created by MaxMind, available from <a href="http://www.maxmind.com">http://www.maxmind.com</a>.</small>
+                        </p>
                     </div>
                     <div class="small-12 medium-8 columns">
                         <div class="row">

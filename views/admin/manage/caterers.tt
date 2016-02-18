@@ -1,43 +1,47 @@
+[% USE date %]
 <div class="row">
     <div class="small-12 columns">
         <h2>Caterer Management <small>([% ( data.caterers.size || 0 ) %] on record)</h2>
-
         <a href="/admin/manage/caterers/add" class="button">Add New Caterer</a>
-        [% IF data.caterers.size > 0 %]
-        <table class="hover" width="100%">
-            <thead>
-                <tr>
-                    <th width="50">ID</th>
-                    <th>Company</th>
-                    <th width="200">POC Name</th>
-                    <th width="200">POC Email</th>
-                    <th width="200">City, State, Country</th>
-                    <th width="100">Created On</th>
-                    <th width="100">Utility</th>
-                </tr>
-            </thead>
-            <tbody>
-            [% FOREACH caterer IN data.caterers %]
-                <tr>
-                    <td>[% caterer.id %]</td>
-                    <td>[% ( caterer.company || 'N/A' ) %]
-                        [% IF caterer.confirmed != 1 %] <span data-tooltip aria-haspopup="true" class="has-tip" data-disable-hover='false' tabindex=[% caterer.id %] title="Account not confirmed." style="font-size: 1rem; color: red;"><i class="fi-alert"></i></span>[% END %]
-                    </td>
-                    <td>[% caterer.poc_name %]</td>
-                    <td><a href="mailto:[% caterer.email %]">[% caterer.email %]</a></td>
-                    <td>[% ( caterer.city || 'N/A' ) %], [% ( caterer.state || 'N/A' ) %], [% ( caterer.country || 'N/A' ) %]</td>
-                    <td>[% caterer.created_on %]</td>
-                    <td>
-                        <a href="/admin/manage/caterers/view/[% caterer.id %]">Details</a>
-                        |
-                        <a href="/admin/manage/caterers/edit/[% caterer.id %]">Edit</a>
-                    </td>
-                </tr>
-            [% END %]
-            </tbody>
-        </table>
-        [% ELSE %]
-        <div class="error callout">No caterers found.</div>
-        [% END %]
+        <div class="row">
+            <div class="small-12 columns callout">
+                [% IF data.caterers.size > 0 %]
+                <table class="hover" width="100%">
+                    <thead>
+                        <tr>
+                            <th width="50">ID</th>
+                            <th>Company</th>
+                            <th width="200">POC Name</th>
+                            <th width="200">POC Email</th>
+                            <th width="200">City, State, Country</th>
+                            <th width="100">Created On</th>
+                            <th width="100">Utility</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    [% FOREACH caterer IN data.caterers %]
+                        <tr>
+                            <td>[% caterer.id %]</td>
+                            <td>[% ( caterer.company || 'N/A' ) %]
+                                [% IF caterer.confirmed != 1 %] <span data-tooltip aria-haspopup="true" class="has-tip" data-disable-hover='false' tabindex=[% caterer.id %] title="Account not confirmed." style="font-size: 1rem; color: red;"><i class="fi-alert"></i></span>[% END %]
+                            </td>
+                            <td>[% caterer.poc_name %]</td>
+                            <td><a href="mailto:[% caterer.email %]">[% caterer.email %]</a></td>
+                            <td>[% ( caterer.city || 'N/A' ) %], [% ( caterer.state || 'N/A' ) %], [% ( caterer.country || 'N/A' ) %]</td>
+                            <td>[% date.format(format="%d %b, %Y %I:%M%p", caterer.created_on ) %]</td>
+                            <td>
+                                <a href="/admin/manage/caterers/[% caterer.id %]/view">Details</a>
+                                |
+                                <a href="/admin/manage/caterers/[% caterer.id %]/edit">Edit</a>
+                            </td>
+                        </tr>
+                    [% END %]
+                    </tbody>
+                </table>
+                [% ELSE %]
+                <div class="error callout">No caterers found.</div>
+                [% END %]
+            </div>
+        </div>
     </div>
 </div>

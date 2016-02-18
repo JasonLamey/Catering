@@ -29,6 +29,7 @@ engines:
       #WRAPPER: views/layouts/main.tt
       start_tag: '[%'
       end_tag:   '%]'
+      PLUGIN_BASE: 'Cater::Template::Plugin'
   session:
     YAML:
       session_dir: ./sessions

@@ -1,0 +1,133 @@
+[% USE date %]
+[% USE LocaleCountry %]
+<div class="row">
+    <div class="small-12 columns">
+        <h1>Add Marketer Record</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="small-12 columns">
+        <a href="/admin/manage/marketers" class="button">Manage Marketers</a>
+    </div>
+</div>
+
+<form action="/admin/manage/marketers/create" method="post" data-abide novalidate>
+    <div class="row">
+        <div class="small-12 columns">
+            <div data-abide-error class="alert callout" style="display: none;">
+                <p><i class="fi-alert"></i> There are some errors in your form. Please fix them and re-submit.</p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-12 columns callout">
+            <div class="row">
+                <div class="medium-4 columns">
+                    <label for="company">Company Name <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="company" value="[% data.marketer.company %]" placeholder="Company Name" required>
+                        <span class="form-error">
+                            A Company Name is required.
+                        </span>
+                    </label>
+
+                    <label for="email">E-mail Address <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="email" name="email" value="[% data.marketer.email %]" placeholder="bob@company.com" required pattern="email">
+                        <span class="form-error">
+                            A valid E-mail Address is required.
+                        </span>
+                    </label>
+
+                    <label for="phone">Primary Phone Number
+                        <input type="tel" name="phone" value="[% data.marketer.phone %]" placeholder="123 456-7890" data-abide-ignore>
+                    </label>
+                </div>
+
+                <div class="medium-4 columns">
+                    <label for="street1">Street Address 1 <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="street1" value="[% data.marketer.street1 %]" placeholder="123 Any Street" required>
+                        <span class="form-error">
+                            A Street address is required.
+                        </span>
+                    </label>
+
+                    <label for="street2">Street Address 2
+                        <input type="text" name="street2" value="[% data.marketer.street2 %]" placeholder="Apt. 221B" data-abide-ignore>
+                    </label>
+
+                    <label for="city">City <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="city" value="[% data.marketer.city %]" placeholder="Citytown" required>
+                        <span class="form-error">
+                            A City is required.
+                        </span>
+                    </label>
+
+                    <label for="state">State <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="state" value="[% data.marketer.state %]" placeholder="Virginia" required>
+                        <span class="form-error">
+                            A State is required.
+                        </span>
+                    </label>
+
+                    <label for="country">Country <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <select name="country" required>
+                            <option value=''>[ Choose One ]</option>
+                        [% SET data.marketer.country = 'us' IF NOT data.marketer.country %]
+                        [% FOREACH country IN data.countries %]
+                            [% country_code = LocaleCountry.country2code(country) %]
+                            <option value='[% country_code %]'[% IF data.marketer.country.lower == country_code.lower %] selected[% END %]>[% country %]</option>
+                        [% END %]
+                        </select>
+                        <span class="form-error">
+                            A Country is required.
+                        </span>
+                    </label>
+
+                    <label for="postal">Zip/Postal Code <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="zip" value="[% data.marketer.zip %]" placeholder="12345" required>
+                        <span class="form-error">
+                            A Postal code is required.
+                        </span>
+                    </label>
+                </div>
+
+                <div class="medium-4 columns">
+                    <label for="poc_name">Point of Contact Name <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="poc_name" value="[% data.marketer.poc_name %]" placeholder="Bob Jones" required>
+                        <span class="form-error">
+                            A Point of Contact Name is required.
+                        </span>
+                    </label>
+
+                    <label for="username">Username <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="username" value="[% data.marketer.username %]" placeholder="bjones" required>
+                        <span class="form-error">
+                            A Username is required.
+                        </span>
+                    </label>
+
+                    <label for="password">Password <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="password" value="[% data.marketer.password %]" placeholder="AFdDir2z" required>
+                        <span class="form-error">
+                            A Password is required.
+                        </span>
+                    </label>
+
+                    <label for="confirmed">Account Confirmed
+                        [% IF data.marketer.confirmed == 1 %][% confirmed_set = ' checked' %][% ELSE %][% confirmed_set = '' %][% END %]
+                        <div class="switch">
+                            <input class="switch-input" id="confirmed_switch" type="checkbox" name="confirmed" value="1"[% confirmed_set %] data-abide-ignore>
+                            <label class="switch-paddle" for="confirmed_switch">
+                                <span class="show-for-sr">Account Confirmed</span>
+                                <span class="switch-active" aria-hidden="true">Yes</span>
+                                <span class="switch-inactive" aria-hidden="true">No</span>
+                            </label>
+                        </div>
+                    </label>
+
+                    <input type="submit" value="Save Account" class="button">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

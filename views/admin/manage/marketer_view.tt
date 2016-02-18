@@ -1,0 +1,152 @@
+[% USE date %]
+[% account_id = data.marketer.id %][% account_type = 'marketers' %]
+<div class="row">
+    <div class="small-12 columns">
+        <h1>Marketer Record</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="small-9 columns">
+        <a href="/admin/manage/marketers" class="button">Manage Marketers</a>
+        <a href="/admin/manage/marketers/[% data.marketer.id %]/edit" class="button">Edit This Marketer</a>
+    </div>
+    <div class="small-3 text-right columns">
+        [% IF vars.is_admin %]
+        <a class="alert button" data-toggle="deleteConfirm">Delete This Marketer</a>
+        [% END %]
+    </div>
+</div>
+
+[% PROCESS 'views/admin/manage/_account_deletion_confirm.tt' %]
+
+<div class="row">
+    <div class="small-12 columns callout">
+        <div class="row">
+    <div class="medium-6 columns">
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="idLabel">Marketer ID</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="idLabel">[% data.marketer.id %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="companyLabel">Marketer Company</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="companyLabel">[% ( data.marketer.company || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="emailLabel">Email</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="emailLabel">[% ( data.marketer.email || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="phoneLabel">Phone</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="phoneLabel">[% ( data.marketer.phone || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="street1Label">Street 1</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="street1Label">[% ( data.marketer.street1 || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="street2Label">Street 2</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="street2Label">[% data.marketer.street2 %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="cityLabel">City</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="cityLabel">[% ( data.marketer.city || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="stateLabel">State</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="stateLabel">[% ( data.marketer.state || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="countryLabel">Country</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="countryLabel">[% ( data.marketer.country || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="postalLabel">Postal Code</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="postalLabel">[% ( data.marketer.zip || 'Not defined' ) %]</span>
+            </div>
+        </div>
+    </div>
+    <div class="medium-6 columns">
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="pocLabel">Point of Contact</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="pocLabel">[% ( data.marketer.poc_name || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="usernameLabel">Username</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="usernameLabel">[% data.marketer.username %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="confirmedLabel">Account Confirmed</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="confirmedLabel">[% IF data.marketer.confirmed == 1 %]Yes[% ELSE %]<strong>No</strong>[% END %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="createdLabel">Account Created</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="createdLabel">[% date.format(format="%d %B, %Y %I:%M%p", data.marketer.created_on) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="updatedLabel">Last Updated</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="updatedLabel">[% IF date.marketer.updated_on %][% date.format(format="%d %B, %Y %I:%M%p", data.marketer.updated_on) %][% ELSE %]Never[% END %]</span>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>

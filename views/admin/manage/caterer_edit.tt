@@ -1,0 +1,146 @@
+[% USE date %]
+[% USE LocaleCountry %]
+[% account_id = data.caterer.id %][% account_type = 'caterers' %]
+<div class="row">
+    <div class="small-12 columns">
+        <h1>Edit Caterer Record</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="small-9 columns">
+        <a href="/admin/manage/caterers" class="button">Manage Caterers</a>
+    </div>
+    <div class="small-3 text-right columns">
+        [% IF vars.is_admin %]
+        <a class="alert button" data-toggle="deleteConfirm">Delete This Caterer</a>
+        [% END %]
+    </div>
+</div>
+
+[% PROCESS 'views/admin/manage/_account_deletion_confirm.tt' %]
+
+<form action="/admin/manage/caterers/[% data.caterer.id %]/save" method="post" data-abide novalidate>
+    <div class="row">
+        <div class="small-12 columns">
+            <div data-abide-error class="alert callout" style="display: none;">
+                <p><i class="fi-alert"></i> There are some errors in your form. Please fix them and re-submit.</p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-12 columns callout">
+            <div class="row">
+                <div class="medium-4 columns">
+                    <label for="id">Caterer ID
+                        <input type="text" name="id" value="[% data.caterer.id %]" data-abide-ignore disabled>
+                    </label>
+
+                    <label for="company">Company Name <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="company" value="[% data.caterer.company %]" placeholder="Company Name" required>
+                        <span class="form-error">
+                            A Company Name is required.
+                        </span>
+                    </label>
+
+                    <label for="email">E-mail Address <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="email" name="email" value="[% data.caterer.email %]" placeholder="bob@company.com" required pattern="email">
+                        <span class="form-error">
+                            A valid E-mail Address is required.
+                        </span>
+                    </label>
+
+                    <label for="phone">Primary Phone Number
+                        <input type="tel" name="phone" value="[% data.caterer.phone %]" placeholder="123 456-7890" data-abide-ignore>
+                    </label>
+                </div>
+
+                <div class="medium-4 columns">
+                    <label for="street1">Street Address 1 <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="street1" value="[% data.caterer.street1 %]" placeholder="123 Any Street" required>
+                        <span class="form-error">
+                            A Street address is required.
+                        </span>
+                    </label>
+
+                    <label for="street2">Street Address 2
+                        <input type="text" name="street2" value="[% data.caterer.street2 %]" placeholder="Apt. 221B" data-abide-ignore>
+                    </label>
+
+                    <label for="city">City <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="city" value="[% data.caterer.city %]" placeholder="Citytown" required>
+                        <span class="form-error">
+                            A City is required.
+                        </span>
+                    </label>
+
+                    <label for="state">State <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="state" value="[% data.caterer.state %]" placeholder="Virginia" required>
+                        <span class="form-error">
+                            A State is required.
+                        </span>
+                    </label>
+
+                    <label for="country">Country <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <select name="country" required>
+                            <option value=''>[ Choose One ]</option>
+                        [% SET data.caterer.country = 'us' IF NOT data.caterer.country %]
+                        [% FOREACH country IN data.countries %]
+                            [% country_code = LocaleCountry.country2code(country) %]
+                            <option value='[% country_code %]'[% IF data.caterer.country.lower == country_code.lower %] selected[% END %]>[% country %]</option>
+                        [% END %]
+                        </select>
+                        <span class="form-error">
+                            A Country is required.
+                        </span>
+                    </label>
+
+                    <label for="postal">Zip/Postal Code <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="zip" value="[% data.caterer.zip %]" placeholder="12345" required>
+                        <span class="form-error">
+                            A Postal code is required.
+                        </span>
+                    </label>
+                </div>
+
+                <div class="medium-4 columns">
+                    <label for="poc_name">Point of Contact Name <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="poc_name" value="[% data.caterer.poc_name %]" placeholder="Bob Jones" required>
+                        <span class="form-error">
+                            A Point of Contact Name is required.
+                        </span>
+                    </label>
+
+                    <label for="username">Username <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="username" value="[% data.caterer.username %]" placeholder="bjones" required>
+                        <span class="form-error">
+                            A Username is required.
+                        </span>
+                    </label>
+
+                    <label for="confirmed">Account Confirmed
+                        [% IF data.caterer.confirmed == 1 %][% confirmed_set = ' checked' %][% ELSE %][% confirmed_set = '' %][% END %]
+                        <div class="switch">
+                            <input class="switch-input" id="confirmed_switch" type="checkbox" name="confirmed" value="1"[% confirmed_set %] data-abide-ignore>
+                            <label class="switch-paddle" for="confirmed_switch">
+                                <span class="show-for-sr">Account Confirmed</span>
+                                <span class="switch-active" aria-hidden="true">Yes</span>
+                                <span class="switch-inactive" aria-hidden="true">No</span>
+                            </label>
+                        </div>
+                    </label>
+
+                    <label for="created_on">Created On
+                        <input type="datetime" name="created_on" value="[% data.caterer.created_on %]" data-abide-ignore disabled>
+                    </label>
+
+                    <label for="updated_on">Updated On
+                        <input type="datetime" name="updated_on" value="[% data.caterer.updated_on %]" placeholder="Never" data-abide-ignore disabled>
+                    </label>
+
+                    <input type="submit" value="Save Account" class="button">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

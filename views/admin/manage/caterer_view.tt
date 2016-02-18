@@ -1,0 +1,152 @@
+[% USE date %]
+[% account_id = data.caterer.id %][% account_type = 'caterers' %]
+<div class="row">
+    <div class="small-12 columns">
+        <h1>Caterer Record</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="small-9 columns">
+        <a href="/admin/manage/caterers" class="button">Manage Caterers</a>
+        <a href="/admin/manage/caterers/[% data.caterer.id %]/edit" class="button">Edit This Caterer</a>
+    </div>
+    <div class="small-3 text-right columns">
+        [% IF vars.is_admin %]
+        <a class="alert button" data-toggle="deleteConfirm">Delete This Caterer</a>
+        [% END %]
+    </div>
+</div>
+
+[% PROCESS 'views/admin/manage/_account_deletion_confirm.tt' %]
+
+<div class="row">
+    <div class="small-12 columns callout">
+        <div class="row">
+    <div class="medium-6 columns">
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="idLabel">Caterer ID</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="idLabel">[% data.caterer.id %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="companyLabel">Caterer Company</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="companyLabel">[% ( data.caterer.company || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="emailLabel">Email</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="emailLabel">[% ( data.caterer.email || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="phoneLabel">Phone</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="phoneLabel">[% ( data.caterer.phone || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="street1Label">Street 1</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="street1Label">[% ( data.caterer.street1 || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="street2Label">Street 2</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="street2Label">[% data.caterer.street2 %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="cityLabel">City</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="cityLabel">[% ( data.caterer.city || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="stateLabel">State</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="stateLabel">[% ( data.caterer.state || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="countryLabel">Country</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="countryLabel">[% ( data.caterer.country || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="postalLabel">Postal Code</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="postalLabel">[% ( data.caterer.zip || 'Not defined' ) %]</span>
+            </div>
+        </div>
+    </div>
+    <div class="medium-6 columns">
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="pocLabel">Point of Contact</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="pocLabel">[% ( data.caterer.poc_name || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="usernameLabel">Username</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="usernameLabel">[% data.caterer.username %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="confirmedLabel">Account Confirmed</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="confirmedLabel">[% IF data.caterer.confirmed == 1 %]Yes[% ELSE %]<strong>No</strong>[% END %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="createdLabel">Account Created</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="createdLabel">[% date.format(format="%d %B, %Y %I:%M%p", data.caterer.created_on) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="updatedLabel">Last Updated</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="updatedLabel">[% IF date.caterer.updated_on %][% date.format(format="%d %B, %Y %I:%M%p", data.caterer.updated_on) %][% ELSE %]Never[% END %]</span>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>

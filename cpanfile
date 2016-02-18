@@ -1,6 +1,7 @@
 # cpanfile
 requires 'perl', '>= 5.18.2';
 
+requires 'Template::Toolkit',           '2.26';
 requires 'Dancer2',                     '0.163000';
 requires 'URL::Encode::XS',             '0.03';
 requires 'CGI::Deurl::XS',              '0.08';
@@ -9,6 +10,7 @@ requires 'Dancer2::Plugin::Passphrase', '3.2.2';
 requires 'Dancer2::Plugin::DBIC',       '0.0011';
 requires 'Dancer2::Plugin::Emailesque', '0.03';
 requires 'Dancer2::Plugin::Deferred',   '0.007016';
+requires 'Locale::Codes',               '3.37';
 requires 'Locale::Country',             '3.36';
 requires 'Net::LibIDN',                 '0.12';
 requires 'Net::DNS',                    '1.04';
@@ -26,6 +28,7 @@ requires 'Email::Valid',                '1.198';
 requires 'Try::Tiny',                   '0.24';
 requires 'DateTime',                    '1.21';
 requires 'Emailesque',                  '1.26';
+requires 'GeoIP2',                      '2.002000';
 
 on 'develop' => sub
 {

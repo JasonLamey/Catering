@@ -1,0 +1,47 @@
+[% USE date %]
+<div class="row">
+    <div class="small-12 columns">
+        <h2>Marketer Management <small>([% ( data.marketers.size || 0 ) %] on record)</h2>
+        <a href="/admin/manage/marketers/add" class="button">Add New Marketer</a>
+        <div class="row">
+            <div class="small-12 columns callout">
+                [% IF data.marketers.size > 0 %]
+                <table class="hover" width="100%">
+                    <thead>
+                        <tr>
+                            <th width="50">ID</th>
+                            <th>Company</th>
+                            <th width="200">POC Name</th>
+                            <th width="200">POC Email</th>
+                            <th width="200">City, State, Country</th>
+                            <th width="100">Created On</th>
+                            <th width="100">Utility</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    [% FOREACH marketer IN data.marketers %]
+                        <tr>
+                            <td>[% marketer.id %]</td>
+                            <td>[% ( marketer.company || 'N/A' ) %]
+                                [% IF marketer.confirmed != 1 %] <span data-tooltip aria-haspopup="true" class="has-tip" data-disable-hover='false' tabindex=[% marketer.id %] title="Account not confirmed." style="font-size: 1rem; color: red;"><i class="fi-alert"></i></span>[% END %]
+                            </td>
+                            <td>[% marketer.poc_name %]</td>
+                            <td><a href="mailto:[% marketer.email %]">[% marketer.email %]</a></td>
+                            <td>[% ( marketer.city || 'N/A' ) %], [% ( marketer.state || 'N/A' ) %], [% ( marketer.country || 'N/A' ) %]</td>
+                            <td>[% date.format(format="%d %b, %Y %I:%M%p", marketer.created_on ) %]</td>
+                            <td>
+                                <a href="/admin/manage/marketers/[% marketer.id %]/view">Details</a>
+                                |
+                                <a href="/admin/manage/marketers/[% marketer.id %]/edit">Edit</a>
+                            </td>
+                        </tr>
+                    [% END %]
+                    </tbody>
+                </table>
+                [% ELSE %]
+                <div class="error callout">No marketers found.</div>
+                [% END %]
+            </div>
+        </div>
+    </div>
+</div>

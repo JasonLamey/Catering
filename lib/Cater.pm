@@ -7,15 +7,33 @@ use warnings;
 use Dancer2::Session::Cookie;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Deferred;
+use Dancer2::Plugin::Passphrase;
 
+use Locale::Country;
 use Const::Fast;
+use FormValidator::Simple;
+use Data::Dumper;
+use DateTime;
+use Template;
+use FindBin;
+use Try::Tiny;
+use GeoIP2::Database::Reader;
 
-use version; our $VERSION = qv( 'v0.1.3' );
+my $template = Template->new(
+                                {
+                                    PLUGIN_BASE => 'Cater::Template::Plugin',
+                                }
+                            );
 
+use version; our $VERSION = qv( 'v0.1.4' );
+
+use Cater::DBSchema;
 use Cater::Login;
 use Cater::Email;
 use Cater::Admin;
 
+const my $SCHEMA           => Cater::DBSchema->get_schema_connection();
+const my $COUNTRY_CODE_SET => 'LOCALE_CODE_ALPHA_2';
 
 =head1 NAME
 
@@ -28,6 +46,40 @@ Primary web application library, providing all routes and data calls.
 
 
 =head1 ROUTES
+
+=cut
+
+hook before => sub
+{
+    # Fetch GeoLocation details
+    my $reader = GeoIP2::Database::Reader->new(
+        file    => "$FindBin::Bin/../lib/GeoIP2/GeoLite2-City.mmdb",
+        locales => [ 'en' ]
+    );
+
+    try
+    {
+        my $record = $reader->city( ip => request->remote_address );
+        #my $record = $reader->city( ip => '173.71.202.84' );  # DEBUG: This is a static debugging IP address. DO NOT use in production.
+
+        debug "Pulled GeoLocation data for >" . request->remote_address . "<";
+        my $country_rec  = $record->country();
+        my $city_rec     = $record->city();
+        my $postal_rec   = $record->postal();
+        my $location_rec = $record->location();
+
+        var guest_country => $country_rec->name();
+        var guest_ccode   => $country_rec->iso_code();
+        var guest_city    => $city_rec->name();
+        var guest_postal  => $postal_rec->code();
+        var guest_lat     => $location_rec->latitude();
+        var guest_long    => $location_rec->longitude();
+    }
+    catch
+    {
+        warning "Could not find GeoLocation data for >" . request->remote_address . '<';
+    };
+};
 
 
 =head2 'GET /'
@@ -350,7 +402,7 @@ Processes the login attempt.
                  request->remote_address . ' - ' . request->remote_host . '<';
             session admin_user => body_parameters->get('username');
             deferred success => 'Successfully logged in.  Welcome back, <b>' . session( "admin_user" ) . '</b>!';
-            redirect '/admin/';
+            redirect ( body_parameters->get('requested_path') // '/admin/' );
         }
         else
         {
@@ -395,8 +447,317 @@ Route to the Caterer Management page.
                                             data => {
                                                         caterers => $caterers,
                                                     },
+                                            breadcrumbs => [
+                                                        { disabled => 1, name => 'ADMIN' },
+                                                        { current  => 1, name => 'Manage Caterers' },
+                                                    ],
                                           },
                                         { layout => 'admin' };
+    };
+
+
+=head2 'GET /admin/manage/caterers/<id>/view'
+
+Route viewing a Client's account information.
+
+=cut
+
+    get '/manage/caterers/:id/view' => sub
+    {
+        my $caterer = Cater::Admin->get_caterer_by_id( client_id => route_parameters->{'id'} );
+
+        template 'admin/manage/caterer_view',   {
+                                                    data => {
+                                                                caterer => $caterer,
+                                                            },
+                                                    breadcrumbs => [
+                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link  => '/admin/manage/caterers', name => 'Manage Caterers' },
+                                                                { current  => 1, name => 'View Caterer Record' },
+                                                            ],
+                                                },
+                                                { layout => 'admin' };
+    };
+
+
+=head2 'GET /admin/manage/caterers/<id>/edit'
+
+Route for editing caterer account information.
+
+=cut
+
+    get '/manage/caterers/:id/edit' => sub
+    {
+        my $caterer   = Cater::Admin->get_caterer_by_id( client_id => route_parameters->{'id'} );
+        my @countries = Locale::Country::all_country_names();
+
+        template 'admin/manage/caterer_edit',   {
+                                                    data => {
+                                                                caterer   => $caterer,
+                                                                countries => \@countries,
+                                                            },
+                                                    breadcrumbs => [
+                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link  => '/admin/manage/caterers', name => 'Manage Caterers' },
+                                                                { link  => '/admin/manage/caterers/' . route_parameters->{'id'} . '/view', name => 'View Caterer' },
+                                                                { current  => 1, name => 'Edit Caterer Record' },
+                                                            ],
+                                                },
+                                                { layout => 'admin' };
+    };
+
+
+=head2 'POST /admin/manage/caterers/<id>/save'
+
+Route for saving caterer account information.
+
+=cut
+
+    post '/manage/caterers/:id/save' => sub
+    {
+        my $caterer = Cater::Admin->get_caterer_by_id( client_id => route_parameters->{'id'} );
+
+        my $form_input = body_parameters->as_hashref;
+        my $results = FormValidator::Simple->check(
+                                                    $form_input => [
+                                                                    company  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    email    => [ 'NOT_BLANK', 'EMAIL' ],
+                                                                    phone    => [ [ 'LENGTH', 0, 30 ] ],
+                                                                    street1  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    city     => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    state    => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    country  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    zip      => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                    poc_name => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                    username => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                   ]
+                                                  );
+
+        if ( $results->has_error )
+        {
+            my $bad_fields = '';
+            foreach my $key ( @{ $results->error() } )
+            {
+                $bad_fields .= "<li>$key</li>\n";
+            }
+            my $error_message = "The following fields had errors:\n";
+            $error_message    .= "<ul>\n$bad_fields</ul>\n";
+
+            warning $error_message;
+
+            my @countries = Locale::Country::all_country_names();
+            my $new_caterer = {
+                                    id         => route_parameters->{'id'},
+                                    company    => body_parameters->{'company'},
+                                    email      => body_parameters->{'email'},
+                                    phone      => body_parameters->{'phone'},
+                                    street1    => body_parameters->{'street1'},
+                                    street2    => body_parameters->{'street2'},
+                                    city       => body_parameters->{'city'},
+                                    state      => body_parameters->{'state'},
+                                    country    => body_parameters->{'country'},
+                                    zip        => body_parameters->{'zip'},
+                                    poc_name   => body_parameters->{'poc_name'},
+                                    username   => body_parameters->{'username'},
+                                    confirmed  => ( body_parameters->{'confirmed'} // 0 ),
+                                    created_on => body_parameters->{'created_on'},
+                                    updated_on => body_parameters->{'updated_on'},
+                              };
+
+            template 'admin/manage/caterer_edit',   {
+                                                        data => {
+                                                                    caterer   => $new_caterer,
+                                                                    countries => \@countries,
+                                                                },
+                                                        msgs => {
+                                                                    error_message => $error_message,
+                                                                },
+                                                        breadcrumbs => [
+                                                                    { disabled => 1, name => 'ADMIN' },
+                                                                    { link  => '/admin/manage/caterers', name => 'Manage Caterers' },
+                                                                    { link  => '/admin/manage/caterers/' . route_parameters->{'id'} . '/view', name => 'View Caterer' },
+                                                                    { current  => 1, name => 'Edit Caterer Record' },
+                                                                ],
+                                                    },
+                                                    { layout => 'admin' };
+        }
+
+        $SCHEMA->txn_do( sub
+                            {
+                                $caterer->update(
+                                        {
+                                            company    => body_parameters->{'company'},
+                                            email      => body_parameters->{'email'},
+                                            phone      => body_parameters->{'phone'},
+                                            street1    => body_parameters->{'street1'},
+                                            street2    => body_parameters->{'street2'},
+                                            city       => body_parameters->{'city'},
+                                            state      => body_parameters->{'state'},
+                                            country    => body_parameters->{'country'},
+                                            zip        => body_parameters->{'zip'},
+                                            poc_name   => body_parameters->{'poc_name'},
+                                            username   => body_parameters->{'username'},
+                                            confirmed  => ( body_parameters->{'confirmed'} // 0 ),
+                                            updated_on => DateTime->now(),
+                                        }
+                                )
+                            }
+        );
+
+        deferred success => "Successfully updated <strong>" . body_parameters->{'company'} . "</strong>.";
+        redirect '/admin/manage/caterers/' . route_parameters->{'id'} . '/view';
+    };
+
+
+=head2 'GET /admin/manage/caterers/add'
+
+Route to adding a new Caterer/Client account.
+
+=cut
+
+    get '/manage/caterers/add' => sub
+    {
+        my @countries = Locale::Country::all_country_names();
+
+        template 'admin/manage/caterer_add', {
+                                                    data => {
+                                                                countries => \@countries,
+                                                            },
+                                                    breadcrumbs => [
+                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link  => '/admin/manage/caterers', name => 'Manage Caterers' },
+                                                                { current  => 1, name => 'Add Caterer Record' },
+                                                            ],
+                                             },
+                                             { layout => 'admin' };
+    };
+
+
+=head2 'POST /admin/manage/caterers/create'
+
+Route for saving new caterer account information.
+
+=cut
+
+    post '/manage/caterers/create' => sub
+    {
+        my $form_input = body_parameters->as_hashref;
+        my $results = FormValidator::Simple->check(
+                                                    $form_input => [
+                                                                    company  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    email    => [ 'NOT_BLANK', 'EMAIL' ],
+                                                                    phone    => [ [ 'LENGTH', 0, 30 ] ],
+                                                                    street1  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    city     => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    state    => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    country  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    zip      => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                    poc_name => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                    username => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                   ]
+                                                  );
+
+        my $new_caterer = {
+                                company    => body_parameters->{'company'},
+                                email      => body_parameters->{'email'},
+                                phone      => body_parameters->{'phone'},
+                                street1    => body_parameters->{'street1'},
+                                street2    => body_parameters->{'street2'},
+                                city       => body_parameters->{'city'},
+                                state      => body_parameters->{'state'},
+                                country    => body_parameters->{'country'},
+                                zip        => body_parameters->{'zip'},
+                                poc_name   => body_parameters->{'poc_name'},
+                                username   => body_parameters->{'username'},
+                                confirmed  => ( body_parameters->{'confirmed'} // 0 ),
+                                created_on => DateTime->now(),
+                          };
+
+        if ( $results->has_error )
+        {
+            my $bad_fields = '';
+            foreach my $key ( @{ $results->error() } )
+            {
+                $bad_fields .= "<li>$key</li>\n";
+            }
+            my $error_message = "The following fields had errors:\n";
+            $error_message    .= "<ul>\n$bad_fields</ul>\n";
+
+            warning $error_message;
+
+            my @countries = Locale::Country::all_country_names();
+
+            template 'admin/manage/caterer_add',   {
+                                                        data => {
+                                                                    caterer   => $new_caterer,
+                                                                    countries => \@countries,
+                                                                },
+                                                        msgs => {
+                                                                    error_message => $error_message,
+                                                                },
+                                                        breadcrumbs => [
+                                                                    { disabled => 1, name => 'ADMIN' },
+                                                                    { link  => '/admin/manage/caterers', name => 'Manage Caterers' },
+                                                                    { current  => 1, name => 'Add Caterer Record' },
+                                                                ],
+                                                    },
+                                                    { layout => 'admin' };
+        }
+
+        my $added_caterer = $SCHEMA->resultset( 'Client' )->new(
+                                                                    {
+                                                                        company    => body_parameters->{'company'},
+                                                                        email      => body_parameters->{'email'},
+                                                                        phone      => body_parameters->{'phone'},
+                                                                        street1    => body_parameters->{'street1'},
+                                                                        street2    => body_parameters->{'street2'},
+                                                                        city       => body_parameters->{'city'},
+                                                                        state      => body_parameters->{'state'},
+                                                                        country    => body_parameters->{'country'},
+                                                                        zip        => body_parameters->{'zip'},
+                                                                        poc_name   => body_parameters->{'poc_name'},
+                                                                        username   => body_parameters->{'username'},
+                                                                        password   => passphrase( body_parameters->{'password'} )->generate->rfc2307(),
+                                                                        confirmed  => ( body_parameters->{'confirmed'} // 0 ),
+                                                                        created_on => DateTime->now(),
+                                                                    }
+                                                                );
+
+        $SCHEMA->txn_do( sub
+                            {
+                                $added_caterer->insert
+                            }
+        );
+
+        deferred success => "Successfully added <strong>" . body_parameters->{'company'} . "</strong>.";
+        redirect '/admin/manage/caterers/' . $added_caterer->id . '/view';
+    };
+
+
+=head2 'GET /admin/manage/caterers/<id>/delete'
+
+Route to delete a specific caterer/client account
+
+=cut
+
+    get '/manage/caterers/:id/delete' => sub
+    {
+        unless ( vars->{'is_admin'} )
+        {
+            redirect '/admin/manage/caterers/' . route_parameters->{'id'} . '/view';
+        }
+
+        my $caterer = Cater::Admin->get_caterer_by_id( client_id => route_parameters->{'id'} );
+        my $caterer_name = $caterer->company;
+
+        $SCHEMA->txn_do( sub
+                            {
+                                $caterer->delete
+                            }
+        );
+
+        deferred success => "Successfully deleted <strong>$caterer_name</strong>.";
+        redirect '/admin/manage/caterers';
     };
 
 
@@ -405,6 +766,327 @@ Route to the Caterer Management page.
 Route to the Marketer Management page.
 
 =cut
+
+
+    get '/manage/marketers' => sub
+    {
+        my $marketers = Cater::Admin->get_all_marketers();
+        template 'admin/manage/marketers', {
+                                            data => {
+                                                        marketers => $marketers,
+                                                    },
+                                            breadcrumbs => [
+                                                        { disabled => 1, name => 'ADMIN' },
+                                                        { current  => 1, name => 'Manage Marketers' },
+                                                    ],
+                                          },
+                                        { layout => 'admin' };
+    };
+
+
+=head2 'GET /admin/manage/marketers/<id>/view'
+
+Route viewing a Client's account information.
+
+=cut
+
+    get '/manage/marketers/:id/view' => sub
+    {
+        my $marketer = Cater::Admin->get_marketer_by_id( marketer_id => route_parameters->{'id'} );
+
+        template 'admin/manage/marketer_view',   {
+                                                    data => {
+                                                                marketer => $marketer,
+                                                            },
+                                                    breadcrumbs => [
+                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link  => '/admin/manage/marketers', name => 'Manage Marketers' },
+                                                                { current  => 1, name => 'View Marketer Record' },
+                                                            ],
+                                                },
+                                                { layout => 'admin' };
+    };
+
+
+=head2 'GET /admin/manage/marketers/<id>/edit'
+
+Route for editing marketer account information.
+
+=cut
+
+    get '/manage/marketers/:id/edit' => sub
+    {
+        my $marketer   = Cater::Admin->get_marketer_by_id( marketer_id => route_parameters->{'id'} );
+        my @countries = Locale::Country::all_country_names();
+
+        template 'admin/manage/marketer_edit',   {
+                                                    data => {
+                                                                marketer   => $marketer,
+                                                                countries => \@countries,
+                                                            },
+                                                    breadcrumbs => [
+                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link  => '/admin/manage/marketers', name => 'Manage Marketers' },
+                                                                { link  => '/admin/manage/marketers/' . route_parameters->{'id'} . '/view', name => 'View Marketer' },
+                                                                { current  => 1, name => 'Edit Marketer Record' },
+                                                            ],
+                                                },
+                                                { layout => 'admin' };
+    };
+
+
+=head2 'POST /admin/manage/marketers/<id>/save'
+
+Route for saving marketer account information.
+
+=cut
+
+    post '/manage/marketers/:id/save' => sub
+    {
+        my $marketer = Cater::Admin->get_marketer_by_id( marketer_id => route_parameters->{'id'} );
+
+        my $form_input = body_parameters->as_hashref;
+        my $results = FormValidator::Simple->check(
+                                                    $form_input => [
+                                                                    company  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    email    => [ 'NOT_BLANK', 'EMAIL' ],
+                                                                    phone    => [ [ 'LENGTH', 0, 30 ] ],
+                                                                    street1  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    city     => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    state    => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    country  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    zip      => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                    poc_name => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                    username => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                   ]
+                                                  );
+
+        if ( $results->has_error )
+        {
+            my $bad_fields = '';
+            foreach my $key ( @{ $results->error() } )
+            {
+                $bad_fields .= "<li>$key</li>\n";
+            }
+            my $error_message = "The following fields had errors:\n";
+            $error_message    .= "<ul>\n$bad_fields</ul>\n";
+
+            warning $error_message;
+
+            my @countries = Locale::Country::all_country_names();
+            my $new_marketer = {
+                                    id         => route_parameters->{'id'},
+                                    company    => body_parameters->{'company'},
+                                    email      => body_parameters->{'email'},
+                                    phone      => body_parameters->{'phone'},
+                                    street1    => body_parameters->{'street1'},
+                                    street2    => body_parameters->{'street2'},
+                                    city       => body_parameters->{'city'},
+                                    state      => body_parameters->{'state'},
+                                    country    => body_parameters->{'country'},
+                                    zip        => body_parameters->{'zip'},
+                                    poc_name   => body_parameters->{'poc_name'},
+                                    username   => body_parameters->{'username'},
+                                    confirmed  => ( body_parameters->{'confirmed'} // 0 ),
+                                    created_on => body_parameters->{'created_on'},
+                                    updated_on => body_parameters->{'updated_on'},
+                              };
+
+            template 'admin/manage/marketer_edit',   {
+                                                        data => {
+                                                                    marketer   => $new_marketer,
+                                                                    countries => \@countries,
+                                                                },
+                                                        msgs => {
+                                                                    error_message => $error_message,
+                                                                },
+                                                        breadcrumbs => [
+                                                                    { disabled => 1, name => 'ADMIN' },
+                                                                    { link  => '/admin/manage/marketers', name => 'Manage Marketers' },
+                                                                    { link  => '/admin/manage/marketers/' . route_parameters->{'id'} . '/view', name => 'View Marketer' },
+                                                                    { current  => 1, name => 'Edit Marketer Record' },
+                                                                ],
+                                                    },
+                                                    { layout => 'admin' };
+        }
+
+        $SCHEMA->txn_do( sub
+                            {
+                                $marketer->update(
+                                        {
+                                            company    => body_parameters->{'company'},
+                                            email      => body_parameters->{'email'},
+                                            phone      => body_parameters->{'phone'},
+                                            street1    => body_parameters->{'street1'},
+                                            street2    => body_parameters->{'street2'},
+                                            city       => body_parameters->{'city'},
+                                            state      => body_parameters->{'state'},
+                                            country    => body_parameters->{'country'},
+                                            zip        => body_parameters->{'zip'},
+                                            poc_name   => body_parameters->{'poc_name'},
+                                            username   => body_parameters->{'username'},
+                                            confirmed  => ( body_parameters->{'confirmed'} // 0 ),
+                                            updated_on => DateTime->now(),
+                                        }
+                                )
+                            }
+        );
+
+        deferred success => "Successfully updated <strong>" . body_parameters->{'company'} . "</strong>.";
+        redirect '/admin/manage/marketers/' . route_parameters->{'id'} . '/view';
+    };
+
+
+=head2 'GET /admin/manage/marketers/add'
+
+Route to adding a new Caterer/Client account.
+
+=cut
+
+    get '/manage/marketers/add' => sub
+    {
+        my @countries = Locale::Country::all_country_names();
+
+        template 'admin/manage/marketer_add', {
+                                                    data => {
+                                                                countries => \@countries,
+                                                            },
+                                                    breadcrumbs => [
+                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link  => '/admin/manage/marketers', name => 'Manage Marketers' },
+                                                                { current  => 1, name => 'Add Marketer Record' },
+                                                            ],
+                                             },
+                                             { layout => 'admin' };
+    };
+
+
+=head2 'POST /admin/manage/marketers/create'
+
+Route for saving new marketer account information.
+
+=cut
+
+    post '/manage/marketers/create' => sub
+    {
+        my $form_input = body_parameters->as_hashref;
+        my $results = FormValidator::Simple->check(
+                                                    $form_input => [
+                                                                    company  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    email    => [ 'NOT_BLANK', 'EMAIL' ],
+                                                                    phone    => [ [ 'LENGTH', 0, 30 ] ],
+                                                                    street1  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    city     => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    state    => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    country  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                    zip      => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                    poc_name => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                    username => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                   ]
+                                                  );
+
+        my $new_marketer = {
+                                company    => body_parameters->{'company'},
+                                email      => body_parameters->{'email'},
+                                phone      => body_parameters->{'phone'},
+                                street1    => body_parameters->{'street1'},
+                                street2    => body_parameters->{'street2'},
+                                city       => body_parameters->{'city'},
+                                state      => body_parameters->{'state'},
+                                country    => body_parameters->{'country'},
+                                zip        => body_parameters->{'zip'},
+                                poc_name   => body_parameters->{'poc_name'},
+                                username   => body_parameters->{'username'},
+                                confirmed  => ( body_parameters->{'confirmed'} // 0 ),
+                                created_on => DateTime->now(),
+                          };
+
+        if ( $results->has_error )
+        {
+            my $bad_fields = '';
+            foreach my $key ( @{ $results->error() } )
+            {
+                $bad_fields .= "<li>$key</li>\n";
+            }
+            my $error_message = "The following fields had errors:\n";
+            $error_message    .= "<ul>\n$bad_fields</ul>\n";
+
+            warning $error_message;
+
+            my @countries = Locale::Country::all_country_names();
+
+            template 'admin/manage/marketer_add',   {
+                                                        data => {
+                                                                    marketer   => $new_marketer,
+                                                                    countries => \@countries,
+                                                                },
+                                                        msgs => {
+                                                                    error_message => $error_message,
+                                                                },
+                                                        breadcrumbs => [
+                                                                    { disabled => 1, name => 'ADMIN' },
+                                                                    { link  => '/admin/manage/marketers', name => 'Manage Marketers' },
+                                                                    { current  => 1, name => 'Add Marketer Record' },
+                                                                ],
+                                                    },
+                                                    { layout => 'admin' };
+        }
+
+        my $added_marketer = $SCHEMA->resultset( 'Marketer' )->new(
+                                                                    {
+                                                                        company    => body_parameters->{'company'},
+                                                                        email      => body_parameters->{'email'},
+                                                                        phone      => body_parameters->{'phone'},
+                                                                        street1    => body_parameters->{'street1'},
+                                                                        street2    => body_parameters->{'street2'},
+                                                                        city       => body_parameters->{'city'},
+                                                                        state      => body_parameters->{'state'},
+                                                                        country    => body_parameters->{'country'},
+                                                                        zip        => body_parameters->{'zip'},
+                                                                        poc_name   => body_parameters->{'poc_name'},
+                                                                        username   => body_parameters->{'username'},
+                                                                        password   => passphrase( body_parameters->{'password'} )->generate->rfc2307(),
+                                                                        confirmed  => ( body_parameters->{'confirmed'} // 0 ),
+                                                                        created_on => DateTime->now(),
+                                                                    }
+                                                                );
+
+        $SCHEMA->txn_do( sub
+                            {
+                                $added_marketer->insert
+                            }
+        );
+
+        deferred success => "Successfully added <strong>" . body_parameters->{'company'} . "</strong>.";
+        redirect '/admin/manage/marketers/' . $added_marketer->id . '/view';
+    };
+
+
+=head2 'GET /admin/manage/marketers/<id>/delete'
+
+Route to delete a specific marketer/client account
+
+=cut
+
+    get '/manage/marketers/:id/delete' => sub
+    {
+        unless ( vars->{'is_admin'} )
+        {
+            redirect '/admin/manage/marketers/' . route_parameters->{'id'} . '/view';
+        }
+
+        my $marketer = Cater::Admin->get_marketer_by_id( marketer_id => route_parameters->{'id'} );
+        my $marketer_name = $marketer->company;
+
+        $SCHEMA->txn_do( sub
+                            {
+                                $marketer->delete
+                            }
+        );
+
+        deferred success => "Successfully deleted <strong>$marketer_name</strong>.";
+        redirect '/admin/manage/marketers';
+    };
 
 
 =head2 'GET /admin/manage/users'

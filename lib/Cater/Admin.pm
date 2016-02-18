@@ -17,7 +17,7 @@ use version; our $VERSION = qv( "v0.1.0" );
 use Cater::DBSchema;
 
 const my $SCHEMA => Cater::DBSchema->get_schema_connection();
-$SCHEMA->storage->debug(1);   # UNCOMMENT IN ORDER TO DUMP SQL DEBUG MESSAGES TO LOGS
+#$SCHEMA->storage->debug(1);   # UNCOMMENT IN ORDER TO DUMP SQL DEBUG MESSAGES TO LOGS
 
 =head1 NAME
 
@@ -177,6 +177,94 @@ sub get_all_caterers
     my @caterers = $SCHEMA->resultset( 'Client' )->search( undef, { order_by => { -asc => [ qw/ company poc_name / ] } } );
 
     return \@caterers;
+}
+
+
+=head2 get_caterer_by_id()
+
+Returns a found caterer account.
+
+=over 4
+
+=item Input: integer containing the Client ID.
+
+=item Output: The Client account object. Returns C<undef> if no Client account found, or an invalid or undefined ID is provided.
+
+=back
+
+    my $client = Cater::Admin->get_caterer_by_id( client_id => $client_id );
+
+=cut
+
+sub get_caterer_by_id
+{
+    my ( $self, %params ) = @_;
+
+    my $client_id = $params{'client_id'} // undef;
+
+    return undef if ( not defined $client_id );
+    return undef if ( $client_id =~ m{\D} );
+
+    my $client = $SCHEMA->resultset( 'Client' )->find( $client_id );
+
+    return $client;
+}
+
+
+=head2 get_all_marketers()
+
+Returns all found marketers from the database.
+
+=over 4
+
+=item Input: None (at this time)
+
+=item Output: An arrayref containing all records found.
+
+=back
+
+    my $marketers = Cater::Admin->get_all_marketers();
+
+=cut
+
+sub get_all_marketers
+{
+    my ( $self, %params ) = @_;
+
+    my @marketers = $SCHEMA->resultset( 'Marketer' )->search( undef, { order_by => { -asc => [ qw/ company poc_name / ] } } );
+
+    return \@marketers;
+}
+
+
+=head2 get_marketer_by_id()
+
+Returns a found marketer account.
+
+=over 4
+
+=item Input: integer containing the Marketer ID.
+
+=item Output: The Marketer account object. Returns C<undef> if no Marketer account found, or an invalid or undefined ID is provided.
+
+=back
+
+    my $marketer = Cater::Admin->get_marketer_by_id( marketer_id => $marketer_id );
+
+=cut
+
+sub get_marketer_by_id
+{
+    my ( $self, %params ) = @_;
+
+    my $marketer_id = $params{'marketer_id'} // undef;
+
+    return undef if ( not defined $marketer_id );
+    return undef if ( $marketer_id =~ m{\D} );
+
+    my $marketer = $SCHEMA->resultset( 'Marketer' )->find( $marketer_id );
+
+    return $marketer;
 }
 
 
