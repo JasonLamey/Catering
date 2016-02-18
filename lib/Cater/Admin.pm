@@ -268,4 +268,61 @@ sub get_marketer_by_id
 }
 
 
+=head2 get_all_users()
+
+Returns all found users from the database.
+
+=over 4
+
+=item Input: None (at this time)
+
+=item Output: An arrayref containing all records found.
+
+=back
+
+    my $users = Cater::Admin->get_all_users();
+
+=cut
+
+sub get_all_users
+{
+    my ( $self, %params ) = @_;
+
+    my @users = $SCHEMA->resultset( 'User' )->search( undef, { order_by => { -asc => [ qw/ username full_name / ] } } );
+
+    return \@users;
+}
+
+
+=head2 get_user_by_id()
+
+Returns a found user account.
+
+=over 4
+
+=item Input: integer containing the User ID.
+
+=item Output: The User account object. Returns C<undef> if no User account found, or an invalid or undefined ID is provided.
+
+=back
+
+    my $user = Cater::Admin->get_user_by_id( user_id => $user_id );
+
+=cut
+
+sub get_user_by_id
+{
+    my ( $self, %params ) = @_;
+
+    my $user_id = $params{'user_id'} // undef;
+
+    return undef if ( not defined $user_id );
+    return undef if ( $user_id =~ m{\D} );
+
+    my $user = $SCHEMA->resultset( 'User' )->find( $user_id );
+
+    return $user;
+}
+
+
 1;

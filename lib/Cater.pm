@@ -767,7 +767,6 @@ Route to the Marketer Management page.
 
 =cut
 
-
     get '/manage/marketers' => sub
     {
         my $marketers = Cater::Admin->get_all_marketers();
@@ -1094,6 +1093,271 @@ Route to delete a specific marketer/client account
 Route to the User Management page.
 
 =cut
+
+    get '/manage/users' => sub
+    {
+        my $users = Cater::Admin->get_all_users();
+        template 'admin/manage/users', {
+                                            data => {
+                                                        users => $users,
+                                                    },
+                                            breadcrumbs => [
+                                                        { disabled => 1, name => 'ADMIN' },
+                                                        { current  => 1, name => 'Manage Users' },
+                                                    ],
+                                          },
+                                        { layout => 'admin' };
+    };
+
+
+=head2 'GET /admin/manage/users/<id>/view'
+
+Route viewing a Client's account information.
+
+=cut
+
+    get '/manage/users/:id/view' => sub
+    {
+        my $user = Cater::Admin->get_user_by_id( user_id => route_parameters->{'id'} );
+
+        template 'admin/manage/user_view',   {
+                                                    data => {
+                                                                user => $user,
+                                                            },
+                                                    breadcrumbs => [
+                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link  => '/admin/manage/users', name => 'Manage Users' },
+                                                                { current  => 1, name => 'View User Record' },
+                                                            ],
+                                                },
+                                                { layout => 'admin' };
+    };
+
+
+=head2 'GET /admin/manage/users/<id>/edit'
+
+Route for editing user account information.
+
+=cut
+
+    get '/manage/users/:id/edit' => sub
+    {
+        my $user   = Cater::Admin->get_user_by_id( user_id => route_parameters->{'id'} );
+
+        template 'admin/manage/user_edit',   {
+                                                    data => {
+                                                                user   => $user,
+                                                            },
+                                                    breadcrumbs => [
+                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link  => '/admin/manage/users', name => 'Manage Users' },
+                                                                { link  => '/admin/manage/users/' . route_parameters->{'id'} . '/view', name => 'View User' },
+                                                                { current  => 1, name => 'Edit User Record' },
+                                                            ],
+                                                },
+                                                { layout => 'admin' };
+    };
+
+
+=head2 'POST /admin/manage/users/<id>/save'
+
+Route for saving user account information.
+
+=cut
+
+    post '/manage/users/:id/save' => sub
+    {
+        my $user = Cater::Admin->get_user_by_id( user_id => route_parameters->{'id'} );
+
+        my $form_input = body_parameters->as_hashref;
+        my $results = FormValidator::Simple->check(
+                                                    $form_input => [
+                                                                    email     => [ 'NOT_BLANK', 'EMAIL' ],
+                                                                    full_name => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                    username  => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                   ]
+                                                  );
+
+        if ( $results->has_error )
+        {
+            my $bad_fields = '';
+            foreach my $key ( @{ $results->error() } )
+            {
+                $bad_fields .= "<li>$key</li>\n";
+            }
+            my $error_message = "The following fields had errors:\n";
+            $error_message    .= "<ul>\n$bad_fields</ul>\n";
+
+            warning $error_message;
+
+            my $new_user = {
+                                    id         => route_parameters->{'id'},
+                                    email      => body_parameters->{'email'},
+                                    full_name  => body_parameters->{'full_name'},
+                                    username   => body_parameters->{'username'},
+                                    confirmed  => ( body_parameters->{'confirmed'} // 0 ),
+                                    created_on => body_parameters->{'created_on'},
+                                    updated_on => body_parameters->{'updated_on'},
+                              };
+
+            template 'admin/manage/user_edit',   {
+                                                        data => {
+                                                                    user   => $new_user,
+                                                                },
+                                                        msgs => {
+                                                                    error_message => $error_message,
+                                                                },
+                                                        breadcrumbs => [
+                                                                    { disabled => 1, name => 'ADMIN' },
+                                                                    { link  => '/admin/manage/users', name => 'Manage Users' },
+                                                                    { link  => '/admin/manage/users/' . route_parameters->{'id'} . '/view', name => 'View User' },
+                                                                    { current  => 1, name => 'Edit User Record' },
+                                                                ],
+                                                    },
+                                                    { layout => 'admin' };
+        }
+
+        $SCHEMA->txn_do( sub
+                            {
+                                $user->update(
+                                        {
+                                            email      => body_parameters->{'email'},
+                                            full_name  => body_parameters->{'full_name'},
+                                            username   => body_parameters->{'username'},
+                                            confirmed  => ( body_parameters->{'confirmed'} // 0 ),
+                                            updated_on => DateTime->now(),
+                                        }
+                                )
+                            }
+        );
+
+        deferred success => "Successfully updated <strong>" . body_parameters->{'username'} . "</strong>.";
+        redirect '/admin/manage/users/' . route_parameters->{'id'} . '/view';
+    };
+
+
+=head2 'GET /admin/manage/users/add'
+
+Route to adding a new Caterer/Client account.
+
+=cut
+
+    get '/manage/users/add' => sub
+    {
+        template 'admin/manage/user_add', {
+                                                    data => {
+                                                            },
+                                                    breadcrumbs => [
+                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link  => '/admin/manage/users', name => 'Manage Users' },
+                                                                { current  => 1, name => 'Add User Record' },
+                                                            ],
+                                             },
+                                             { layout => 'admin' };
+    };
+
+
+=head2 'POST /admin/manage/users/create'
+
+Route for saving new user account information.
+
+=cut
+
+    post '/manage/users/create' => sub
+    {
+        my $form_input = body_parameters->as_hashref;
+        my $results = FormValidator::Simple->check(
+                                                    $form_input => [
+                                                                    email     => [ 'NOT_BLANK', 'EMAIL' ],
+                                                                    full_name => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                    username  => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                   ]
+                                                  );
+
+        my $new_user = {
+                                email      => body_parameters->{'email'},
+                                full_name  => body_parameters->{'full_name'},
+                                username   => body_parameters->{'username'},
+                                confirmed  => ( body_parameters->{'confirmed'} // 0 ),
+                                created_on => DateTime->now(),
+                          };
+
+        if ( $results->has_error )
+        {
+            my $bad_fields = '';
+            foreach my $key ( @{ $results->error() } )
+            {
+                $bad_fields .= "<li>$key</li>\n";
+            }
+            my $error_message = "The following fields had errors:\n";
+            $error_message    .= "<ul>\n$bad_fields</ul>\n";
+
+            warning $error_message;
+
+            template 'admin/manage/user_add',   {
+                                                        data => {
+                                                                    user   => $new_user,
+                                                                },
+                                                        msgs => {
+                                                                    error_message => $error_message,
+                                                                },
+                                                        breadcrumbs => [
+                                                                    { disabled => 1, name => 'ADMIN' },
+                                                                    { link  => '/admin/manage/users', name => 'Manage Users' },
+                                                                    { current  => 1, name => 'Add User Record' },
+                                                                ],
+                                                    },
+                                                    { layout => 'admin' };
+        }
+
+        my $added_user = $SCHEMA->resultset( 'User' )->new(
+                                                                    {
+                                                                        email      => body_parameters->{'email'},
+                                                                        full_name  => body_parameters->{'full_name'},
+                                                                        username   => body_parameters->{'username'},
+                                                                        password   => passphrase( body_parameters->{'password'} )->generate->rfc2307(),
+                                                                        confirmed  => ( body_parameters->{'confirmed'} // 0 ),
+                                                                        created_on => DateTime->now(),
+                                                                    }
+                                                                );
+
+        $SCHEMA->txn_do( sub
+                            {
+                                $added_user->insert
+                            }
+        );
+
+        deferred success => "Successfully added <strong>" . body_parameters->{'username'} . "</strong>.";
+        redirect '/admin/manage/users/' . $added_user->id . '/view';
+    };
+
+
+=head2 'GET /admin/manage/users/<id>/delete'
+
+Route to delete a specific user/client account
+
+=cut
+
+    get '/manage/users/:id/delete' => sub
+    {
+        unless ( vars->{'is_admin'} )
+        {
+            redirect '/admin/manage/users/' . route_parameters->{'id'} . '/view';
+        }
+
+        my $user = Cater::Admin->get_user_by_id( user_id => route_parameters->{'id'} );
+        my $user_name = $user->username;
+
+        $SCHEMA->txn_do( sub
+                            {
+                                $user->delete
+                            }
+        );
+
+        deferred success => "Successfully deleted <strong>$user_name</strong>.";
+        redirect '/admin/manage/users';
+    };
+
 
 
 =head2 'GET /admin/manage/admins'

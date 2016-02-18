@@ -48,16 +48,16 @@
                             A Username is required.
                         </span>
                     </label>
-                </div>
 
-                <div class="medium-6 columns">
                     <label for="email">E-mail Address <span style="color: red;"><i class="fi-asterisk"></i></span>
                         <input type="email" name="email" value="[% data.user.email %]" placeholder="bob@company.com" required pattern="email">
                         <span class="form-error">
                             A valid E-mail Address is required.
                         </span>
                     </label>
+                </div>
 
+                <div class="medium-6 columns">
                     <label for="confirmed">Account Confirmed
                         [% IF data.user.confirmed == 1 %][% confirmed_set = ' checked' %][% ELSE %][% confirmed_set = '' %][% END %]
                         <div class="switch">
