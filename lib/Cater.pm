@@ -350,7 +350,7 @@ Root admin route
                                                         stats => $stats,
                                                    },
                                     breadcrumbs => [
-                                                        { disabled => 1, name => 'ADMIN' },
+                                                        { link => '/admin/', name => 'ADMIN' },
                                                         { current  => 1, name => 'Main' },
                                                    ],
                                 },
@@ -376,7 +376,7 @@ Provides the admin-specific login screen to the user.
                                         error_message  => ( param 'error_message' // '' ),
                                     },
                             breadcrumbs => [
-                                        { disabled => 1, name => 'ADMIN' },
+                                        { link => '/admin/', name => 'ADMIN' },
                                         { current  => 1, name => 'Login' },
                                     ],
                         },
@@ -448,7 +448,7 @@ Route to the Caterer Management page.
                                                         caterers => $caterers,
                                                     },
                                             breadcrumbs => [
-                                                        { disabled => 1, name => 'ADMIN' },
+                                                        { link => '/admin/', name => 'ADMIN' },
                                                         { current  => 1, name => 'Manage Caterers' },
                                                     ],
                                           },
@@ -471,7 +471,7 @@ Route viewing a Client's account information.
                                                                 caterer => $caterer,
                                                             },
                                                     breadcrumbs => [
-                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link => '/admin/', name => 'ADMIN' },
                                                                 { link  => '/admin/manage/caterers', name => 'Manage Caterers' },
                                                                 { current  => 1, name => 'View Caterer Record' },
                                                             ],
@@ -497,7 +497,7 @@ Route for editing caterer account information.
                                                                 countries => \@countries,
                                                             },
                                                     breadcrumbs => [
-                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link => '/admin/', name => 'ADMIN' },
                                                                 { link  => '/admin/manage/caterers', name => 'Manage Caterers' },
                                                                 { link  => '/admin/manage/caterers/' . route_parameters->{'id'} . '/view', name => 'View Caterer' },
                                                                 { current  => 1, name => 'Edit Caterer Record' },
@@ -573,7 +573,7 @@ Route for saving caterer account information.
                                                                     error_message => $error_message,
                                                                 },
                                                         breadcrumbs => [
-                                                                    { disabled => 1, name => 'ADMIN' },
+                                                                    { link => '/admin/', name => 'ADMIN' },
                                                                     { link  => '/admin/manage/caterers', name => 'Manage Caterers' },
                                                                     { link  => '/admin/manage/caterers/' . route_parameters->{'id'} . '/view', name => 'View Caterer' },
                                                                     { current  => 1, name => 'Edit Caterer Record' },
@@ -624,7 +624,7 @@ Route to adding a new Caterer/Client account.
                                                                 countries => \@countries,
                                                             },
                                                     breadcrumbs => [
-                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link => '/admin/', name => 'ADMIN' },
                                                                 { link  => '/admin/manage/caterers', name => 'Manage Caterers' },
                                                                 { current  => 1, name => 'Add Caterer Record' },
                                                             ],
@@ -696,7 +696,7 @@ Route for saving new caterer account information.
                                                                     error_message => $error_message,
                                                                 },
                                                         breadcrumbs => [
-                                                                    { disabled => 1, name => 'ADMIN' },
+                                                                    { link => '/admin/', name => 'ADMIN' },
                                                                     { link  => '/admin/manage/caterers', name => 'Manage Caterers' },
                                                                     { current  => 1, name => 'Add Caterer Record' },
                                                                 ],
@@ -775,7 +775,7 @@ Route to the Marketer Management page.
                                                         marketers => $marketers,
                                                     },
                                             breadcrumbs => [
-                                                        { disabled => 1, name => 'ADMIN' },
+                                                        { link => '/admin/', name => 'ADMIN' },
                                                         { current  => 1, name => 'Manage Marketers' },
                                                     ],
                                           },
@@ -798,7 +798,7 @@ Route viewing a Client's account information.
                                                                 marketer => $marketer,
                                                             },
                                                     breadcrumbs => [
-                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link => '/admin/', name => 'ADMIN' },
                                                                 { link  => '/admin/manage/marketers', name => 'Manage Marketers' },
                                                                 { current  => 1, name => 'View Marketer Record' },
                                                             ],
@@ -824,7 +824,7 @@ Route for editing marketer account information.
                                                                 countries => \@countries,
                                                             },
                                                     breadcrumbs => [
-                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link => '/admin/', name => 'ADMIN' },
                                                                 { link  => '/admin/manage/marketers', name => 'Manage Marketers' },
                                                                 { link  => '/admin/manage/marketers/' . route_parameters->{'id'} . '/view', name => 'View Marketer' },
                                                                 { current  => 1, name => 'Edit Marketer Record' },
@@ -900,7 +900,7 @@ Route for saving marketer account information.
                                                                     error_message => $error_message,
                                                                 },
                                                         breadcrumbs => [
-                                                                    { disabled => 1, name => 'ADMIN' },
+                                                                    { link => '/admin/', name => 'ADMIN' },
                                                                     { link  => '/admin/manage/marketers', name => 'Manage Marketers' },
                                                                     { link  => '/admin/manage/marketers/' . route_parameters->{'id'} . '/view', name => 'View Marketer' },
                                                                     { current  => 1, name => 'Edit Marketer Record' },
@@ -951,7 +951,7 @@ Route to adding a new Caterer/Client account.
                                                                 countries => \@countries,
                                                             },
                                                     breadcrumbs => [
-                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link => '/admin/', name => 'ADMIN' },
                                                                 { link  => '/admin/manage/marketers', name => 'Manage Marketers' },
                                                                 { current  => 1, name => 'Add Marketer Record' },
                                                             ],
@@ -1023,7 +1023,7 @@ Route for saving new marketer account information.
                                                                     error_message => $error_message,
                                                                 },
                                                         breadcrumbs => [
-                                                                    { disabled => 1, name => 'ADMIN' },
+                                                                    { link => '/admin/', name => 'ADMIN' },
                                                                     { link  => '/admin/manage/marketers', name => 'Manage Marketers' },
                                                                     { current  => 1, name => 'Add Marketer Record' },
                                                                 ],
@@ -1102,7 +1102,7 @@ Route to the User Management page.
                                                         users => $users,
                                                     },
                                             breadcrumbs => [
-                                                        { disabled => 1, name => 'ADMIN' },
+                                                        { link => '/admin/', name => 'ADMIN' },
                                                         { current  => 1, name => 'Manage Users' },
                                                     ],
                                           },
@@ -1125,7 +1125,7 @@ Route viewing a Client's account information.
                                                                 user => $user,
                                                             },
                                                     breadcrumbs => [
-                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link => '/admin/', name => 'ADMIN' },
                                                                 { link  => '/admin/manage/users', name => 'Manage Users' },
                                                                 { current  => 1, name => 'View User Record' },
                                                             ],
@@ -1149,7 +1149,7 @@ Route for editing user account information.
                                                                 user   => $user,
                                                             },
                                                     breadcrumbs => [
-                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link => '/admin/', name => 'ADMIN' },
                                                                 { link  => '/admin/manage/users', name => 'Manage Users' },
                                                                 { link  => '/admin/manage/users/' . route_parameters->{'id'} . '/view', name => 'View User' },
                                                                 { current  => 1, name => 'Edit User Record' },
@@ -1208,7 +1208,7 @@ Route for saving user account information.
                                                                     error_message => $error_message,
                                                                 },
                                                         breadcrumbs => [
-                                                                    { disabled => 1, name => 'ADMIN' },
+                                                                    { link => '/admin/', name => 'ADMIN' },
                                                                     { link  => '/admin/manage/users', name => 'Manage Users' },
                                                                     { link  => '/admin/manage/users/' . route_parameters->{'id'} . '/view', name => 'View User' },
                                                                     { current  => 1, name => 'Edit User Record' },
@@ -1248,7 +1248,7 @@ Route to adding a new Caterer/Client account.
                                                     data => {
                                                             },
                                                     breadcrumbs => [
-                                                                { disabled => 1, name => 'ADMIN' },
+                                                                { link => '/admin/', name => 'ADMIN' },
                                                                 { link  => '/admin/manage/users', name => 'Manage Users' },
                                                                 { current  => 1, name => 'Add User Record' },
                                                             ],
@@ -1302,7 +1302,7 @@ Route for saving new user account information.
                                                                     error_message => $error_message,
                                                                 },
                                                         breadcrumbs => [
-                                                                    { disabled => 1, name => 'ADMIN' },
+                                                                    { link => '/admin/', name => 'ADMIN' },
                                                                     { link  => '/admin/manage/users', name => 'Manage Users' },
                                                                     { current  => 1, name => 'Add User Record' },
                                                                 ],
@@ -1365,6 +1365,277 @@ Route to delete a specific user/client account
 Route to the Admin Management page.
 
 =cut
+
+    get '/manage/admins' => sub
+    {
+        my $admins = Cater::Admin->get_all_admins();
+        template 'admin/manage/admins', {
+                                            data => {
+                                                        admins => $admins,
+                                                    },
+                                            breadcrumbs => [
+                                                        { link => '/admin/', name => 'ADMIN' },
+                                                        { current  => 1, name => 'Manage Admins' },
+                                                    ],
+                                          },
+                                        { layout => 'admin' };
+    };
+
+
+=head2 'GET /admin/manage/admins/<id>/view'
+
+Route viewing a Client's account information.
+
+=cut
+
+    get '/manage/admins/:id/view' => sub
+    {
+        my $admin = Cater::Admin->get_admin_by_id( admin_id => route_parameters->{'id'} );
+
+        template 'admin/manage/admin_view',   {
+                                                    data => {
+                                                                admin => $admin,
+                                                            },
+                                                    breadcrumbs => [
+                                                                { link => '/admin/', name => 'ADMIN' },
+                                                                { link  => '/admin/manage/admins', name => 'Manage Admins' },
+                                                                { current  => 1, name => 'View Admin Record' },
+                                                            ],
+                                                },
+                                                { layout => 'admin' };
+    };
+
+
+=head2 'GET /admin/manage/admins/<id>/edit'
+
+Route for editing admin account information.
+
+=cut
+
+    get '/manage/admins/:id/edit' => sub
+    {
+        my $admin   = Cater::Admin->get_admin_by_id( admin_id => route_parameters->{'id'} );
+
+        template 'admin/manage/admin_edit',   {
+                                                    data => {
+                                                                admin   => $admin,
+                                                            },
+                                                    breadcrumbs => [
+                                                                { link => '/admin/', name => 'ADMIN' },
+                                                                { link  => '/admin/manage/admins', name => 'Manage Admins' },
+                                                                { link  => '/admin/manage/admins/' . route_parameters->{'id'} . '/view', name => 'View Admin' },
+                                                                { current  => 1, name => 'Edit Admin Record' },
+                                                            ],
+                                                },
+                                                { layout => 'admin' };
+    };
+
+
+=head2 'POST /admin/manage/admins/<id>/save'
+
+Route for saving admin account information.
+
+=cut
+
+    post '/manage/admins/:id/save' => sub
+    {
+        my $admin = Cater::Admin->get_admin_by_id( admin_id => route_parameters->{'id'} );
+
+        my $form_input = body_parameters->as_hashref;
+        my $results = FormValidator::Simple->check(
+                                                    $form_input => [
+                                                                    email     => [ 'NOT_BLANK', 'EMAIL' ],
+                                                                    full_name => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                    username  => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                   ]
+                                                  );
+
+        if ( $results->has_error )
+        {
+            my $bad_fields = '';
+            foreach my $key ( @{ $results->error() } )
+            {
+                $bad_fields .= "<li>$key</li>\n";
+            }
+            my $error_message = "The following fields had errors:\n";
+            $error_message    .= "<ul>\n$bad_fields</ul>\n";
+
+            warning $error_message;
+
+            my $new_admin = {
+                                    id         => route_parameters->{'id'},
+                                    admin_type => body_parameters->{'admin_type'},
+                                    email      => body_parameters->{'email'},
+                                    phone      => body_parameters->{'phone'},
+                                    full_name  => body_parameters->{'full_name'},
+                                    username   => body_parameters->{'username'},
+                                    created_on => body_parameters->{'created_on'},
+                                    updated_on => body_parameters->{'updated_on'},
+                              };
+
+            template 'admin/manage/admin_edit',   {
+                                                        data => {
+                                                                    admin   => $new_admin,
+                                                                },
+                                                        msgs => {
+                                                                    error_message => $error_message,
+                                                                },
+                                                        breadcrumbs => [
+                                                                    { link => '/admin/', name => 'ADMIN' },
+                                                                    { link  => '/admin/manage/admins', name => 'Manage Admins' },
+                                                                    { link  => '/admin/manage/admins/' . route_parameters->{'id'} . '/view', name => 'View Admin' },
+                                                                    { current  => 1, name => 'Edit Admin Record' },
+                                                                ],
+                                                    },
+                                                    { layout => 'admin' };
+        }
+
+        $SCHEMA->txn_do( sub
+                            {
+                                $admin->update(
+                                        {
+                                            admin_type => body_parameters->{'admin_type'},
+                                            email      => body_parameters->{'email'},
+                                            phone      => body_parameters->{'phone'},
+                                            full_name  => body_parameters->{'full_name'},
+                                            username   => body_parameters->{'username'},
+                                            updated_on => DateTime->now(),
+                                        }
+                                )
+                            }
+        );
+
+        deferred success => "Successfully updated <strong>" . body_parameters->{'username'} . "</strong>.";
+        redirect '/admin/manage/admins/' . route_parameters->{'id'} . '/view';
+    };
+
+
+=head2 'GET /admin/manage/admins/add'
+
+Route to adding a new Caterer/Client account.
+
+=cut
+
+    get '/manage/admins/add' => sub
+    {
+        template 'admin/manage/admin_add', {
+                                                    data => {
+                                                            },
+                                                    breadcrumbs => [
+                                                                { link => '/admin/', name => 'ADMIN' },
+                                                                { link  => '/admin/manage/admins', name => 'Manage Admins' },
+                                                                { current  => 1, name => 'Add Admin Record' },
+                                                            ],
+                                             },
+                                             { layout => 'admin' };
+    };
+
+
+=head2 'POST /admin/manage/admins/create'
+
+Route for saving new admin account information.
+
+=cut
+
+    post '/manage/admins/create' => sub
+    {
+        my $form_input = body_parameters->as_hashref;
+        my $results = FormValidator::Simple->check(
+                                                    $form_input => [
+                                                                    email     => [ 'NOT_BLANK', 'EMAIL' ],
+                                                                    full_name => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                    username  => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                                   ]
+                                                  );
+
+        my $new_admin = {
+                                email      => body_parameters->{'email'},
+                                full_name  => body_parameters->{'full_name'},
+                                username   => body_parameters->{'username'},
+                                confirmed  => ( body_parameters->{'confirmed'} // 0 ),
+                                created_on => DateTime->now(),
+                          };
+
+        if ( $results->has_error )
+        {
+            my $bad_fields = '';
+            foreach my $key ( @{ $results->error() } )
+            {
+                $bad_fields .= "<li>$key</li>\n";
+            }
+            my $error_message = "The following fields had errors:\n";
+            $error_message    .= "<ul>\n$bad_fields</ul>\n";
+
+            warning $error_message;
+
+            template 'admin/manage/admin_add',   {
+                                                        data => {
+                                                                    admin   => $new_admin,
+                                                                },
+                                                        msgs => {
+                                                                    error_message => $error_message,
+                                                                },
+                                                        breadcrumbs => [
+                                                                    { link => '/admin/', name => 'ADMIN' },
+                                                                    { link  => '/admin/manage/admins', name => 'Manage Admins' },
+                                                                    { current  => 1, name => 'Add Admin Record' },
+                                                                ],
+                                                    },
+                                                    { layout => 'admin' };
+        }
+
+        my $added_admin = $SCHEMA->resultset( 'Admin' )->new(
+                                                                    {
+                                                                        email      => body_parameters->{'email'},
+                                                                        phone      => body_parameters->{'phone'},
+                                                                        full_name  => body_parameters->{'full_name'},
+                                                                        username   => body_parameters->{'username'},
+                                                                        password   => passphrase( body_parameters->{'password'} )->generate->rfc2307(),
+                                                                        created_on => DateTime->now(),
+                                                                    }
+                                                                );
+
+        $SCHEMA->txn_do( sub
+                            {
+                                $added_admin->insert
+                            }
+        );
+
+        deferred success => "Successfully added <strong>" . body_parameters->{'username'} . "</strong>.";
+        redirect '/admin/manage/admins/' . $added_admin->id . '/view';
+    };
+
+
+=head2 'GET /admin/manage/admins/<id>/delete'
+
+Route to delete a specific admin/client account
+
+=cut
+
+    get '/manage/admins/:id/delete' => sub
+    {
+        unless ( vars->{'is_admin'} )
+        {
+            redirect '/admin/manage/admins/' . route_parameters->{'id'} . '/view';
+        }
+
+        my $admin = Cater::Admin->get_admin_by_id( admin_id => route_parameters->{'id'} );
+        my $admin_name = $admin->username;
+
+        $SCHEMA->txn_do( sub
+                            {
+                                $admin->delete
+                            }
+        );
+
+        deferred success => "Successfully deleted <strong>$admin_name</strong>.";
+        redirect '/admin/manage/admins';
+    };
+
+
+
+
+
 
 };
 

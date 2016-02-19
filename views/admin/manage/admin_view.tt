@@ -1,0 +1,94 @@
+[% USE date %]
+[% account_id = data.admin.id %][% account_type = 'admins' %]
+<div class="row">
+    <div class="small-12 columns">
+        <h1>Admin Record</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="small-9 columns">
+        <a href="/admin/manage/admins" class="button">Manage Admins</a>
+        <a href="/admin/manage/admins/[% data.admin.id %]/edit" class="button">Edit This Admin</a>
+    </div>
+    <div class="small-3 text-right columns">
+        [% IF vars.is_admin %]
+        <a class="alert button" data-toggle="deleteConfirm">Delete This Admin</a>
+        [% END %]
+    </div>
+</div>
+
+[% PROCESS 'views/admin/manage/_account_deletion_confirm.tt' %]
+
+<div class="row">
+    <div class="small-12 columns callout">
+        <div class="row">
+    <div class="medium-6 columns">
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="idLabel">Admin ID</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="idLabel">[% data.admin.id %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="admin_typeLabel">Admin Type</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="admin_typeLabel">[% ( data.admin.admin_type || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="emailLabel">Email</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="emailLabel">[% ( data.admin.email || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="phoneLabel">Phone</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="phoneLabel">[% ( data.admin.phone || 'Not defined' ) %]</span>
+            </div>
+        </div>
+    </div>
+    <div class="medium-6 columns">
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="usernameLabel">Username</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="usernameLabel">[% data.admin.username %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="nameLabel">Full Name</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="nameLabel">[% ( data.admin.full_name || 'Not defined' ) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="createdLabel">Account Created</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="createdLabel">[% date.format(format="%d %B, %Y %I:%M%p", data.admin.created_on) %]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-3 columns text-right">
+                <span class="secondary label" id="updatedLabel">Last Updated</span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <span aria-describedby="updatedLabel">[% IF date.admin.updated_on %][% date.format(format="%d %B, %Y %I:%M%p", data.admin.updated_on) %][% ELSE %]Never[% END %]</span>
+            </div>
+        </div>
+    </div>
+</div>

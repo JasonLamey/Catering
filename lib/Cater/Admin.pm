@@ -325,4 +325,61 @@ sub get_user_by_id
 }
 
 
+=head2 get_all_admins()
+
+Returns all found admins from the database.
+
+=over 4
+
+=item Input: None (at this time)
+
+=item Output: An arrayref containing all records found.
+
+=back
+
+    my $admins = Cater::Admin->get_all_admins();
+
+=cut
+
+sub get_all_admins
+{
+    my ( $self, %params ) = @_;
+
+    my @admins = $SCHEMA->resultset( 'Admin' )->search( undef, { order_by => { -asc => [ qw/ admin_type username full_name / ] } } );
+
+    return \@admins;
+}
+
+
+=head2 get_admin_by_id()
+
+Returns a found admin account.
+
+=over 4
+
+=item Input: integer containing the Admin ID.
+
+=item Output: The Admin account object. Returns C<undef> if no Admin account found, or an invalid or undefined ID is provided.
+
+=back
+
+    my $admin = Cater::Admin->get_admin_by_id( admin_id => $admin_id );
+
+=cut
+
+sub get_admin_by_id
+{
+    my ( $self, %params ) = @_;
+
+    my $admin_id = $params{'admin_id'} // undef;
+
+    return undef if ( not defined $admin_id );
+    return undef if ( $admin_id =~ m{\D} );
+
+    my $admin = $SCHEMA->resultset( 'Admin' )->find( $admin_id );
+
+    return $admin;
+}
+
+
 1;

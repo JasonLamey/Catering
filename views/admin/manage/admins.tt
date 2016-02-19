@@ -1,0 +1,43 @@
+[% USE date %]
+<div class="row">
+    <div class="small-12 columns">
+        <h2>Admin Management <small>([% ( data.admins.size || 0 ) %] on record)</h2>
+        <a href="/admin/manage/admins/add" class="button">Add New Admin</a>
+        <div class="row">
+            <div class="small-12 columns callout">
+                [% IF data.admins.size > 0 %]
+                <table class="hover" width="100%">
+                    <thead>
+                        <tr>
+                            <th width="50">ID</th>
+                            <th width="100">Admin Type</th>
+                            <th>Username</th>
+                            <th>Full Name</th>
+                            <th width="200">Created On</th>
+                            <th width="200">Utility</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    [% FOREACH admin IN data.admins %]
+                        <tr>
+                            <td>[% admin.id %]</td>
+                            <td>[% ( admin.admin_type || 'N/A' ) %]</td>
+                            <td>[% admin.username %]</td>
+                            <td>[% ( admin.full_name || 'N/A' ) %]</td>
+                            <td>[% date.format(format="%d %b, %Y %I:%M%p", admin.created_on ) %]</td>
+                            <td>
+                                <a href="/admin/manage/admins/[% admin.id %]/view">Details</a>
+                                |
+                                <a href="/admin/manage/admins/[% admin.id %]/edit">Edit</a>
+                            </td>
+                        </tr>
+                    [% END %]
+                    </tbody>
+                </table>
+                [% ELSE %]
+                <div class="error callout">No admins found.</div>
+                [% END %]
+            </div>
+        </div>
+    </div>
+</div>

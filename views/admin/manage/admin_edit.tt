@@ -1,0 +1,90 @@
+[% USE date %]
+[% account_id = data.admin.id %][% account_type = 'admins' %]
+<div class="row">
+    <div class="small-12 columns">
+        <h1>Edit Admin Record</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="small-9 columns">
+        <a href="/admin/manage/admins" class="button">Manage Admins</a>
+    </div>
+    <div class="small-3 text-right columns">
+        [% IF vars.is_admin %]
+        <a class="alert button" data-toggle="deleteConfirm">Delete This Admin</a>
+        [% END %]
+    </div>
+</div>
+
+[% PROCESS 'views/admin/manage/_account_deletion_confirm.tt' %]
+
+<form action="/admin/manage/admins/[% data.admin.id %]/save" method="post" data-abide novalidate>
+    <div class="row">
+        <div class="small-12 columns">
+            <div data-abide-error class="alert callout" style="display: none;">
+                <p><i class="fi-alert"></i> There are some errors in your form. Please fix them and re-submit.</p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-12 columns callout">
+            <div class="row">
+                <div class="medium-6 columns">
+                    <label for="id">Admin ID
+                        <input type="text" name="id" value="[% data.admin.id %]" data-abide-ignore disabled>
+                    </label>
+
+                    [% SET data.admin.admin_type = 'Op' IF NOT data.admin.admin_type.defined %]
+                    <legend>Admin Type <span style="color: red;"><i class="fi-asterisk"></i></span></legend>
+                    <label for="admin_typeOp" style="display: inline; margin-right: 2rem;">
+                        <input type="radio" name="admin_type" value="Op" id="admin_typeOp"[% IF data.admin.admin_type == 'Op' %] checked[% END %] data-abide-ignore>
+                    Op
+                    </label>
+                    <label for="admin_typeAdmin" style="display: inline; margin-right: 1rem;">
+                        <input type="radio" name="admin_type" value="Admin" id="admin_typeAdmin"[% IF data.admin.admin_type == 'Admin' %] checked[% END %] data-abide-ignore>
+                        Admin
+                    </label>
+                    <span style="color: #FF0000;" data-tooltip aria-haspopup="true" class="has-tip" data-disable-hover='false' tabindex=1 title="What's The Difference? Ops can do most thi    ngs, except for critical things like deleting accounts, or creating and managing Admins. Admins have full access to all functions and abilities."><i class="fi-alert"></i></span>
+
+                    <label for="email">E-mail Address <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="email" name="email" value="[% data.admin.email %]" placeholder="bob@company.com" required pattern="email">
+                        <span class="form-error">
+                            A valid E-mail Address is required.
+                        </span>
+                    </label>
+
+                    <label for="phone">Primary Phone Number
+                        <input type="tel" name="phone" value="[% data.admin.phone %]" placeholder="123 456-7890" data-abide-ignore>
+                    </label>
+                </div>
+
+                <div class="medium-6 columns">
+                    <label for="username">Username <span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="username" value="[% data.admin.username %]" placeholder="bjones" required>
+                        <span class="form-error">
+                            A Username is required.
+                        </span>
+                    </label>
+
+                    <label for="full_name">Full Name<span style="color: red;"><i class="fi-asterisk"></i></span>
+                        <input type="text" name="full_name" value="[% data.admin.full_name %]" placeholder="Bob Jones" required>
+                        <span class="form-error">
+                            A Full Name is required.
+                        </span>
+                    </label>
+
+                    <label for="created_on">Created On
+                        <input type="datetime" name="created_on" value="[% data.admin.created_on %]" data-abide-ignore disabled>
+                    </label>
+
+                    <label for="updated_on">Updated On
+                        <input type="datetime" name="updated_on" value="[% data.admin.updated_on %]" placeholder="Never" data-abide-ignore disabled>
+                    </label>
+
+                    <input type="submit" value="Save Account" class="button">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
