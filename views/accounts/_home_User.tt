@@ -1,0 +1,93 @@
+<!-- Start User Account Type Home Page Content -->
+
+    <div class="row medium-unstack">
+        <div class="medium-2 columns"><a href="/account" class="button"><i class="fi-home"></i> Account Home</a></div>
+        <div class="medium-2 columns"><a href="/account/bookmarks" class="button"><i class="fi-bookmark"></i> Your Bookmarks</a></div>
+        <div class="medium-2 columns"><a href="/account/inquiries" class="button"><i class="fi-at-sign"></i> Your Inquiries</a></div>
+    </div>
+
+    <div class="row">
+        <div class="medium-6 columns">
+            <h2>Your Default Search Criteria</h2>
+            <form method="post" action="/account/search_criteria/save">
+                <label for="postal_code">Postal Code:
+                    <input type="text" name="postal_code" placeholder="12345" maxlength="20" size="40" value="[% ( data.search_criteria.postal_code or vars.guest_postal ) %]">
+                </label>
+                <label for="radius">Search Radius (miles):
+                    <div class="row">
+                        <div class="small-10 columns">
+                            <div class="slider" data-slider data-initial-start="[% ( data.search_criteria.search_radius or 25 ) %]" data-end="100" data-step="5">
+                                <span class="slider-handle" data-slider-handle role="slider" tabindex="1" aria-controls="radius_slider"></span>
+                                <span class="slider-fill" data-slider-fill></span>
+                            </div>
+                        </div>
+                        <div class="small-2 columns">
+                            <input type="number" id="radius_slider" name="search_radius" maxlength="3" step="5" min="0" max="100">
+                        </div>
+                    </div>
+                </label>
+                <label for="cuisine">Types of Cuisine:
+                    <select name="cuisine" multiple size="3" style="margin-bottom: 0;">
+                        <option value="Any" selected>Any</option>
+                        [% FOREACH cuisine IN data.cuisine_types %]
+                        <option value="[% cuisine.name %]">[% cuisine.name %]</option>
+                        [% END %]
+                    </select>
+                    <small>CTRL-click (PC) or CMD-click (Mac) to select/deselect multiple items</small>
+                </label>
+                <input type="submit" value="Save" class="button">
+            </form>
+
+            <hr>
+
+            <h4>Create A Saved Event Search Query</h4>
+            <form method="post" action="/account/saved_search/save">
+                <label for="search_name">Saved Search Name:
+                    <input type="text" name="search_name" placeholder="Becky's Wedding" maxlength="255" size="40">
+                </label>
+                <label for="postal_code">Postal Code:
+                    <input type="text" name="postal_code" placeholder="12345" maxlength="20" size="40">
+                </label>
+                <label for="radius">Search Radius (miles):
+                    <div class="row">
+                        <div class="small-10 columns">
+                            <div class="slider" data-slider data-initial-start="[% ( data.search_criteria.search_radius or 25 ) %]" data-end="100" data-step="5">
+                                <span class="slider-handle" data-slider-handle role="slider" tabindex="2" aria-controls="radius_slider2"></span>
+                                <span class="slider-fill" data-slider-fill></span>
+                            </div>
+                        </div>
+                        <div class="small-2 columns">
+                            <input type="number" id="radius_slider2" name="search_radius" maxlength="3" step="5" min="0" max="100">
+                        </div>
+                    </div>
+                </label>
+                <label for="cuisine">Types of Cuisine:
+                    <select name="cuisine" multiple size="3" style="margin-bottom: 0;">
+                        <option value="Any" selected>Any</option>
+                        [% FOREACH cuisine IN data.cuisine_types %]
+                        <option value="[% cuisine.name %]">[% cuisine.name %]</option>
+                        [% END %]
+                    </select>
+                    <small>CTRL-click (PC) or CMD-click (Mac) to select/deselect multiple items</small>
+                </label>
+                <input type="submit" value="Save" class="button">
+            </form>
+        </div>
+        <div class="medium-6 columns">
+            <h2>Last Viewed Caterers</h2>
+            [% IF data.view_history.defined and data.view_history.size > 0 %]
+            [% ELSE %]
+                <p>No view history defined.</p>
+            [% END %]
+
+            <hr>
+
+            <h2>Saved Event Searches</h2>
+            [% IF data.saved_searches.defined and data.saved_searches.size > 0 %]
+            [% ELSE %]
+                <p>No saved searches defined.</p>
+            [% END %]
+        </div>
+    </div>
+
+<!-- End User Account Type Home Page Content -->

@@ -6,7 +6,7 @@
 
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Catering Services Admin</title>
+        <title>That's Catering! Admin</title>
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.1.0/foundation.min.css">
         <link rel="stylesheet" href="/css/app.css">
@@ -52,7 +52,7 @@
             <div class="top-bar-left">
                 <ul class="dropdown menu" data-dropdown-menu>
                     <li class="menu-text">
-                        <a href="/"><img src="http://placehold.it/250x50&text=Catering Logo"></a></li>
+                        <a href="/"><img src="http://placehold.it/250x50&text=That's Catering!"></a></li>
                     <li class="has-submenu">
                         <a href="#">Manage</a>
                         <ul class="submenu menu vertical" data-submenu>
@@ -81,48 +81,54 @@
             </div>
         </div>
         [% IF breadcrumbs %]
-        <nav aria-label="You are here:" role="navigation">
-            <ul class="breadcrumbs">
-                <li><a href="/">Home</a></li>
-                [% FOREACH crumb IN breadcrumbs %]
-                [% IF crumb.disabled %]
-                <li class="disabled">[% crumb.name %]</li>
-                [% ELSIF crumb.current %]
-                <li>
-                    <span class="show-for-sr">Current: </span> [% crumb.name %]
-                </li>
-                [% ELSE %]
-                <li><a href="[% crumb.link %]">[% crumb.name %]</a></li>
-                [% END %]
-                [% END %]
-            </ul>
-        </nav>
+        <div class="row">
+            <div class="small-12 columns">
+                <nav aria-label="You are here:" role="navigation">
+                    <ul class="breadcrumbs">
+                        <li><a href="/">Home</a></li>
+                        [% FOREACH crumb IN breadcrumbs %]
+                        [% IF crumb.disabled %]
+                        <li class="disabled">[% crumb.name %]</li>
+                        [% ELSIF crumb.current %]
+                        <li>
+                            <span class="show-for-sr">Current: </span> [% crumb.name %]
+                        </li>
+                        [% ELSE %]
+                        <li><a href="[% crumb.link %]">[% crumb.name %]</a></li>
+                        [% END %]
+                        [% END %]
+                    </ul>
+                </nav>
+            </div>
+        </div>
         [% END %]
 
 
         [% content %]
 
 
-        <footer class="row">
-            <div class="small-12 columns">
-                <hr/>
-                <div class="row">
-                    <div class="small-12 medium-4 columns">
-                        <p>&copy; 2016 MRM</p>
-                    </div>
-                    <div class="small-12 medium-8 columns">
-                        <div class="row">
-                            <div class="small-3 columns">
-                                <a href="/tos.html">Terms of Service</a>
-                            </div>
-                            <div class="small-3 columns">
-                                <a href="/privacy.html">Privacy Policy</a>
-                            </div>
-                            <div class="small-3 columns">
-                                <a href="/contact_us.html">Contact Us</a>
-                            </div>
-                            <div class="small-3 columns">
-                                <a href="/about_us.html">About Us</a>
+        <footer style="visibility: hidden;">
+            <div class="row">
+                <div class="small-12 columns">
+                    <hr/>
+                    <div class="row">
+                        <div class="small-12 medium-4 columns">
+                            <p>&copy; 2016 <strong>That's Catering!</strong> &middot; All Rights Reserved</p>
+                        </div>
+                        <div class="small-12 medium-8 columns">
+                            <div class="row">
+                                <div class="small-3 columns text-center">
+                                    <a href="/tos.html">Terms of Service</a>
+                                </div>
+                                <div class="small-3 columns text-center">
+                                    <a href="/privacy.html">Privacy Policy</a>
+                                </div>
+                                <div class="small-3 columns text-center">
+                                    <a href="/contact_us.html">Contact Us</a>
+                                </div>
+                                <div class="small-3 columns text-center">
+                                    <a href="/about_us.html">About Us</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -140,6 +146,7 @@
 
         <!-- post footer starts -->
 
+        <script src="/javascripts/vendor/stickyFooter.js"></script>
         <script>
             // Your code goes here
         </script>

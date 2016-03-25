@@ -1,0 +1,5 @@
+<div class="row">
+    <div class="small-12 columns">
+        [% PROCESS "views/accounts/_home_${session.user_type}.tt" %]
+    </div>
+</div>

@@ -23,6 +23,8 @@ template: "template_toolkit"
 
 session: YAML
 
+auto_page: 1
+
 engines:
   template:
     template_toolkit:

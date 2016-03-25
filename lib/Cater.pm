@@ -30,10 +30,13 @@ use version; our $VERSION = qv( 'v0.1.4' );
 use Cater::DBSchema;
 use Cater::Login;
 use Cater::Email;
+use Cater::Caterer;
 use Cater::Admin;
 
-const my $SCHEMA           => Cater::DBSchema->get_schema_connection();
-const my $COUNTRY_CODE_SET => 'LOCALE_CODE_ALPHA_2';
+const my $SCHEMA                    => Cater::DBSchema->get_schema_connection();
+const my $COUNTRY_CODE_SET          => 'LOCALE_CODE_ALPHA_2';
+const my $USER_SESSION_EXPIRE_TIME  => 172800; # 48 hours in seconds.
+const my $ADMIN_SESSION_EXPIRE_TIME => 600;    # 10 minutes in seconds.
 
 =head1 NAME
 
@@ -59,8 +62,8 @@ hook before => sub
 
     try
     {
-        my $record = $reader->city( ip => request->remote_address );
-        #my $record = $reader->city( ip => '173.71.202.84' );  # DEBUG: This is a static debugging IP address. DO NOT use in production.
+        #my $record = $reader->city( ip => request->remote_address );
+        my $record = $reader->city( ip => '173.71.202.84' );  # DEBUG: This is a static debugging IP address. DO NOT use in production.
 
         debug "Pulled GeoLocation data for >" . request->remote_address . "<";
         my $country_rec  = $record->country();
@@ -79,6 +82,17 @@ hook before => sub
     {
         warning "Could not find GeoLocation data for >" . request->remote_address . '<';
     };
+
+    if (
+        ! session( 'user' )
+        &&
+        request->dispatch_path =~ m{^/account}
+        &&
+        request->dispatch_path !~ m{^/account_confirmation}
+    )
+    {
+        forward '/login', { requested_path => request->dispatch_path };
+    }
 };
 
 
@@ -106,8 +120,9 @@ get '/login' => sub
     template 'login',
                     {
                         data => {
-                                    username      => ( param 'username'      // '' ),
-                                    user_type     => ( param 'user_type'     // '' ),
+                                    username       => ( param 'username'       // '' ),
+                                    user_type      => ( param 'user_type'      // '' ),
+                                    requested_path => ( param 'requested_path' // '' ),
                                 },
                         msgs => {
                                     error_message => ( param 'error_message' // '' ),
@@ -137,18 +152,22 @@ post '/login' => sub
     {
         info 'Successful Login: >' . body_parameters->get('username') . '< from IP: >' .
              request->remote_address . ' - ' . request->remote_host . '<';
-        session user => body_parameters->get('username');
+        session user      => body_parameters->get('username');
+        session user_type => body_parameters->get('user_type');
+        session->expires( $USER_SESSION_EXPIRE_TIME ); # User session auto-expires after 48 hours of inactivity.
+
         deferred success => 'Successfully logged in.  Welcome back, <b>' . session( "user" ) . '</b>!';
-        redirect '/';
+        redirect ( body_parameters->get('requested_path') || '/account' );
     }
     else
     {
         warning $login_result->{'log_message'};
         forward '/login',
                         {
-                            username      => body_parameters->get('username'),
-                            user_type     => body_parameters->get('user_type'),
-                            error_message => $login_result->{'error_message'},
+                            username       => body_parameters->get('username'),
+                            user_type      => body_parameters->get('user_type'),
+                            requested_path => body_parameters->get('requested_path'),
+                            error_message  => $login_result->{'error_message'},
                         },
                         { method => 'GET' };
     }
@@ -190,6 +209,9 @@ get '/register' => sub
                         msgs => {
                                     error_message => ( param 'error_message' // '' ),
                                 },
+                        breadcrumbs => [
+                                        { current => 1, name => 'Registration' },
+                                       ],
                     };
 };
 
@@ -270,11 +292,14 @@ any [ 'get', 'post' ] => '/post_register' => sub
                                                     email     => ( param 'email'     // '' ),
                                                     user_type => ( param 'user_type' // '' ),
                                                 },
+                                        breadcrumbs => [
+                                                        { current => 1, name => 'Post Registration' },
+                                                       ],
                                      };
 };
 
 
-=head2 'GET or post /account_confirmation'
+=head2 'GET or POST /account_confirmation'
 
 User account confirmation page.
 
@@ -299,7 +324,46 @@ any [ 'get', 'post' ] => '/account_confirmation/:ccode?' => sub
                                                         success => $ccode_confirmed->{'success'},
                                                         user    => $ccode_confirmed->{'user'},
                                                     },
+                                            breadcrumbs => [
+                                                            { current => 1, name => 'Account Confirmation' },
+                                                           ],
                                         };
+};
+
+
+=head2 Account-based routes that require logins
+
+=head2 GET '/account'
+
+Account-based route to preset the user with their account home page.
+
+=cut
+
+get '/account' => sub
+{
+    my $user = Cater::Account->find_account(
+                                            {
+                                                username => session('user'),
+                                            },
+                                            user_type => session('user_type'),
+                                           );
+
+    my $cuisines = Cater::Caterer->get_all_cuisine_types();
+
+    if ( session('user_type') eq 'User' )
+    {
+    }
+
+    template 'accounts/home.tt', {
+                                    data => {
+                                                user          => $user,
+                                                cuisine_types => $cuisines,
+                                            },
+                                    breadcrumbs => [
+                                                    { link => '/account', name => 'Account' },
+                                                    { current => 1, name => 'Dashboard' },
+                                                   ],
+                                 };
 };
 
 
@@ -330,7 +394,7 @@ prefix '/admin' => sub
             my $admin_user = Cater::Admin->get_admin_user( username => session( 'admin_user' ) );
             var admin_user => $admin_user;
             var is_admin   => ( defined $admin_user && $admin_user->admin_type eq 'Admin' ) ? 1 : 0;
-            session->expires( 600 ); # Admin session auto-expires after 10 minutes of inactivity.
+            session->expires( $ADMIN_SESSION_EXPIRE_TIME ); # Admin session auto-expires after 10 minutes of inactivity.
         }
     };
 

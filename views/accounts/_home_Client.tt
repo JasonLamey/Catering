@@ -1,0 +1,68 @@
+        <div class="row align-stretch">
+            <div class="medium-3 columns callout">
+                <h3>Quick Info</h3>
+                <h4>Performance</h4>
+                <div class="row">
+                    <div class="medium-6 large-5 columns text-right">
+                        Views:
+                    </div>
+                    <div class="medium-6 large-7 columns">
+                        [% data.performance.ad_views || 0 %]
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="medium-6 large-5 columns text-right">
+                        Bookmarks:
+                    </div>
+                    <div class="medium-6 large-7 columns">
+                        [% data.performance.bookmarks || 0 %]
+                    </div>
+                </div>
+                <h4>Leads</h4>
+                <div class="row">
+                    <div class="medium-6 large-5 columns text-right">
+                        Today:
+                    </div>
+                    <div class="medium-6 large-7 columns">
+                        [% data.leads.total_today || 0 %]
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="medium-6 large-5 columns text-right">
+                        This Week:
+                    </div>
+                    <div class="medium-6 large-7 columns">
+                        [% data.leads.total_week || 0 %]
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="medium-6 large-5 columns text-right">
+                        This Month:
+                    </div>
+                    <div class="medium-6 large-7 columns">
+                        [% data.leads.total_month || 0 %]
+                    </div>
+                </div>
+            </div>
+            <div class="medium-6 columns">
+                <h3>Manage Your Profile</h3>
+                <a href="/account/manage/ad" class="button"><i class="fi-layout"></i> Your Ad Listing</a>
+                <a href="/account/manage/locations" class="button"><i class="fi-map"></i> Your Business Locations</a>
+                <a href="/account/manage/leads" class="button"><i class="fi-torsos-all"></i> Your Leads</a>
+                <h3>Manage Your Account</h3>
+                <a href="/account/edit" class="button"><i class="fi-results-demographics"></i> Your Account Info</a>
+                <a href="/account/subscription" class="button"><i class="fi-comment"></i> Your Subscription</a><br>
+                <a href="/account/delete" class="alert button"><i class="fi-x-circle"></i> Delete Your Account</a>
+            </div>
+
+            <!-- START Marketer Listing Window -->
+            <div class="medium-3 columns secondary callout">
+                <div class="row">
+                    <div class="small-12 columns">
+                        <h5>Marketer Listings</h5>
+                    </div>
+                </div>
+            </div>
+            <!-- END Marketer Listing Window -->
+
+        </div>
