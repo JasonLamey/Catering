@@ -348,15 +348,13 @@ get '/account' => sub
                                             user_type => session('user_type'),
                                            );
 
-    my $cuisines = Cater::Caterer->get_all_cuisine_types();
-
-    if ( session('user_type') eq 'User' )
-    {
-    }
+    my @countries = Locale::Country::all_country_names();
+    my $cuisines  = Cater::Caterer->get_all_cuisine_types();
 
     template 'accounts/home.tt', {
                                     data => {
-                                                user          => $user,
+                                                user          => $user->{'account'},
+                                                countries     => \@countries,
                                                 cuisine_types => $cuisines,
                                             },
                                     breadcrumbs => [
