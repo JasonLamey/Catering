@@ -1,0 +1,37 @@
+<ul class="pagination text-center" role="navigation" aria-label="Pagination">
+    [% IF data.pagination.page == 1 %]
+    <li class="pagination-previous disabled">First</li>
+    <li class="pagination-previous disabled">Previous</li>
+    [% ELSE %]
+    <li class="pagination-previous"><a href="[% data.pagination_link %]/1" aria-label="First page">First</a></li>
+    <li class="pagination-previous"><a href="[% data.pagination_link %]/[% data.pagination.page - 1 %]" aria-label="Previous page">Previous</a></li>
+    [% END %]
+
+    [% IF data.pagination.page > 5 %]
+    <li class="ellipsis"></li>
+    [% END %]
+
+    [% end_prev = data.pagination.page - 1 %]
+    [% FOREACH prevp IN [ data.pagination.pagination_start .. end_prev ] %]
+    <li><a href="[% data.pagination_link %]/[% prevp %]" aria-label="Page [% prevp %]">[% prevp %]</a></li>
+    [% END %]
+
+    <li class="current"><span class="show-for-sr">You're on page</span> [% data.pagination.page %]</li>
+
+    [% start_next = data.pagination.page + 1 %]
+    [% FOREACH nextp IN [ start_next .. data.pagination.pagination_end ] %]
+    <li><a href="[% data.pagination_link %]/[% nextp %]" aria-label="Page [% nextp %]">[% nextp %]</a></li>
+    [% END %]
+
+    [% IF data.pagination.last_page > data.pagination.pagination_end %]
+    <li class="ellipsis"></li>
+    [% END %]
+
+    [% IF data.pagination.page == data.pagination.last_page %]
+    <li class="pagination-next disabled">Next</li>
+    <li class="pagination-next disabled">Last</li>
+    [% ELSE %]
+    <li class="pagination-next"><a href="[% data.pagination_link %]/[% data.pagination.page + 1 %]" aria-label="Next page">Next</a></li>
+    <li class="pagination-next"><a href="[% data.pagination_link %]/[% data.pagination.last_page %]" aria-label="Last page">Last</a></li>
+    [% END %]
+</ul>

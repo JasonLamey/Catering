@@ -54,7 +54,7 @@
                     <li class="menu-text">
                         <a href="/"><img src="http://placehold.it/250x50&text=That's Catering!"></a></li>
                     <li class="has-submenu">
-                        <a href="#">Manage</a>
+                        <a href="#"><i class="fi-wrench"></i> Manage</a>
                         <ul class="submenu menu vertical" data-submenu>
                             <li><a href="/admin/manage/caterers">Caterers</a></li>
                             <li><a href="/admin/manage/marketers">Marketers</a></li>
@@ -64,10 +64,17 @@
                             [% END %]
                         </ul>
                     </li>
+                    <li class="has-submenu">
+                        <a href="#"><i class="fi-widget"></i> System Details</a>
+                        <ul class="submenu menu vertical" data-submenu>
+                            <li><a href="/admin/admin_logs"><i class="fi-results-demographics"></i> Admin Logs</a></li>
+                            <li><a href="/admin/system_stats"><i class="fi-graph-trend"></i> System Status</a></li>
+                        </ul>
+                    </li>
                     [% IF session.admin_user %]
-                    <li><a href="/admin/logout">Log Out ([% session.admin_user %])</a></li>
+                    <li><a href="/admin/logout"><i class="fi-power"></i> Log Out ([% session.admin_user %])</a></li>
                     [% ELSE %]
-                    <li><a href="/admin/login">Sign In</a></li>
+                    <li><a href="/admin/login"><i class="fi-key"></i> Sign In</a></li>
                     [% END %]
                 </ul>
             </div>

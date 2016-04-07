@@ -54,19 +54,19 @@
                     <li class="menu-text">
                         <a href="/"><img src="http://placehold.it/250x50&text=That's Catering!"></a></li>
                     <li class="has-submenu">
-                        <a href="#">Browse Caterers</a>
+                        <a href="#"><i class="fi-magnifying-glass"></i> Browse Caterers</a>
                         <ul class="submenu menu vertical" data-submenu>
-                            <li><a href="#">By Location</a></li>
-                            <li><a href="#">By Cuisine</a></li>
+                            <li><a href="#"><i class="fi-map"></i> By Location</a></li>
+                            <li><a href="#"><i class="fi-heart"></i> By Cuisine</a></li>
                         </ul>
                     </li>
-                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#"><i class="fi-megaphone"></i> FAQ</a></li>
                     [% IF session.user %]
                     <li><a href="#">&middot;</a></li>
                     <li><a href="/account"><i class="fi-home"></i> [% session.user %]</a></li>
                     <li><a href="/logout"><i class="fi-power"></i> Log Out</a></li>
                     [% ELSE %]
-                    <li><a href="/login">Sign In / Register</a></li>
+                    <li><a href="/login"><i class="fi-key"></i> Sign In / Register</a></li>
                     [% END %]
                 </ul>
             </div>

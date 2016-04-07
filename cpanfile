@@ -29,6 +29,7 @@ requires 'Try::Tiny',                   '0.24';
 requires 'DateTime',                    '1.21';
 requires 'Emailesque',                  '1.26';
 requires 'GeoIP2',                      '2.002000';
+requires 'Clone',                       '0.38';
 
 on 'develop' => sub
 {

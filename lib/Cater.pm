@@ -18,6 +18,7 @@ use Template;
 use FindBin;
 use Try::Tiny;
 use GeoIP2::Database::Reader;
+use Clone;
 
 my $template = Template->new(
                                 {
@@ -25,13 +26,15 @@ my $template = Template->new(
                                 }
                             );
 
-use version; our $VERSION = qv( 'v0.1.4' );
+use version; our $VERSION = qv( 'v0.1.7' );
 
 use Cater::DBSchema;
 use Cater::Login;
 use Cater::Email;
 use Cater::Caterer;
 use Cater::Admin;
+use Cater::Log;
+use Cater::Utils;
 
 const my $SCHEMA                    => Cater::DBSchema->get_schema_connection();
 const my $COUNTRY_CODE_SET          => 'LOCALE_CODE_ALPHA_2';
@@ -460,6 +463,12 @@ Processes the login attempt.
 
         if ( $login_result->{'success'} )
         {
+            my $logged = Cater::Log->admin_log(
+                                                admin       => body_parameters->get('username'),
+                                                ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                                log_level   => 'Info',
+                                                log_message => 'Successful Login',
+                                              );
             info 'Successful Admin Login: >' . body_parameters->get('username') . '< from IP: >' .
                  request->remote_address . ' - ' . request->remote_host . '<';
             session admin_user => body_parameters->get('username');
@@ -488,10 +497,16 @@ Admin logout route. Destroys the user's session, effectively logging them out of
 
     get '/logout' => sub
     {
-        my $user = session( "admin_user" );
+        my $user = session( 'admin_user' );
         app->destroy_session;
         deferred success => 'You have been successfully logged out. Come back soon!';
         info 'Successful Admin Logout of >' . $user . '<';
+        my $logged = Cater::Log->admin_log(
+                                            admin       => $user,
+                                            ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                            log_level   => 'Info',
+                                            log_message => 'Successful Logout',
+                                          );
         redirect '/';
     };
 
@@ -644,6 +659,8 @@ Route for saving caterer account information.
                                                     { layout => 'admin' };
         }
 
+        my $orig_caterer = Clone::clone( $caterer );
+
         $SCHEMA->txn_do( sub
                             {
                                 $caterer->update(
@@ -665,6 +682,25 @@ Route for saving caterer account information.
                                 )
                             }
         );
+
+        # Let's make easy hashes from the objects so that we can leave out the cruft.
+        my %old_data = ();
+        my %new_data = ();
+        foreach my $key ( qw/ company email phone street1 street2 city state country zip poc_name username confirmed / )
+        {
+            $old_data{$key} = $orig_caterer->$key;
+            $new_data{$key} = $caterer->$key;
+        }
+
+        my @changes = Cater::Log->find_changes_in_data( old_data => \%old_data, new_data => \%new_data );
+        my $logged = Cater::Log->admin_log(
+                                            admin       => session( "admin_user" ),
+                                            ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                            log_level   => 'Info',
+                                            log_message => 'Account Changes By Admin: Caterer &gt;'
+                                                            . body_parameters->{'company'} . '&lt;: '
+                                                            . join( '; ', @changes ),
+                                          );
 
         deferred success => "Successfully updated <strong>" . body_parameters->{'company'} . "</strong>.";
         redirect '/admin/manage/caterers/' . route_parameters->{'id'} . '/view';
@@ -791,6 +827,22 @@ Route for saving new caterer account information.
                             }
         );
 
+        my @changes = ();
+        foreach my $key ( qw/ company email phone street1 street2 city state country
+                              zip poc_name username confirmed username password / )
+        {
+            push ( @changes, "$key -> '$added_caterer->$key'" );
+        }
+
+        my $logged = Cater::Log->admin_log(
+                                            admin       => session( "admin_user" ),
+                                            ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                            log_level   => 'Info',
+                                            log_message => 'New Account Created By Admin: Caterer &gt;'
+                                                            . body_parameters->{'company'} . '&lt;: '
+                                                            . join( '; ', @changes ),
+                                          );
+
         deferred success => "Successfully added <strong>" . body_parameters->{'company'} . "</strong>.";
         redirect '/admin/manage/caterers/' . $added_caterer->id . '/view';
     };
@@ -817,6 +869,14 @@ Route to delete a specific caterer/client account
                                 $caterer->delete
                             }
         );
+
+        my $logged = Cater::Log->admin_log(
+                                            admin       => session( "admin_user" ),
+                                            ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                            log_level   => 'Info',
+                                            log_message => 'Account Deleted By Admin: Caterer &gt;'
+                                                            . $caterer_name . '&lt; ID: ' . route_parameters->{'id'},
+                                          );
 
         deferred success => "Successfully deleted <strong>$caterer_name</strong>.";
         redirect '/admin/manage/caterers';
@@ -971,6 +1031,8 @@ Route for saving marketer account information.
                                                     { layout => 'admin' };
         }
 
+        my $orig_marketer = Clone::clone( $marketer );
+
         $SCHEMA->txn_do( sub
                             {
                                 $marketer->update(
@@ -992,6 +1054,25 @@ Route for saving marketer account information.
                                 )
                             }
         );
+
+        # Let's make easy hashes from the objects so that we can leave out the cruft.
+        my %old_data = ();
+        my %new_data = ();
+        foreach my $key ( qw/ company email phone street1 street2 city state country zip poc_name username confirmed / )
+        {
+            $old_data{$key} = $orig_marketer->$key;
+            $new_data{$key} = $marketer->$key;
+        }
+
+        my @changes = Cater::Log->find_changes_in_data( old_data => \%old_data, new_data => \%new_data );
+        my $logged = Cater::Log->admin_log(
+                                            admin       => session( "admin_user" ),
+                                            ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                            log_level   => 'Info',
+                                            log_message => 'Account Changes By Admin: Marketer &gt;'
+                                                            . body_parameters->{'company'} . '&lt;: '
+                                                            . join( '; ', @changes ),
+                                          );
 
         deferred success => "Successfully updated <strong>" . body_parameters->{'company'} . "</strong>.";
         redirect '/admin/manage/marketers/' . route_parameters->{'id'} . '/view';
@@ -1118,6 +1199,22 @@ Route for saving new marketer account information.
                             }
         );
 
+        my @changes = ();
+        foreach my $key ( qw/ company email phone street1 street2 city state country
+                              zip poc_name username confirmed username password / )
+        {
+            push ( @changes, "$key -> '$added_marketer->$key'" );
+        }
+
+        my $logged = Cater::Log->admin_log(
+                                            admin       => session( "admin_user" ),
+                                            ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                            log_level   => 'Info',
+                                            log_message => 'New Account Created By Admin: Marketer &gt;'
+                                                            . body_parameters->{'company'} . '&lt;: '
+                                                            . join( '; ', @changes ),
+                                          );
+
         deferred success => "Successfully added <strong>" . body_parameters->{'company'} . "</strong>.";
         redirect '/admin/manage/marketers/' . $added_marketer->id . '/view';
     };
@@ -1144,6 +1241,14 @@ Route to delete a specific marketer/client account
                                 $marketer->delete
                             }
         );
+
+        my $logged = Cater::Log->admin_log(
+                                            admin       => session( "admin_user" ),
+                                            ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                            log_level   => 'Info',
+                                            log_message => 'Account Deleted By Admin: Marketer &gt;'
+                                                            . $marketer_name . '&lt; ID: ' . route_parameters->{'id'},
+                                          );
 
         deferred success => "Successfully deleted <strong>$marketer_name</strong>.";
         redirect '/admin/manage/marketers';
@@ -1279,6 +1384,8 @@ Route for saving user account information.
                                                     { layout => 'admin' };
         }
 
+        my $orig_user = Clone::clone( $user );
+
         $SCHEMA->txn_do( sub
                             {
                                 $user->update(
@@ -1292,6 +1399,25 @@ Route for saving user account information.
                                 )
                             }
         );
+
+        # Let's make easy hashes from the objects so that we can leave out the cruft.
+        my %old_data = ();
+        my %new_data = ();
+        foreach my $key ( qw/ email fullname username confirmed / )
+        {
+            $old_data{$key} = $orig_user->$key;
+            $new_data{$key} = $user->$key;
+        }
+
+        my @changes = Cater::Log->find_changes_in_data( old_data => \%old_data, new_data => \%new_data );
+        my $logged = Cater::Log->admin_log(
+                                            admin       => session( "admin_user" ),
+                                            ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                            log_level   => 'Info',
+                                            log_message => 'Account Changes By Admin: User &gt;'
+                                                            . body_parameters->{'username'} . '&lt;: '
+                                                            . join( '; ', @changes ),
+                                          );
 
         deferred success => "Successfully updated <strong>" . body_parameters->{'username'} . "</strong>.";
         redirect '/admin/manage/users/' . route_parameters->{'id'} . '/view';
@@ -1389,6 +1515,21 @@ Route for saving new user account information.
                             }
         );
 
+        my @changes = ();
+        foreach my $key ( qw/ email full_name username password confirmed / )
+        {
+            push ( @changes, "$key -> '$added_user->$key'" );
+        }
+
+        my $logged = Cater::Log->admin_log(
+                                            admin       => session( "admin_user" ),
+                                            ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                            log_level   => 'Info',
+                                            log_message => 'New Account Created By Admin: User &gt;'
+                                                            . body_parameters->{'username'} . '&lt;: '
+                                                            . join( '; ', @changes ),
+                                          );
+
         deferred success => "Successfully added <strong>" . body_parameters->{'username'} . "</strong>.";
         redirect '/admin/manage/users/' . $added_user->id . '/view';
     };
@@ -1415,6 +1556,14 @@ Route to delete a specific user/client account
                                 $user->delete
                             }
         );
+
+        my $logged = Cater::Log->admin_log(
+                                            admin       => session( "admin_user" ),
+                                            ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                            log_level   => 'Info',
+                                            log_message => 'Account Deleted By Admin: User &gt;'
+                                                            . $user_name . '&lt; ID: ' . route_parameters->{'id'},
+                                          );
 
         deferred success => "Successfully deleted <strong>$user_name</strong>.";
         redirect '/admin/manage/users';
@@ -1552,6 +1701,8 @@ Route for saving admin account information.
                                                     { layout => 'admin' };
         }
 
+        my $orig_admin = Clone::clone( $admin );
+
         $SCHEMA->txn_do( sub
                             {
                                 $admin->update(
@@ -1566,6 +1717,25 @@ Route for saving admin account information.
                                 )
                             }
         );
+
+        # Let's make easy hashes from the objects so that we can leave out the cruft.
+        my %old_data = ();
+        my %new_data = ();
+        foreach my $key ( qw/ admin_type email phone full_name username / )
+        {
+            $old_data{$key} = $orig_admin->$key;
+            $new_data{$key} = $admin->$key;
+        }
+
+        my @changes = Cater::Log->find_changes_in_data( old_data => \%old_data, new_data => \%new_data );
+        my $logged = Cater::Log->admin_log(
+                                            admin       => session( "admin_user" ),
+                                            ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                            log_level   => 'Info',
+                                            log_message => 'Account Changes By Admin: Admin &gt;'
+                                                            . body_parameters->{'username'} . '&lt;: '
+                                                            . join( '; ', @changes ),
+                                          );
 
         deferred success => "Successfully updated <strong>" . body_parameters->{'username'} . "</strong>.";
         redirect '/admin/manage/admins/' . route_parameters->{'id'} . '/view';
@@ -1663,6 +1833,20 @@ Route for saving new admin account information.
                             }
         );
 
+        my @changes = ();
+        foreach my $key ( qw/ email phone full_name username password / )
+        {
+            push ( @changes, "$key -> '$added_admin->$key'" );
+        }
+
+        my $logged = Cater::Log->admin_log(
+                                            admin       => session( "admin_user" ),
+                                            ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                            log_level   => 'Info',
+                                            log_message => 'New Account Created By Admin: Admin &gt;'
+                                                            . body_parameters->{'username'} . '&lt;: '
+                                                            . join( '; ', @changes ),
+                                          );
         deferred success => "Successfully added <strong>" . body_parameters->{'username'} . "</strong>.";
         redirect '/admin/manage/admins/' . $added_admin->id . '/view';
     };
@@ -1690,13 +1874,49 @@ Route to delete a specific admin/client account
                             }
         );
 
+        my $logged = Cater::Log->admin_log(
+                                            admin       => session( "admin_user" ),
+                                            ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                            log_level   => 'Info',
+                                            log_message => 'Account Deleted By Admin: Admin &gt;'
+                                                            . $admin_name . '&lt; ID: ' . route_parameters->{'id'},
+                                          );
+
         deferred success => "Successfully deleted <strong>$admin_name</strong>.";
         redirect '/admin/manage/admins';
     };
 
 
+=head2 'GET /admin/admin_logs/?:page?'
 
+Route to view admin logs.
 
+=cut
+
+    get '/admin_logs/?:page?' => sub
+    {
+        my $logs = Cater::Log->get_admin_logs( page => route_parameters->{'page'}, per_page => 50 );
+        warn 'DEBUG: LOG COUNT: ' . $logs->{'row_count'};
+
+        my $pagination = Cater::Utils->calculate_pagination(
+                                                            row_count => $logs->{'row_count'},
+                                                            page      => route_parameters->{'page'},
+                                                            per_page  => 50,
+                                                           );
+
+        template 'admin/admin_logs', {
+                                        data => {
+                                                    logs            => $logs->{'logs'},
+                                                    pagination      => $pagination,
+                                                    pagination_link => '/admin/admin_logs',
+                                                },
+                                        breadcrumbs => [
+                                                    { link => '/admin/', name => 'ADMIN' },
+                                                    { current => 1, name => 'Admin Logs' },
+                                                ],
+                                     },
+                                     { layout => 'admin' };
+    };
 
 
 };

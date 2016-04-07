@@ -1,0 +1,29 @@
+<div class="row">
+    <div class="columns">
+        [% PROCESS 'views/_pagination.tt' %]
+        <br>
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th width="100">Timestamp</th>
+                    <th width="100">Level</th>
+                    <th>Message</th>
+                    <th width="100">Admin</th>
+                    <th width="200">IP/Host</th>
+                </tr>
+            </thead
+            <tbody>
+                [% FOREACH row IN data.logs %]
+                <tr>
+                    <td>[% row.created_on %]</td>
+                    <td>[% row.log_level %]</td>
+                    <td>[% row.log_message %]</td>
+                    <td>[% row.admin %]</td>
+                    <td>[% row.ip_address %]</td>
+                </tr>
+                [% END %]
+            </tbody>
+        </table><br>
+        [% PROCESS 'views/_pagination.tt' %]
+    </div>
+</div>
