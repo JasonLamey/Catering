@@ -46,9 +46,9 @@
             </div>
             <div class="medium-6 columns">
                 <h3>Manage Your Profile</h3>
-                <a href="/account/manage/ad" class="button"><i class="fi-layout"></i> Your Ad Listing</a>
-                <a href="/account/manage/locations" class="button"><i class="fi-map"></i> Your Business Locations</a>
-                <a href="/account/manage/leads" class="button"><i class="fi-torsos-all"></i> Your Leads</a>
+                <a href="/account/ad" class="button"><i class="fi-layout"></i> Your Ad Listing</a>
+                <a href="/account/locations" class="button"><i class="fi-map"></i> Your Business Locations</a>
+                <a href="/account/leads" class="button"><i class="fi-torsos-all"></i> Your Leads</a>
                 <h3>Manage Your Account</h3>
                 <a href="/account/edit" class="button"><i class="fi-results-demographics"></i> Your Account Info</a>
                 <a href="/account/subscription" class="button"><i class="fi-comment"></i> Your Subscription</a><br>

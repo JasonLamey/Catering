@@ -1,0 +1,71 @@
+[% USE LocaleCountry %]
+<div class="row">
+    <div class="medium-9 columns">
+        <h2>Add Business Location</h2>
+        <p>Add a new business location. These will show up on your listing page.</p>
+        <form action="/account/location/create" method="post" data-abide>
+            <div data-abide-error class="alert callout" style="display: none;">
+                <p><i class="fi-alert"></i> There are some errors in your form. Please correct them and submit again.</p>
+            </div>
+            <label for="name">Location Name <span style="color: red;"><i class="fi-asterisk"></i></span>:
+                <input type="text" name="name" value="[% data.form.name %]" placeholder="Springfield" maxlength="255" size="40" required>
+                <span class="form-error">
+                    Please name this location.
+                </span>
+            </label>
+            <label for="phone">Location Phone <span style="color: red;"><i class="fi-asterisk"></i></span>:
+                <input type="tel" name="phone" value="[% data.form.phone %]" placeholder="+1 (123) 456-7890" maxlength="30" size="40" required>
+                <span class="form-error">
+                    A phone number for this location is required.
+                </span>
+            </label>
+            <label for="email">Location E-mail:
+                <input type="email" name="email" value="[% data.form.email %]" placeholder="manager@company.com" maxlength="255" size="40">
+            </label>
+            <label for="website">Location Website:
+                <input type="url" name="website" value="[% data.form.website %]" placeholder="www.company.com" maxlength="255" size="40">
+            </label>
+            <label for="street1">Street Address 1 <span style="color: red;"><i class="fi-asterisk"></i></span>:
+                <input type="text" name="street1" value="[% data.form.street1 %]" placeholder="123 Some Street" maxlength="255" size="40" required>
+                <span class="form-error">
+                    Please provide the location's street address.
+                </span>
+            </label>
+            <label for="street2">Street Address 2:
+                <input type="text" name="street2" value="[% data.form.street2 %]" placeholder="Suite 200" maxlength="255" size="40">
+            </label>
+            <label for="city">City <span style="color: red;"><i class="fi-asterisk"></i></span>:
+                <input type="text" name="city" value="[% data.form.city %]" placeholder="Springfield" maxlength="255" size="40" required>
+                <span class="form-error">
+                    Please provide the location's city.
+                </span>
+            </label>
+            <label for="state">State <span style="color: red;"><i class="fi-asterisk"></i></span>:
+                <input type="text" name="state" value="[% data.form.state %]" placeholder="Mississippi" maxlength="255" size="40" required>
+                <span class="form-error">
+                    Please provide the location's state or province.
+                </span>
+            </label>
+            <label for="postal">Postal Code <span style="color: red;"><i class="fi-asterisk"></i></span>:
+                <input type="text" name="postal" value="[% data.form.postal %]" placeholder="54321" maxlength="20" size="40" required>
+                <span class="form-error">
+                    Please provide the location's zip or postal code.
+                </span>
+            </label>
+            <label for="name">Country:
+                <select name="country">
+                    <option value=''>[ Choose One ]</option>
+                    [% SET data.form.country = 'us' IF NOT data.form.country %]
+                    [% FOREACH country IN data.countries %]
+                        [% country_code = LocaleCountry.country2code(country) %]
+                    <option value='[% country_code %]'[% IF data.form.country.lower == country_code.lower %] selected[% END %]>[% country %]</option>
+                    [% END %]
+                </select>
+            </label>
+            <input type="submit" value="Save Location" class="button">
+        </form>
+    </div>
+    <div class="medium-3 columns callout secondary">
+        <h5>Marketer Listings</h5>
+    </div>
+</div>

@@ -9,7 +9,7 @@ use Data::Dumper;
 
 use Cater::DBSchema;
 
-use version; our $VERSION = qv( "v0.1.0" );
+use version; our $VERSION = qv( "v0.1.3" );
 
 const my $SCHEMA => Cater::DBSchema->get_schema_connection();
 

@@ -99,6 +99,9 @@ hook before => sub
 };
 
 
+=head1 GENERAL ROUTES
+
+
 =head2 'GET /'
 
 Root route. Presents user with main landing page.
@@ -368,7 +371,308 @@ get '/account' => sub
 };
 
 
-=head2 Admin-based routes
+=head2 GET '/account/locations'
+
+Caterer/Client route for listing established locations.
+
+=cut
+
+get '/account/locations' => sub
+{
+    my $user = Cater::Account->find_account(
+                                            {
+                                                username => session('user'),
+                                            },
+                                            user_type => session('user_type'),
+                                           );
+
+    my @locations = $user->{'account'}->locations( undef, { order_by => { -asc => 'name' } } );
+
+    template 'accounts/caterer_locations.tt', {
+                                                data => {
+                                                            locations => \@locations,
+                                                        },
+                                                breadcrumbs => [
+                                                                { link => '/account', name => 'Account' },
+                                                                { current => 1, name => 'Business Locations' },
+                                                               ],
+                                              };
+};
+
+
+=head2 GET '/account/location/add'
+
+Caterer/Client route for business location add form.
+
+=cut
+
+get '/account/location/add' => sub
+{
+    my @countries = Locale::Country::all_country_names();
+
+    template 'accounts/caterer_add_location.tt', {
+                                    data        => {
+                                                    form => {
+                                                                name    => ( param 'name'    // '' ),
+                                                                phone   => ( param 'phone'   // '' ),
+                                                                email   => ( param 'email'   // '' ),
+                                                                website => ( param 'website' // '' ),
+                                                                street1 => ( param 'street1' // '' ),
+                                                                street2 => ( param 'street2' // '' ),
+                                                                city    => ( param 'city'    // '' ),
+                                                                state   => ( param 'state'   // '' ),
+                                                                postal  => ( param 'postal'  // '' ),
+                                                                country => ( param 'country' // '' ),
+                                                            },
+                                                    countries => \@countries,
+                                                   },
+                                    breadcrumbs => [
+                                                    { link => '/account', name => 'Account' },
+                                                    { link => '/account/locations', name => 'Business Locations' },
+                                                    { current => 1, name => 'Add New Location' },
+                                                   ],
+                                                 };
+};
+
+
+=head2 POST '/account/location/create'
+
+Caterer/Client route for saving a new business location.
+
+=cut
+
+post '/account/location/create' => sub
+{
+    my $user = Cater::Account->find_account(
+                                            {
+                                                username => session('user'),
+                                            },
+                                            user_type => session('user_type'),
+                                           );
+    my $caterer = $user->{'account'};
+
+    my $form_input = body_parameters->as_hashref;
+    my $results = FormValidator::Simple->check(
+                                                $form_input => [
+                                                                name     => [ 'NOT_BLANK', [ 'LENGTH', 3, 255 ] ],
+                                                                email    => [ 'NOT_BLANK', 'EMAIL' ],
+                                                                phone    => [ [ 'LENGTH', 0, 30 ] ],
+                                                                website  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                street1  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                city     => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                state    => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                country  => [ 'NOT_BLANK', [ 'LENGTH', 2, 255 ] ],
+                                                                postal   => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                               ]
+                                              );
+
+    my $new_location = {
+                            name       => body_parameters->{'name'},
+                            email      => body_parameters->{'email'},
+                            phone      => body_parameters->{'phone'},
+                            website    => body_parameters->{'website'},
+                            street1    => body_parameters->{'street1'},
+                            street2    => body_parameters->{'street2'},
+                            city       => body_parameters->{'city'},
+                            state      => body_parameters->{'state'},
+                            country    => body_parameters->{'country'},
+                            postal     => body_parameters->{'postal'},
+                            created_on => DateTime->now(),
+                      };
+
+    if ( $results->has_error )
+    {
+        my $bad_fields = '';
+        foreach my $key ( @{ $results->error() } )
+        {
+            $bad_fields .= "<li>$key</li>\n";
+        }
+        my $error_message = "The following fields had errors:\n";
+        $error_message    .= "<ul>\n$bad_fields</ul>\n";
+
+        warning $error_message;
+
+        my @countries = Locale::Country::all_country_names();
+
+        template 'accounts/caterer_add_location.tt',   {
+                                                    data => {
+                                                                form   => $new_location,
+                                                                countries => \@countries,
+                                                            },
+                                                    msgs => {
+                                                                error_message => $error_message,
+                                                            },
+                                                    breadcrumbs => [
+                                                                    { link => '/account', name => 'Account' },
+                                                                    { link => '/account/locations', name => 'Business Locations' },
+                                                                    { current => 1, name => 'Add New Location' },
+                                                            ],
+                                                };
+    }
+
+    $SCHEMA->txn_do( sub
+                        {
+                            $caterer->add_to_locations( $new_location );
+                        }
+    );
+
+    deferred success => "Successfully added location <strong>" . body_parameters->{'name'} . "</strong>.";
+    redirect '/account/locations';
+};
+
+
+=head2 GET '/account/location/<id>/edit'
+
+Route to the edit form for changing the information on a Caterer location.
+
+=cut
+
+get '/account/location/:id/edit' => sub
+{
+    my $user = Cater::Account->find_account(
+                                            {
+                                                username => session('user'),
+                                            },
+                                            user_type => session('user_type'),
+                                           );
+
+    my @location = $user->{'account'}->locations( { id => route_parameters->{'id'} } );
+    my @countries = Locale::Country::all_country_names();
+
+    template 'accounts/caterer_edit_location.tt', {
+                                                    data => {
+                                                                location  => $location[0],
+                                                                countries => \@countries,
+                                                            },
+                                                    breadcrumbs => [
+                                                                    { link => '/account', name => 'Account' },
+                                                                    { link => '/account/locations', name => 'Business Locations' },
+                                                                    { current => 1, name => 'Edit Location' },
+                                                                   ],
+                                                  };
+};
+
+
+=head2 POST '/account/location/<id>/save'
+
+Route for saving edited caterer locations.
+
+=cut
+
+post '/account/location/:id/save' => sub
+{
+    my $user = Cater::Account->find_account(
+                                            {
+                                                username => session('user'),
+                                            },
+                                            user_type => session('user_type'),
+                                           );
+
+    my @location = $user->{'account'}->locations( { id => route_parameters->{'id'} } );
+    my $orig_location = $location[0];
+
+    my $form_input = body_parameters->as_hashref;
+    my $results = FormValidator::Simple->check(
+                                                $form_input => [
+                                                                name     => [ 'NOT_BLANK', [ 'LENGTH', 3, 255 ] ],
+                                                                email    => [ 'NOT_BLANK', 'EMAIL' ],
+                                                                phone    => [ [ 'LENGTH', 0, 30 ] ],
+                                                                website  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                street1  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                city     => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                state    => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                country  => [ 'NOT_BLANK', [ 'LENGTH', 2, 255 ] ],
+                                                                postal   => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                               ]
+                                              );
+
+    my $new_location = {
+                            name       => body_parameters->{'name'},
+                            email      => body_parameters->{'email'},
+                            phone      => body_parameters->{'phone'},
+                            website    => body_parameters->{'website'},
+                            street1    => body_parameters->{'street1'},
+                            street2    => body_parameters->{'street2'},
+                            city       => body_parameters->{'city'},
+                            state      => body_parameters->{'state'},
+                            country    => body_parameters->{'country'},
+                            postal     => body_parameters->{'postal'},
+                            updated_on => DateTime->now(),
+                      };
+
+    if ( $results->has_error )
+    {
+        my $bad_fields = '';
+        foreach my $key ( @{ $results->error() } )
+        {
+            $bad_fields .= "<li>$key</li>\n";
+        }
+        my $error_message = "The following fields had errors:\n";
+        $error_message    .= "<ul>\n$bad_fields</ul>\n";
+
+        warning $error_message;
+
+        my @countries = Locale::Country::all_country_names();
+
+        template 'accounts/caterer_edit_location.tt',   {
+                                                    data => {
+                                                                form   => $new_location,
+                                                                countries => \@countries,
+                                                            },
+                                                    msgs => {
+                                                                error_message => $error_message,
+                                                            },
+                                                    breadcrumbs => [
+                                                                    { link => '/account', name => 'Account' },
+                                                                    { link => '/account/locations', name => 'Business Locations' },
+                                                                    { current => 1, name => 'Edit Location' },
+                                                            ],
+                                                };
+    }
+
+    $SCHEMA->txn_do( sub
+                        {
+                            $orig_location->update( $new_location );
+                        }
+    );
+
+    deferred success => "Successfully updated location <strong>" . body_parameters->{'name'} . "</strong>.";
+    redirect '/account/locations';
+
+};
+
+
+=head2 GET '/account/location/<id>/delete'
+
+Route to delete a caterer location.
+
+=cut
+
+get '/account/location/:id/delete' => sub
+{
+    my $user = Cater::Account->find_account(
+                                            {
+                                                username => session('user'),
+                                            },
+                                            user_type => session('user_type'),
+                                           );
+
+    my @location = $user->{'account'}->locations( { id => route_parameters->{'id'} } );
+    my $location_to_delete = $location[0];
+    my $location_name = $location_to_delete->name;
+
+    $SCHEMA->txn_do( sub
+                        {
+                            $location_to_delete->delete
+                        }
+    );
+
+    deferred success => "Successfully deleted <strong>$location_name</strong>.";
+    redirect '/account/locations';
+};
+
+
+=head1 ADMIN-BASED ROUTES
 
 =cut
 

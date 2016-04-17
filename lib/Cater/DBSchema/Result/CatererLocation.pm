@@ -1,4 +1,4 @@
-package Cater::DBSchema::Result::Client;
+package Cater::DBSchema::Result::CatererLocation;
 
 use Dancer2 appname => 'Cater';
 use base 'DBIx::Class::Core';
@@ -11,50 +11,33 @@ use version; our $VERSION = qv( "v0.1.0" );
 
 =head1 NAME
 
-Cater::DBSchema::Result::Client
+Cater::DBSchema::Result::CatererLocation
 
 
 =head1 DESCRIPTION AND USAGE
 
-Database object representing Client (specialized Users) within the web app.
+Database object representing Caterer Locations within the web app.
 
 =cut
 
-__PACKAGE__->table( 'clients' );
+
+__PACKAGE__->table( 'caterer_locations' );
 __PACKAGE__->add_columns(
                             id =>
                                 {
-                                    accessor          => 'client',
+                                    accessor          => 'caterer_location',
                                     data_type         => 'integer',
                                     size              => 20,
                                     is_nullable       => 0,
                                     is_auto_increment => 1,
                                 },
-                            username =>
+                            client_id =>
                                 {
-                                    data_type         => 'varchar',
-                                    size              => 40,
+                                    data_type         => 'integer',
+                                    size              => 20,
                                     is_nullable       => 0,
                                 },
-                            password =>
-                                {
-                                    data_type         => 'char',
-                                    size              => 73,
-                                    is_nullable       => 0,
-                                },
-                            poc_name =>
-                                {
-                                    data_type         => 'varchar',
-                                    size              => 255,
-                                    is_nullable       => 0,
-                                },
-                            company =>
-                                {
-                                    data_type         => 'varchar',
-                                    size              => 255,
-                                    is_nullable       => 1,
-                                },
-                            email =>
+                            name =>
                                 {
                                     data_type         => 'varchar',
                                     size              => 255,
@@ -63,38 +46,39 @@ __PACKAGE__->add_columns(
                             phone =>
                                 {
                                     data_type         => 'varchar',
-                                    size              => 25,
-                                    is_nullable       => 1,
+                                    size              => 30,
+                                    is_nullable       => 0,
                                 },
                             street1 =>
                                 {
                                     data_type         => 'varchar',
                                     size              => 255,
-                                    is_nullable       => 1,
+                                    is_nullable       => 0,
                                 },
                             street2 =>
                                 {
                                     data_type         => 'varchar',
                                     size              => 255,
                                     is_nullable       => 1,
+                                    default_value     => undef,
                                 },
                             city =>
                                 {
                                     data_type         => 'varchar',
                                     size              => 100,
-                                    is_nullable       => 1,
+                                    is_nullable       => 0,
                                 },
                             state =>
                                 {
                                     data_type         => 'varchar',
                                     size              => 50,
-                                    is_nullable       => 1,
+                                    is_nullable       => 0,
                                 },
-                            zip =>
+                            postal =>
                                 {
                                     data_type         => 'varchar',
                                     size              => 15,
-                                    is_nullable       => 1,
+                                    is_nullable       => 0,
                                 },
                             country =>
                                 {
@@ -102,18 +86,17 @@ __PACKAGE__->add_columns(
                                     size              => 2,
                                     is_nullable       => 1,
                                 },
-                            website =>
+                            email =>
                                 {
                                     data_type         => 'varchar',
                                     size              => 255,
                                     is_nullable       => 1,
                                 },
-                            confirmed =>
+                            website =>
                                 {
-                                    data_type         => 'integer',
-                                    size              => 1,
-                                    is_nullable       => 0,
-                                    default_value     => 0,
+                                    data_type         => 'varchar',
+                                    size              => 255,
+                                    is_nullable       => 1,
                                 },
                             created_on =>
                                 {
@@ -130,7 +113,7 @@ __PACKAGE__->add_columns(
                         );
 
 __PACKAGE__->set_primary_key( 'id' );
-__PACKAGE__->has_many( 'locations', 'Cater::DBSchema::Result::CatererLocation', 'client_id' );
+__PACKAGE__->belongs_to( 'client' => 'Cater::DBSchema::Result::Client', 'client_id' );
 
 
 =head1 AUTHOR

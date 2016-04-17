@@ -1,0 +1,64 @@
+[% USE date %]
+<div class="row">
+    <div class="medium-9 columns">
+        <div class="reveal" id="deleteConfirm" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out">
+            <h3>You Are About To Delete This Location!</h3>
+            <p>If you delete this location, it cannot be recovered. Are you sure you want to delete this location?</p>
+            <p>
+                <a class="button" data-close aria-label="Close reveal" type="button">Cancel</a>
+                <a class="alert button" id="deleteLink" href="">Delete Location</a>
+            </p>
+            <button class="close-button" data-close aria-label="Close reveal" type="button">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <h2>Your Business Locations</h2>
+        <p>These will show up on your listing page.</p>
+        <a href="/account/location/add" class="button"><i class="fi-plus"></i> Add New Location</a><br>
+
+        [% IF data.locations.size > 0 %]
+        <table class="hover" width="100%" style="font-size: 0.8rem;">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Contact</th>
+                    <th>Added/Updated</th>
+                    <th>Manage</th>
+                </tr>
+            </thead>
+            <tbody>
+                [% FOREACH location IN data.locations %]
+                <tr>
+                    <td>[% location.name %]</td>
+                    <td>[% location.street1 %]<br>
+                        [% IF location.street2.defined && location.street2 != '' %][% location.street2 %]<br>[% END %]
+                        [% location.city %], [% location.state %] [% location.postal %]
+                        [% IF location.country.defined && location.country != '' %]<br>[% location.country.upper %][% END %]
+                    </td>
+                    <td>
+                        [% location.phone %]
+                        [% IF location.email.defined && location.email != '' %]<br>[% location.email %][% END %]
+                        [% IF location.website.defined && location.website != '' %]<br><a href="[% location.website %]" target="_blank">[% location.website %] <i class="fa fa-external-link"></i></a>[% END %]
+                    </td>
+                    <td>
+                        A: [% date.format( location.created_on, format => '%d-%b-%Y' ) %]
+                        [% IF location.updated_on.defined %]<br>U: [% date.format( location.updated_on, format => '%d-%b-%Y' ) %][% END %]
+                    </td>
+                    <td>
+                        <a href="/account/location/[% location.id %]/edit" class="button small"><i class="fi-pencil"></i> Edit</a><br>
+                        <a class="button alert small" data-toggle="deleteConfirm" onClick='document.getElementById("deleteLink").href="/account/location/[% location.id %]/delete";'><i class="fi-trash"></i> Delete</a>
+                    </td>
+                </tr>
+                [% END %]
+            </tbody>
+        </table>
+        [% ELSE %]
+        <div>No locations listed, yet.</div>
+        [% END %]
+    </div>
+    <div class="medium-3 columns callout secondary">
+        <h5>Marketer Listings</h5>
+    </div>
+</div>
