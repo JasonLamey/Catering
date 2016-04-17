@@ -86,6 +86,58 @@ sub admin_log
 }
 
 
+=head2 user_log()
+
+=over 4
+
+=item Input: hashref containing log data [C<admin_ip>, C<ip_address>, C<log_level>, C<log_message>].
+
+=item Output: Boolean indicating success.
+
+=back
+
+    my $logged = Cater::Log->user_log( \%log_data );
+
+=cut
+
+sub user_log
+{
+    my ( $self, %params ) = @_;
+
+    my $user        = delete $params{'user'}        // undef;
+    my $ip_address  = delete $params{'ip_address'}  // 'Unknown';
+    my $log_level   = delete $params{'log_level'}   // 'Info';
+    my $log_message = delete $params{'log_message'} // undef;
+
+    if (
+        not defined $user
+        or
+        not defined $log_message
+    )
+    {
+        error "Missing mandatory user log info: user >$user< / log_message >$log_message<";
+        return 0;
+    }
+
+    my $log = $SCHEMA->resultset( 'UserLog' )->new(
+                                                    {
+                                                        user        => $user,
+                                                        ip_address  => $ip_address,
+                                                        log_level   => $log_level,
+                                                        log_message => $log_message,
+                                                        created_on  => DateTime->now( time_zone => 'UTC' )->datetime,
+                                                    }
+                                                   );
+    $SCHEMA->txn_do( sub
+                        {
+                            $log->insert
+                        }
+    );
+
+    return 1;
+}
+
+
 =head2 find_changes_in_data()
 
 =over 4

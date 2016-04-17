@@ -516,6 +516,19 @@ post '/account/location/create' => sub
                         }
     );
 
+    my @changes = ();
+    foreach my $key ( qw/ name website email phone street1 street2 city state country postal / )
+    {
+        push ( @changes, "$key -> '$new_location->{$key}'" );
+    }
+
+    my $logged = Cater::Log->user_log(
+                                        user        => session( 'user' ) . ' (' . session( 'user_type' ) . ')',
+                                        ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                        log_level   => 'Info',
+                                        log_message => 'Added New Location: ' . join( ', ', @changes ),
+                                      );
+
     deferred success => "Successfully added location <strong>" . body_parameters->{'name'} . "</strong>.";
     redirect '/account/locations';
 };
@@ -630,11 +643,30 @@ post '/account/location/:id/save' => sub
                                                 };
     }
 
+    my $pre_change_location = Clone::clone( $orig_location );
+
     $SCHEMA->txn_do( sub
                         {
                             $orig_location->update( $new_location );
                         }
     );
+
+    my %old_data = ();
+    my %new_data = ();
+    foreach my $key ( qw/ name website email phone street1 street2 city state country postal / )
+    {
+        $old_data{$key} = $pre_change_location->$key;
+        $new_data{$key} = $new_location->{$key};
+    }
+
+    my @changes = Cater::Log->find_changes_in_data( old_data => \%old_data, new_data => \%new_data );
+
+    my $logged = Cater::Log->user_log(
+                                        user        => session( 'user' ) . ' (' . session( 'user_type' ) . ')',
+                                        ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                        log_level   => 'Info',
+                                        log_message => 'Updated Location: ' . join( ', ', @changes ),
+                                      );
 
     deferred success => "Successfully updated location <strong>" . body_parameters->{'name'} . "</strong>.";
     redirect '/account/locations';
@@ -666,6 +698,13 @@ get '/account/location/:id/delete' => sub
                             $location_to_delete->delete
                         }
     );
+
+    my $logged = Cater::Log->user_log(
+                                        user        => session( 'user' ) . ' (' . session( 'user_type' ) . ')',
+                                        ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                        log_level   => 'Info',
+                                        log_message => 'Deleted Location: \'' . $location_name . '\'',
+                                      );
 
     deferred success => "Successfully deleted <strong>$location_name</strong>.";
     redirect '/account/locations';
