@@ -15,6 +15,16 @@
 
         <!-- Grab Google CDN's jQuery. fall back to local if necessary -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+        [% IF use_editor %]
+        <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+        <script>tinymce.init({
+                                selector:'textarea.editor',
+                                menubar: 'edit insert view format tools',
+                                toolbar: 'undo redo | styleselect | fontselect fontsizeselect forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | charmap link spellchecker',
+                                plugins: 'autolink link lists charmap preview wordcount textcolor colorpicker',
+                                browser_spellcheck: true,
+                            });</script>
+        [% END %]
     </head>
     <body>
         [% IF deferred.error_message || msgs.error_message %]

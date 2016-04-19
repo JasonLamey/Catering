@@ -1,0 +1,55 @@
+[% USE date %]
+<div class="row">
+    <div class="medium-9 columns">
+        <h2>Edit Your Listing</h2>
+        <form method="post" action="/account/listing/save">
+        <div class="row">
+            <div class="medium-6 columns">
+                <label for="company">Company Name: <span style="color: red;"><i class="fi-asterisk"></i></span>
+                    <input type="text" maxlength="255" size="40" name="company" value="[% data.listing.company %]" placeholder="Bob's Burgers">
+                </label>
+            </div>
+            <div class="medium-6 columns">
+                <label for="slogan">Your Slogan:
+                    <input type="text" maxlength="255" size="40" name="slogan" value="[% data.listing.slogan %]" placeholder="Great Burgers for a Great Party!">
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="medium-12 columns" style="margin-bottom: 1rem;">
+                <label for="about">Tell People About Your Company: <span style="color: red;"><i class="fi-asterisk"></i></span>
+                    <textarea name="about" class="editor">[% data.listing.about %]</textarea>
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="medium-12 columns">
+                <label for="cuisine_types">What types of cuisine do you serve or specialize in: <span style="color: red;"><i class="fi-asterisk"></i></span>
+                    <select name="cuisine_types" multiple rows="5">
+                        [% FOREACH cuisine IN data.cuisine_types %]
+                        <option value='[% cuisine.name %]'>[% cuisine.name %]</option>
+                        [% END %]
+                    </select>
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="medium-12 columns" style="margin-bottom: 1rem;">
+                <label for="special_offer">If you have a special offer, you can announce it here:
+                    <textarea name="special_offer" class="editor">[% data.listing.special_offer %]</textarea>
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="medium-12 columns">
+                <input type="submit" value="Save" class="button">
+            </div>
+        </div>
+        </form>
+        <span class="small">[% IF data.listing.created_on %]<strong>Created:</strong> [% date.format( data.listing.created_on, format => '%d %b %Y' ) %][% END %]
+                            [% IF data.listing.updated_on %] &nbsp; <strong>Last Updated:</strong> [% date.format( data.listing.updated_on, format => '%d %b %Y' ) %][% END %]</span>
+    </div>
+    <div class="medium-3 columns callout secondary">
+        <h5>Marketer Listings</h5>
+    </div>
+</div>

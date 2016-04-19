@@ -711,6 +711,143 @@ get '/account/location/:id/delete' => sub
 };
 
 
+=head2 GET '/account/listing'
+
+Route to edit caterer listing information.
+
+=cut
+
+get '/account/listing' => sub
+{
+    my $user = Cater::Account->find_account(
+                                            {
+                                                username => session('user'),
+                                            },
+                                            user_type => session('user_type'),
+                                           );
+
+    my @listing = $user->{'account'}->listing();
+    my $cuisines  = Cater::Caterer->get_all_cuisine_types();
+
+    template 'accounts/caterer_edit_listing.tt',
+                                                {
+                                                    use_editor => 1,
+                                                    data => {
+                                                                listing       => $listing[0],
+                                                                cuisine_types => $cuisines,
+                                                            },
+                                                    breadcrumbs => [
+                                                                    { link => '/account', name => 'Account' },
+                                                                    { current => 1, name => 'Edit Listing' },
+                                                                   ],
+                                                };
+
+};
+
+
+=head2 POST '/account/listing/save'
+
+Route to save changes to the listing.
+
+=cut
+
+post '/account/listing/save' => sub
+{
+    my $user = Cater::Account->find_account(
+                                            {
+                                                username => session('user'),
+                                            },
+                                            user_type => session('user_type'),
+                                           );
+
+    my $orig_listing = $user->{'account'}->listing;
+    my $cuisines  = Cater::Caterer->get_all_cuisine_types();
+
+    my $form_input = body_parameters->as_hashref;
+    my $results = FormValidator::Simple->check(
+                                                $form_input => [
+                                                                company  => [ 'NOT_BLANK', [ 'LENGTH', 3, 255 ] ],
+                                                                about    => [ 'NOT_BLANK', [ 'LENGTH', 3, 65535 ] ],
+                                                                cuisine_types  => [ 'NOT_BLANK' ],
+                                                               ]
+                                              );
+
+    my $new_listing = {
+                            company       => body_parameters->{'company'},
+                            slogan        => body_parameters->{'slogan'},
+                            about         => body_parameters->{'about'},
+                            cuisine_types => body_parameters->{'cuisine_types'},
+                            special_offer => body_parameters->{'special_offer'},
+                            updated_on    => DateTime->now(),
+                      };
+
+    if ( $results->has_error )
+    {
+        my $bad_fields = '';
+        foreach my $key ( @{ $results->error() } )
+        {
+            $bad_fields .= "<li>$key</li>\n";
+        }
+        my $error_message = "The following fields had errors:\n";
+        $error_message    .= "<ul>\n$bad_fields</ul>\n";
+
+        warning $error_message;
+
+        template 'accounts/caterer_edit_listing.tt',
+                                                    {
+                                                        use_editor => 1,
+                                                        data => {
+                                                                    listing       => $new_listing,
+                                                                    cuisine_types => $cuisines,
+                                                                },
+                                                        msgs => {
+                                                                    error_message => $error_message,
+                                                                },
+                                                        breadcrumbs => [
+                                                                        { link => '/account', name => 'Account' },
+                                                                        { current => 1, name => 'Edit Listing' },
+                                                                       ],
+                                                    };
+    }
+
+    my $listing = Clone::clone( $orig_listing );
+
+    if ( not defined $orig_listing ) {
+        $new_listing->{'created_on'} = DateTime->now();
+        $user->{'account'}->create_related( 'listing', $new_listing );
+    }
+    else
+    {
+        $SCHEMA->txn_do(
+                        sub
+                        {
+                            $listing->update( $new_listing )
+                        }
+        );
+    }
+
+    my %old_data = ();
+    my %new_data = ();
+    foreach my $key ( qw/ company slogan about cuisine_types special_offer / )
+    {
+        $old_data{$key} = ( defined $orig_listing ) ? $orig_listing->$key : '';
+        $new_data{$key} = $new_listing->{$key};
+    }
+
+    my @changes = Cater::Log->find_changes_in_data( old_data => \%old_data, new_data => \%new_data );
+
+    my $logged = Cater::Log->user_log(
+                                        user        => session( 'user' ) . ' (' . session( 'user_type' ) . ')',
+                                        ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                        log_level   => 'Info',
+                                        log_message => 'Updated Listing: ' . join( ', ', @changes ),
+                                      );
+
+    deferred success => "Successfully updated your listing.";
+    redirect '/account/listing';
+};
+
+
 =head1 ADMIN-BASED ROUTES
 
 =cut

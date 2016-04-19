@@ -131,7 +131,7 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key( 'id' );
 __PACKAGE__->has_many( 'locations', 'Cater::DBSchema::Result::CatererLocation', 'client_id' );
-__PACKAGE__->has_one( 'listing', 'Cater::DBSchema::Result::CatererListing', 'client_id' );
+__PACKAGE__->might_have( 'listing', 'Cater::DBSchema::Result::CatererListing', 'client_id' );
 
 
 =head1 AUTHOR
