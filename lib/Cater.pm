@@ -477,7 +477,7 @@ post '/account/location/create' => sub
                             state      => body_parameters->{'state'},
                             country    => body_parameters->{'country'},
                             postal     => body_parameters->{'postal'},
-                            created_on => DateTime->now(),
+                            created_on => DateTime->now( time_zone => 'UTC' )->datetime,
                       };
 
     if ( $results->has_error )
@@ -610,7 +610,7 @@ post '/account/location/:id/save' => sub
                             state      => body_parameters->{'state'},
                             country    => body_parameters->{'country'},
                             postal     => body_parameters->{'postal'},
-                            updated_on => DateTime->now(),
+                            updated_on => DateTime->now( time_zone => 'UTC' )->datetime,
                       };
 
     if ( $results->has_error )
@@ -778,7 +778,7 @@ post '/account/listing/save' => sub
                             about         => body_parameters->{'about'},
                             cuisine_types => body_parameters->{'cuisine_types'},
                             special_offer => body_parameters->{'special_offer'},
-                            updated_on    => DateTime->now(),
+                            updated_on    => DateTime->now( time_zone => 'UTC' )->datetime,
                       };
 
     if ( $results->has_error )
@@ -813,7 +813,7 @@ post '/account/listing/save' => sub
     my $listing = Clone::clone( $orig_listing );
 
     if ( not defined $orig_listing ) {
-        $new_listing->{'created_on'} = DateTime->now();
+        $new_listing->{'created_on'} = DateTime->now( time_zone => 'UTC' )->datetime;
         $user->{'account'}->create_related( 'listing', $new_listing );
     }
     else
@@ -845,6 +845,159 @@ post '/account/listing/save' => sub
 
     deferred success => "Successfully updated your listing.";
     redirect '/account/listing';
+};
+
+
+=head2 GET '/account/edit'
+
+Route to edit account information.
+
+=cut
+
+get '/account/edit' => sub
+{
+    my $user = Cater::Account->find_account(
+                                            {
+                                                username => session('user'),
+                                            },
+                                            user_type => session('user_type'),
+                                           );
+
+    my @countries = Locale::Country::all_country_names();
+    template '/accounts/edit_account.tt',
+                                            {
+                                                data => {
+                                                            account   => $user->{'account'},
+                                                            countries => \@countries,
+                                                        },
+                                                user_type => session('user_type'),
+                                                breadcrumbs => [
+                                                                { link => '/account', name => 'Account' },
+                                                                { current => 1, name => 'Edit Account Information' },
+                                                               ],
+                                            };
+};
+
+
+=head2 POST '/account/save'
+
+Route to save changes to the user's account.
+
+=cut
+
+post '/account/save' => sub
+{
+    my $user = Cater::Account->find_account(
+                                            {
+                                                username => session('user'),
+                                            },
+                                            user_type => session('user_type'),
+                                           );
+
+    my $account = $user->{'account'};
+    my $orig_account = Clone::clone( $account );
+
+    my $form_input = body_parameters->as_hashref;
+    my $results = FormValidator::Simple->check(
+                                                $form_input => [
+                                                                username => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                poc_name => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                company  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                email    => [ 'NOT_BLANK', 'EMAIL' ],
+                                                                phone    => [ [ 'LENGTH', 0, 30 ] ],
+                                                                street1  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                city     => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                state    => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                country  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                zip      => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                                               ]
+                                              );
+    if ( $results->has_error )
+    {
+        my $bad_fields = '';
+        foreach my $key ( @{ $results->error() } )
+        {
+            $bad_fields .= "<li>$key</li>\n";
+        }
+        my $error_message = "The following fields had errors:\n";
+        $error_message    .= "<ul>\n$bad_fields</ul>\n";
+
+        warning $error_message;
+
+        my @countries = Locale::Country::all_country_names();
+        my $new_account = {
+                                company    => body_parameters->{'company'},
+                                email      => body_parameters->{'email'},
+                                phone      => body_parameters->{'phone'},
+                                street1    => body_parameters->{'street1'},
+                                street2    => body_parameters->{'street2'},
+                                city       => body_parameters->{'city'},
+                                state      => body_parameters->{'state'},
+                                country    => body_parameters->{'country'},
+                                zip        => body_parameters->{'zip'},
+                                poc_name   => body_parameters->{'poc_name'},
+                                username   => body_parameters->{'username'},
+                                created_on => body_parameters->{'created_on'},
+                                updated_on => body_parameters->{'updated_on'},
+                          };
+
+        template 'accounts/edit_account.tt',   {
+                                                    data => {
+                                                                caterer   => $new_account,
+                                                                countries => \@countries,
+                                                            },
+                                                    msgs => {
+                                                                error_message => $error_message,
+                                                            },
+                                                    user_type   => session('user_type'),
+                                                    breadcrumbs => [
+                                                                    { link => '/account', name => 'Account' },
+                                                                    { current => 1, name => 'Edit Account Information' },
+                                                                   ],
+                                                    };
+    }
+
+    $SCHEMA->txn_do( sub
+                        {
+                            $account->update(
+                                    {
+                                        company    => body_parameters->{'company'},
+                                        email      => body_parameters->{'email'},
+                                        phone      => body_parameters->{'phone'},
+                                        street1    => body_parameters->{'street1'},
+                                        street2    => body_parameters->{'street2'},
+                                        city       => body_parameters->{'city'},
+                                        state      => body_parameters->{'state'},
+                                        country    => body_parameters->{'country'},
+                                        zip        => body_parameters->{'zip'},
+                                        poc_name   => body_parameters->{'poc_name'},
+                                        username   => body_parameters->{'username'},
+                                        updated_on => DateTime->now( time_zone => 'UTC' )->datetime,
+                                    }
+                            )
+                        }
+    );
+
+    # Let's make easy hashes from the objects so that we can leave out the cruft.
+    my %old_data = ();
+    my %new_data = ();
+    foreach my $key ( qw/ company email phone street1 street2 city state country zip poc_name username confirmed / )
+    {
+        $old_data{$key} = $orig_account->$key;
+        $new_data{$key} = $account->$key;
+    }
+
+    my @changes = Cater::Log->find_changes_in_data( old_data => \%old_data, new_data => \%new_data );
+    my $logged = Cater::Log->user_log(
+                                        user        => session( "user" ) . ' (' . session("user_type") . ')',
+                                        ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                        log_level   => 'Info',
+                                        log_message => 'Account Changes: '
+                                                        . join( '; ', @changes ),
+                                      );
+
+    deferred success => "Successfully updated your account info.";
+    redirect '/account';
 };
 
 
@@ -1157,7 +1310,7 @@ Route for saving caterer account information.
                                             poc_name   => body_parameters->{'poc_name'},
                                             username   => body_parameters->{'username'},
                                             confirmed  => ( body_parameters->{'confirmed'} // 0 ),
-                                            updated_on => DateTime->now(),
+                                            updated_on => DateTime->now( time_zone => 'UTC' )->datetime,
                                         }
                                 )
                             }
@@ -1248,7 +1401,7 @@ Route for saving new caterer account information.
                                 poc_name   => body_parameters->{'poc_name'},
                                 username   => body_parameters->{'username'},
                                 confirmed  => ( body_parameters->{'confirmed'} // 0 ),
-                                created_on => DateTime->now(),
+                                created_on => DateTime->now( time_zone => 'UTC' )->datetime,
                           };
 
         if ( $results->has_error )
@@ -1297,7 +1450,7 @@ Route for saving new caterer account information.
                                                                         username   => body_parameters->{'username'},
                                                                         password   => passphrase( body_parameters->{'password'} )->generate->rfc2307(),
                                                                         confirmed  => ( body_parameters->{'confirmed'} // 0 ),
-                                                                        created_on => DateTime->now(),
+                                                                        created_on => DateTime->now( time_zone => 'UTC' )->datetime,
                                                                     }
                                                                 );
 
@@ -1529,7 +1682,7 @@ Route for saving marketer account information.
                                             poc_name   => body_parameters->{'poc_name'},
                                             username   => body_parameters->{'username'},
                                             confirmed  => ( body_parameters->{'confirmed'} // 0 ),
-                                            updated_on => DateTime->now(),
+                                            updated_on => DateTime->now( time_zone => 'UTC' )->datetime,
                                         }
                                 )
                             }
@@ -1620,7 +1773,7 @@ Route for saving new marketer account information.
                                 poc_name   => body_parameters->{'poc_name'},
                                 username   => body_parameters->{'username'},
                                 confirmed  => ( body_parameters->{'confirmed'} // 0 ),
-                                created_on => DateTime->now(),
+                                created_on => DateTime->now( time_zone => 'UTC' )->datetime,
                           };
 
         if ( $results->has_error )
@@ -1669,7 +1822,7 @@ Route for saving new marketer account information.
                                                                         username   => body_parameters->{'username'},
                                                                         password   => passphrase( body_parameters->{'password'} )->generate->rfc2307(),
                                                                         confirmed  => ( body_parameters->{'confirmed'} // 0 ),
-                                                                        created_on => DateTime->now(),
+                                                                        created_on => DateTime->now( time_zone => 'UTC' )->datetime,
                                                                     }
                                                                 );
 
@@ -1874,7 +2027,7 @@ Route for saving user account information.
                                             full_name  => body_parameters->{'full_name'},
                                             username   => body_parameters->{'username'},
                                             confirmed  => ( body_parameters->{'confirmed'} // 0 ),
-                                            updated_on => DateTime->now(),
+                                            updated_on => DateTime->now( time_zone => 'UTC' )->datetime,
                                         }
                                 )
                             }
@@ -1947,7 +2100,7 @@ Route for saving new user account information.
                                 full_name  => body_parameters->{'full_name'},
                                 username   => body_parameters->{'username'},
                                 confirmed  => ( body_parameters->{'confirmed'} // 0 ),
-                                created_on => DateTime->now(),
+                                created_on => DateTime->now( time_zone => 'UTC' )->datetime,
                           };
 
         if ( $results->has_error )
@@ -1985,7 +2138,7 @@ Route for saving new user account information.
                                                                         username   => body_parameters->{'username'},
                                                                         password   => passphrase( body_parameters->{'password'} )->generate->rfc2307(),
                                                                         confirmed  => ( body_parameters->{'confirmed'} // 0 ),
-                                                                        created_on => DateTime->now(),
+                                                                        created_on => DateTime->now( time_zone => 'UTC' )->datetime,
                                                                     }
                                                                 );
 
@@ -2192,7 +2345,7 @@ Route for saving admin account information.
                                             phone      => body_parameters->{'phone'},
                                             full_name  => body_parameters->{'full_name'},
                                             username   => body_parameters->{'username'},
-                                            updated_on => DateTime->now(),
+                                            updated_on => DateTime->now( time_zone => 'UTC' )->datetime,
                                         }
                                 )
                             }
@@ -2265,7 +2418,7 @@ Route for saving new admin account information.
                                 full_name  => body_parameters->{'full_name'},
                                 username   => body_parameters->{'username'},
                                 confirmed  => ( body_parameters->{'confirmed'} // 0 ),
-                                created_on => DateTime->now(),
+                                created_on => DateTime->now( time_zone => 'UTC' )->datetime,
                           };
 
         if ( $results->has_error )
@@ -2303,7 +2456,7 @@ Route for saving new admin account information.
                                                                         full_name  => body_parameters->{'full_name'},
                                                                         username   => body_parameters->{'username'},
                                                                         password   => passphrase( body_parameters->{'password'} )->generate->rfc2307(),
-                                                                        created_on => DateTime->now(),
+                                                                        created_on => DateTime->now( time_zone => 'UTC' )->datetime,
                                                                     }
                                                                 );
 

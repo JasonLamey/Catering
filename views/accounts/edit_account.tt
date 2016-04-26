@@ -1,0 +1,10 @@
+[% USE date %]
+
+<div class="row">
+    <div class="small-12 medium-9 columns">
+        [% PROCESS "views/accounts/_edit_account_${user_type}.tt" %]
+    </div>
+    <div class="small-12 medium-3 columns callout secondary">
+        <h5>Marketer Listings</h5>
+    </div>
+</div>

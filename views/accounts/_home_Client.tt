@@ -1,5 +1,5 @@
         <div class="row align-stretch">
-            <div class="medium-3 columns callout">
+            <div class="small-12 medium-3 columns callout">
                 <h3>Quick Info</h3>
                 <h4>Performance</h4>
                 <div class="row">
@@ -44,7 +44,7 @@
                     </div>
                 </div>
             </div>
-            <div class="medium-6 columns">
+            <div class="small-12 medium-6 columns">
                 <h3>Manage Your Profile</h3>
                 <a href="/account/listing" class="button"><i class="fi-layout"></i> Your Ad Listing</a>
                 <a href="/account/locations" class="button"><i class="fi-map"></i> Your Business Locations</a>
@@ -56,7 +56,7 @@
             </div>
 
             <!-- START Marketer Listing Window -->
-            <div class="medium-3 columns secondary callout">
+            <div class="small-12 medium-3 columns secondary callout">
                 <div class="row">
                     <div class="small-12 columns">
                         <h5>Marketer Listings</h5>

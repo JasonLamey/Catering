@@ -8,13 +8,86 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>That's Catering!</title>
 
+        <!-- Grab Google CDN's jQuery. fall back to local if necessary -->
+        [%# <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script> %]
+        <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity="sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.1.0/foundation.min.js"></script>
+        <script type="text/javascript" src="/javascripts/vendor/notifIt.min.js"></script>
+
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.1.0/foundation.min.css">
         <link rel="stylesheet" href="/css/app.css">
         <link href='http://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.css' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="/css/notifIt.css">
 
-        <!-- Grab Google CDN's jQuery. fall back to local if necessary -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+        <script type="text/javascript">
+            function showSuccess( msg )
+            {
+                notif(
+                        {
+                            msg:       msg,
+                            type:      'success',
+                            position:  'center',
+                            width:     600,
+                            autohide:  true,
+                            opacity:   0.9,
+                            fade:      true,
+                            clickable: true,
+                            multiline: true,
+                        }
+                );
+            }
+            function showWarning( msg )
+            {
+                notif(
+                        {
+                            msg:       msg,
+                            type:      'warning',
+                            position:  'center',
+                            width:     600,
+                            autohide:  false,
+                            opacity:   0.9,
+                            fade:      true,
+                            clickable: true,
+                            multiline: true,
+                        }
+                );
+            }
+            function showError( msg )
+            {
+                notif(
+                        {
+                            msg:       msg,
+                            type:      'error',
+                            position:  'center',
+                            width:     600,
+                            autohide:  false,
+                            opacity:   0.9,
+                            fade:      true,
+                            clickable: true,
+                            multiline: true,
+                        }
+                );
+            }
+            function showInfo( msg )
+            {
+                notif(
+                        {
+                            msg:       msg,
+                            type:      'info',
+                            position:  'center',
+                            width:     600,
+                            autohide:  false,
+                            opacity:   0.9,
+                            fade:      true,
+                            clickable: true,
+                            multiline: true,
+                        }
+                );
+            }
+        </script>
+
         [% IF use_editor %]
         <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
         <script>tinymce.init({
@@ -25,40 +98,26 @@
                                 browser_spellcheck: true,
                             });</script>
         [% END %]
-    </head>
-    <body>
+
+        [% IF deferred.error_message || msgs.error_message || deferred.notify || deferred.success %]
+        <script>
+            $(document).ready( function () {
         [% IF deferred.error_message || msgs.error_message %]
             [% IF msgs.error_message %][% message = msgs.error_message %][% ELSE %]
             [% message = deferred.error_message %][% END %]
-        <div class="row">
-            <div class="alert callout" data-closable>
-                ERROR: [% message %]
-                <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        </div>
+                showError( '[% message %]' );
         [% END %]
         [% IF deferred.notify %]
-        <div class="row">
-            <div class="primary callout" data-closable>
-                [% deferred.notify %]
-                <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        </div>
+                showInfo( '[% deferred.notify %]' );
         [% END %]
         [% IF deferred.success %]
-        <div class="row">
-            <div class="success callout" data-closable>
-                [% deferred.success %]
-                <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        </div>
+                showSuccess( '[% deferred.success %]' );
         [% END %]
+            });
+        </script>
+        [% END %]
+    </head>
+    <body>
         <div class="top-bar">
             <div class="top-bar-left">
                 <ul class="dropdown menu" data-dropdown-menu>
@@ -148,11 +207,6 @@
                 </div>
             </div>
         </footer>
-        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript">/* <![CDATA[ */
-            !window.jQuery && document.write('<script type="text/javascript" src="http://localhost:3000/javascripts/jquery.js"><\/script>')
-        /* ]]> */</script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.1.0/foundation.min.js"></script>
         <script>
             $(document).foundation();
         </script>

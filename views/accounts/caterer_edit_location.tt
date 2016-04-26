@@ -1,6 +1,6 @@
 [% USE LocaleCountry %]
 <div class="row">
-    <div class="medium-9 columns">
+    <div class="small-12 medium-9 columns">
         <h2>Edit Business Location</h2>
         <p>Edit this business location's information. This information will show up on your listing page.</p>
         <form action="/account/location/[% data.location.id %]/save" method="post" data-abide>
@@ -65,7 +65,7 @@
             <input type="submit" value="Save Location" class="button">
         </form>
     </div>
-    <div class="medium-3 columns callout secondary">
+    <div class="small-12 medium-3 columns callout secondary">
         <h5>Marketer Listings</h5>
     </div>
 </div>
