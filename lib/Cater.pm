@@ -379,6 +379,11 @@ Caterer/Client route for listing established locations.
 
 get '/account/locations' => sub
 {
+    if ( lc( session( 'user_type' ) ) ne 'client' )
+    {
+        redirect '/account';
+    }
+
     my $user = Cater::Account->find_account(
                                             {
                                                 username => session('user'),
@@ -408,6 +413,11 @@ Caterer/Client route for business location add form.
 
 get '/account/location/add' => sub
 {
+    if ( lc( session( 'user_type' ) ) ne 'client' )
+    {
+        redirect '/account';
+    }
+
     my @countries = Locale::Country::all_country_names();
 
     template 'accounts/caterer_add_location.tt', {
@@ -443,6 +453,11 @@ Caterer/Client route for saving a new business location.
 
 post '/account/location/create' => sub
 {
+    if ( lc( session( 'user_type' ) ) ne 'client' )
+    {
+        redirect '/account';
+    }
+
     my $user = Cater::Account->find_account(
                                             {
                                                 username => session('user'),
@@ -542,6 +557,11 @@ Route to the edit form for changing the information on a Caterer location.
 
 get '/account/location/:id/edit' => sub
 {
+    if ( lc( session( 'user_type' ) ) ne 'client' )
+    {
+        redirect '/account';
+    }
+
     my $user = Cater::Account->find_account(
                                             {
                                                 username => session('user'),
@@ -574,6 +594,11 @@ Route for saving edited caterer locations.
 
 post '/account/location/:id/save' => sub
 {
+    if ( lc( session( 'user_type' ) ) ne 'client' )
+    {
+        redirect '/account';
+    }
+
     my $user = Cater::Account->find_account(
                                             {
                                                 username => session('user'),
@@ -682,6 +707,11 @@ Route to delete a caterer location.
 
 get '/account/location/:id/delete' => sub
 {
+    if ( lc( session( 'user_type' ) ) ne 'client' )
+    {
+        redirect '/account';
+    }
+
     my $user = Cater::Account->find_account(
                                             {
                                                 username => session('user'),
@@ -719,6 +749,11 @@ Route to edit caterer listing information.
 
 get '/account/listing' => sub
 {
+    if ( lc( session( 'user_type' ) ) ne 'client' )
+    {
+        redirect '/account';
+    }
+
     my $user = Cater::Account->find_account(
                                             {
                                                 username => session('user'),
@@ -753,6 +788,11 @@ Route to save changes to the listing.
 
 post '/account/listing/save' => sub
 {
+    if ( lc( session( 'user_type' ) ) ne 'client' )
+    {
+        redirect '/account';
+    }
+
     my $user = Cater::Account->find_account(
                                             {
                                                 username => session('user'),
@@ -998,6 +1038,42 @@ post '/account/save' => sub
 
     deferred success => "Successfully updated your account info.";
     redirect '/account';
+};
+
+
+=head2 POST '/account/advert/create'
+
+Route to add advertisement form for Marketers.
+
+=cut
+
+get '/account/advert/create' => sub
+{
+
+    if ( lc( session( 'user_type' ) ) ne 'marketer' )
+    {
+        redirect '/account';
+    }
+
+    my $user = Cater::Account->find_account(
+                                            {
+                                                username => session('user'),
+                                            },
+                                            user_type => session('user_type'),
+                                           );
+
+    my $account = $user->{'account'};
+
+    template 'accounts/marketer_add_advert.tt', {
+                                                    use_editor => 1,
+                                                    data => {
+                                                            },
+                                                    breadcrumbs => [
+                                                                    { link => '/account', name => 'Account' },
+                                                                    { current => 1, name => 'Add Advertisement' },
+                                                                   ],
+                                                };
+
 };
 
 

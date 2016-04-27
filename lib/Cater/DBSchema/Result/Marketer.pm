@@ -130,6 +130,7 @@ __PACKAGE__->add_columns(
                         );
 
 __PACKAGE__->set_primary_key( 'id' );
+__PACKAGE__->might_have( 'listing', 'Cater::DBSchema::Result::MarketerAdvert', 'marketer_id' );
 
 # Cater::User->has_many( somethings => 'Object::Package' );
 
