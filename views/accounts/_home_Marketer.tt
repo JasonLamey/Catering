@@ -102,7 +102,7 @@
 
     <div class="medium-5 columns">
         <h3>Your Advertisements</h3>
-        <a href="/account/advert/create" class="button"><i class="fi-page-add"></i> Create New Ad</a><br>
+        <a href="/account/advert/add" class="button"><i class="fi-page-add"></i> Create New Ad</a><br>
         [% IF data.ads.defined and data.ads.size > 0 %]
             [% FOREACH ad IN data.ads %]
             [% PROCESS 'views/accounts/_home_Marketer_ads.tt' %]

@@ -20,7 +20,7 @@ Database object representing Marketer Advertisements within the web app.
 
 =cut
 
-__PACKAGE__->table( 'marketer_adverts' );
+__PACKAGE__->table( 'marketer_ads' );
 __PACKAGE__->add_columns(
                             id =>
                                 {

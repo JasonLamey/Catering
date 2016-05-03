@@ -1041,13 +1041,13 @@ post '/account/save' => sub
 };
 
 
-=head2 POST '/account/advert/create'
+=head2 GET '/account/advert/add'
 
 Route to add advertisement form for Marketers.
 
 =cut
 
-get '/account/advert/create' => sub
+get '/account/advert/add' => sub
 {
 
     if ( lc( session( 'user_type' ) ) ne 'marketer' )
@@ -1074,6 +1074,96 @@ get '/account/advert/create' => sub
                                                                    ],
                                                 };
 
+};
+
+
+=head2 post '/account/advert/create'
+
+Route to save a new advert for Marketers.
+
+=cut
+
+post '/account/advert/create' => sub
+{
+    my $user = Cater::Account->find_account(
+                                            {
+                                                username => session('user'),
+                                            },
+                                            user_type => session('user_type'),
+                                           );
+
+    my $account = $user->{'account'};
+
+    my $new_advert = {
+                            headline   => body_parameters->{'headline'},
+                            body       => body_parameters->{'body'},
+                            email      => body_parameters->{'email'},
+                            phone      => body_parameters->{'phone'},
+                            website    => body_parameters->{'website'},
+                            phone      => body_parameters->{'phone'},
+                            created_on => DateTime->now( time_zone => 'UTC' )->datetime,
+                      };
+
+    my $results = FormValidator::Simple->check(
+                                                $new_advert => [
+                                                                headline => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                body     => [ 'NOT_BLANK', [ 'LENGTH', 4, 65535 ] ],
+                                                                email    => [ 'EMAIL' ],
+                                                                phone    => [ [ 'LENGTH', 0, 30 ] ],
+                                                                website  => [ 'HTTP_URL' ],
+                                                               ]
+                                              );
+    if ( $results->has_error )
+    {
+        my $bad_fields = '';
+        foreach my $key ( @{ $results->error() } )
+        {
+            $bad_fields .= "<li>$key</li>\n";
+        }
+        my $error_message = "The following fields had errors:\n";
+        $error_message    .= "<ul>\n$bad_fields</ul>\n";
+
+        warning $error_message;
+
+
+        template 'accounts/marketer_add_advert.tt',   {
+                                                    data => {
+                                                                form => $new_advert,
+                                                            },
+                                                    msgs => {
+                                                                error_message => $error_message,
+                                                            },
+                                                    user_type   => session('user_type'),
+                                                    breadcrumbs => [
+                                                                    { link => '/account', name => 'Account' },
+                                                                    { current => 1, name => 'Add Advertisement' },
+                                                                   ],
+                                                    };
+    }
+
+    $SCHEMA->txn_do( sub
+                        {
+                            $account->add_to_advertisements( $new_advert );
+                        }
+    );
+
+    # Let's make easy hashes from the objects so that we can leave out the cruft.
+    my @changes = ();
+    foreach my $key ( qw/ headline body email phone website / )
+    {
+        push( @changes, "$key -> '$new_advert->{$key}'" );
+    }
+
+    my $logged = Cater::Log->user_log(
+                                        user        => session( "user" ) . ' (' . session("user_type") . ')',
+                                        ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                        log_level   => 'Info',
+                                        log_message => 'Added New Advertisement'
+                                                        . join( '; ', @changes ),
+                                      );
+
+    deferred success => "Successfully created your advertisement <strong>$new_advert->{'headline'}</strong>.";
+    redirect '/account';
 };
 
 
