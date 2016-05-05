@@ -1,8 +1,8 @@
 <div class="row">
     <div class="small-12 columns">
-        <h2>Create Advertisement</h2>
+        <h2>Edit Advertisement</h2>
         <span class="small"><em>Please note: Your company name will be displayed from your account information.</em></span><br>
-        <form action="/account/advert/create" method="post" id="editor_form">
+        <form action="/account/advert/[% data.form.id %]/save" method="post" id="editor_form">
             <div class="row">
                 <div class="small-12 columns">
                     <label for="headline">Your Ad's Headline: <strong><span style="color: red;"><i class="fi-asterisk"></i></span></strong>
@@ -36,7 +36,7 @@
             </div>
             <div class="row">
                 <div class="small-12 columns">
-                    <input type="button" value="Save" class="button" onclick="submitForm( 'body' );">
+                    <input type="button" value="Save" class="button" onclick="submitForm('body')">
                 </div>
             </div>
         </form>

@@ -101,15 +101,25 @@
     </div>
 
     <div class="medium-5 columns">
-        <h3>Your Advertisements</h3>
-        <a href="/account/advert/add" class="button"><i class="fi-page-add"></i> Create New Ad</a><br>
-        [% IF data.ads.defined and data.ads.size > 0 %]
-            [% FOREACH ad IN data.ads %]
+        <div class="row">
+            <div class="small-12 columns">
+                <h3>Your Advertisements</h3>
+                <a href="/account/advert/add" class="button"><i class="fi-page-add"></i> Create New Ad</a>
+            </div>
+        </div>
+        [% IF data.adverts.defined and data.adverts.size > 0 %]
+            <ul class="accordion" data-accordion data-allow-all-closed="true">
+            [% FOREACH ad IN data.adverts %]
             [% PROCESS 'views/accounts/_home_Marketer_ads.tt' %]
             [% END %]
+            </ul>
         [% ELSE %]
-        <strong>Oh no!</strong> Looks like you don't have any advertisements, yet.<br>
-        Go ahead and create one!
+        <div class="row">
+            <div class="small-12 columns">
+                <strong>Oh no!</strong> Looks like you don't have any advertisements, yet.<br>
+                Go ahead and create one!
+            </div>
+        </div>
         [% END %]
     </div>
 </div>

@@ -356,12 +356,14 @@ get '/account' => sub
 
     my @countries = Locale::Country::all_country_names();
     my $cuisines  = Cater::Caterer->get_all_cuisine_types();
+    my @adverts   = $user->{'account'}->advertisements( undef, { ordery_by => { -asc => 'created_on' } } );
 
     template 'accounts/home.tt', {
                                     data => {
                                                 user          => $user->{'account'},
                                                 countries     => \@countries,
                                                 cuisine_types => $cuisines,
+                                                adverts       => \@adverts,
                                             },
                                     breadcrumbs => [
                                                     { link => '/account', name => 'Account' },
@@ -1066,6 +1068,7 @@ get '/account/advert/add' => sub
 
     template 'accounts/marketer_add_advert.tt', {
                                                     use_editor => 1,
+                                                    word_limit => 100,
                                                     data => {
                                                             },
                                                     breadcrumbs => [
@@ -1127,6 +1130,8 @@ post '/account/advert/create' => sub
 
 
         template 'accounts/marketer_add_advert.tt',   {
+                                                    use_editor => 1,
+                                                    word_limit => 100,
                                                     data => {
                                                                 form => $new_advert,
                                                             },
@@ -1163,6 +1168,158 @@ post '/account/advert/create' => sub
                                       );
 
     deferred success => "Successfully created your advertisement <strong>$new_advert->{'headline'}</strong>.";
+    redirect '/account';
+};
+
+
+=head2 GET '/account/advert/<id>/edit'
+
+Route to edit a marketer advertisement.
+
+=cut
+
+get '/account/advert/:id/edit' => sub
+{
+    if ( lc( session( 'user_type' ) ) ne 'marketer' )
+    {
+        redirect '/account';
+    }
+
+    my $user = Cater::Account->find_account(
+                                            {
+                                                username => session('user'),
+                                            },
+                                            user_type => session('user_type'),
+                                           );
+
+    my $account = $user->{'account'};
+    my @adverts = $account->advertisements( { id => route_parameters->{'id'} } );
+
+    if ( scalar( @adverts ) < 1 )
+    {
+        redirect '/account';
+    }
+
+    template 'accounts/marketer_edit_advert.tt',
+                                                {
+                                                    use_editor => 1,
+                                                    word_limit => 100,
+                                                    data => {
+                                                                form => $adverts[0],
+                                                            },
+                                                    breadcrumbs => [
+                                                                    { link => '/account', name => 'Account' },
+                                                                    { current => 1, name => 'Edit Advertisement' },
+                                                                   ],
+                                                };
+
+};
+
+
+=head2 POST '/account/advert/<id>/save'
+
+Route to save changes to a marketer advertisement.
+
+=cut
+
+post '/account/advert/:id/save' => sub
+{
+    if ( lc( session( 'user_type' ) ) ne 'marketer' )
+    {
+        redirect '/account';
+    }
+
+    my $user = Cater::Account->find_account(
+                                            {
+                                                username => session('user'),
+                                            },
+                                            user_type => session('user_type'),
+                                           );
+
+    my $account = $user->{'account'};
+    my @adverts = $account->advertisements( { id => route_parameters->{'id'} } );
+
+    if ( scalar( @adverts ) < 1 )
+    {
+        redirect '/account';
+    }
+
+    my $orig_advert = $adverts[0];
+
+    my $new_advert = {
+                            headline   => body_parameters->{'headline'},
+                            body       => body_parameters->{'body'},
+                            email      => body_parameters->{'email'},
+                            phone      => body_parameters->{'phone'},
+                            website    => body_parameters->{'website'},
+                            phone      => body_parameters->{'phone'},
+                            updated_on => DateTime->now( time_zone => 'UTC' )->datetime,
+                      };
+
+    my $results = FormValidator::Simple->check(
+                                                $new_advert => [
+                                                                headline => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                                                body     => [ 'NOT_BLANK', [ 'LENGTH', 4, 65535 ] ],
+                                                                email    => [ 'EMAIL' ],
+                                                                phone    => [ [ 'LENGTH', 0, 30 ] ],
+                                                                website  => [ 'HTTP_URL' ],
+                                                               ]
+                                              );
+    if ( $results->has_error )
+    {
+        my $bad_fields = '';
+        foreach my $key ( @{ $results->error() } )
+        {
+            $bad_fields .= "<li>$key</li>\n";
+        }
+        my $error_message = "The following fields had errors:\n";
+        $error_message    .= "<ul>\n$bad_fields</ul>\n";
+
+        warning $error_message;
+
+
+        template 'accounts/marketer_add_advert.tt',   {
+                                                    use_editor => 1,
+                                                    word_limit => 100,
+                                                    data => {
+                                                                form => $new_advert,
+                                                            },
+                                                    msgs => {
+                                                                error_message => $error_message,
+                                                            },
+                                                    user_type   => session('user_type'),
+                                                    breadcrumbs => [
+                                                                    { link => '/account', name => 'Account' },
+                                                                    { current => 1, name => 'Edit Advertisement' },
+                                                                   ],
+                                                    };
+    }
+
+    my %old_data = ();
+    my %new_data = ();
+    foreach my $key ( qw/ headline body email phone website / )
+    {
+        $old_data{$key} = $orig_advert->$key;
+        $new_data{$key} = $new_advert->{$key};
+    }
+
+    my @changes = Cater::Log->find_changes_in_data( old_data => \%old_data, new_data => \%new_data );
+
+    $SCHEMA->txn_do( sub
+                        {
+                            $orig_advert->update( $new_advert );
+                        }
+    );
+
+    my $logged = Cater::Log->user_log(
+                                        user        => session( "user" ) . ' (' . session("user_type") . ')',
+                                        ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                        log_level   => 'Info',
+                                        log_message => 'Updated Advertisement'
+                                                        . join( '; ', @changes ),
+                                      );
+
+    deferred success => "Successfully updated your advertisement <strong>$new_advert->{'headline'}</strong>.";
     redirect '/account';
 };
 

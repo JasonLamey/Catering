@@ -1,11 +1,11 @@
-<div class="row">
-    <div class="small-4 columns">
-        <h3><i class="fi-photo"></i></h3>
-    </div>
-    <div class="small-8 columns">
-        <h5>[% ad.title %]</h5>
-        <a href="/account/advertisement/[% ad.id %]/edit"><i class="fi-page-edit"></i> Edit</a>
-        &middot;
-        <a href="/account/advertisement/[% ad.id %]/delete"><i class="fi-trash"></i> Delete</a>
-    </div>
-</div>
+[% USE HTML %]
+            <li class="accordion-item" data-accordion-item>
+                <a href="#" class="accordion-title">[% IF ad.headline.length > 50 %][% HTML.escape( ad.headline.substr( 0, 50 ) ) %]...[% ELSE %][% ad.headline %][% END %]</a>
+                <div class="accordion-content" data-tab-content>
+                    <h5>[% ad.headline %]</h5>
+                    [% ad.body %]
+                    <br>
+                    <a href="/account/advert/[% ad.id %]/edit" class="button"><i class="fi-page-edit"></i> Edit</a>
+                    <a href="/account/advert/[% ad.id %]/delete" class="button alert"><i class="fi-trash"></i> Delete</a>
+                </div>
+            </li>

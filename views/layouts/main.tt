@@ -96,7 +96,30 @@
                                 toolbar: 'undo redo | styleselect | fontselect fontsizeselect forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | charmap link spellchecker',
                                 plugins: 'autolink link lists charmap preview wordcount textcolor colorpicker',
                                 browser_spellcheck: true,
-                            });</script>
+                            });
+            [% IF word_limit %]
+            // Returns text statistics for the specified editor by id
+            function getStats(id) {
+                var body = tinymce.get(id).getBody(), text = tinymce.trim(body.innerText || body.textContent);
+
+                return {
+                    chars: text.length,
+                    words: text.split(/[\w\u2019\'-]+/).length
+                };
+            }
+
+            function submitForm( content ) {
+                // Check if the user has entered less than 100 words
+                if (getStats(content).words > [% word_limit %]) {
+                    showError( "You need to enter fewer than [% word_limit %] words." );
+                    return;
+                }
+
+                // Submit the form
+                document.getElementById( 'editor_form' ).submit();
+            }
+            [% END %]
+        </script>
         [% END %]
 
         [% IF deferred.error_message || msgs.error_message || deferred.notify || deferred.success %]
