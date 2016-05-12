@@ -354,9 +354,22 @@ get '/account' => sub
                                             user_type => session('user_type'),
                                            );
 
+    if ( not defined $user->{'account'} )
+    {
+        deferred error => 'An error occurred and we could not retrieve your account.  Please try logging in again.';
+        redirect '/login';
+    }
+
     my @countries = Locale::Country::all_country_names();
     my $cuisines  = Cater::Caterer->get_all_cuisine_types();
-    my @adverts   = $user->{'account'}->advertisements( undef, { ordery_by => { -asc => 'created_on' } } );
+
+    warning( Data::Dumper::Dumper( $user->{'account'} ) );
+
+    my @adverts = ();
+    if ( session('user_type') eq 'Marketer' )
+    {
+        @adverts = $user->{'account'}->advertisements( undef, { ordery_by => { -asc => 'created_on' } } );
+    }
 
     template 'accounts/home.tt', {
                                     data => {
@@ -939,20 +952,62 @@ post '/account/save' => sub
     my $account = $user->{'account'};
     my $orig_account = Clone::clone( $account );
 
-    my $form_input = body_parameters->as_hashref;
+    my %form_input = (
+                    Client   => [
+                                    username => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                    poc_name => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                    company  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                    email    => [ 'NOT_BLANK', 'EMAIL' ],
+                                    phone    => [ [ 'LENGTH', 0, 30 ] ],
+                                    street1  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                    city     => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                    state    => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                    country  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                    zip      => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                ],
+                    Marketer => [
+                                    username => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                    poc_name => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                    company  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                    email    => [ 'NOT_BLANK', 'EMAIL' ],
+                                    phone    => [ [ 'LENGTH', 0, 30 ] ],
+                                    street1  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                    city     => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                    state    => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                    country  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                    zip      => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
+                                ],
+                    User     => [
+                                    username  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                    email     => [ 'NOT_BLANK', 'EMAIL' ],
+                                    full_name => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
+                                ],
+                  );
+
+    my %account_keys = (
+                        Client   => [
+                                        qw/ company email phone street1 street2 city state country zip
+                                            poc_name username /
+                                    ],
+                        Marketer => [
+                                        qw/ company email phone street1 street2 city state country zip
+                                            poc_name username /
+                                    ],
+                        User     => [ qw/ email full_name username / ],
+                    );
+
+    my $new_account = {};
+    foreach my $key ( @{ $account_keys{session( 'user_type' )} } )
+    {
+        $new_account->{$key} = body_parameters->{$key} // '';
+    }
+    $new_account->{'updated_on'} = DateTime->now( time_zone => 'UTC' )->datetime,
+
+    warn( Data::Dumper::Dumper( $new_account ) );
+
+    my $input_params = body_parameters->as_hashref;
     my $results = FormValidator::Simple->check(
-                                                $form_input => [
-                                                                username => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
-                                                                poc_name => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
-                                                                company  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
-                                                                email    => [ 'NOT_BLANK', 'EMAIL' ],
-                                                                phone    => [ [ 'LENGTH', 0, 30 ] ],
-                                                                street1  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
-                                                                city     => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
-                                                                state    => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
-                                                                country  => [ 'NOT_BLANK', [ 'LENGTH', 4, 255 ] ],
-                                                                zip      => [ 'NOT_BLANK', [ 'LENGTH', 4, 20  ] ],
-                                                               ]
+                                                $input_params => $form_input{session('user_type')}
                                               );
     if ( $results->has_error )
     {
@@ -967,25 +1022,10 @@ post '/account/save' => sub
         warning $error_message;
 
         my @countries = Locale::Country::all_country_names();
-        my $new_account = {
-                                company    => body_parameters->{'company'},
-                                email      => body_parameters->{'email'},
-                                phone      => body_parameters->{'phone'},
-                                street1    => body_parameters->{'street1'},
-                                street2    => body_parameters->{'street2'},
-                                city       => body_parameters->{'city'},
-                                state      => body_parameters->{'state'},
-                                country    => body_parameters->{'country'},
-                                zip        => body_parameters->{'zip'},
-                                poc_name   => body_parameters->{'poc_name'},
-                                username   => body_parameters->{'username'},
-                                created_on => body_parameters->{'created_on'},
-                                updated_on => body_parameters->{'updated_on'},
-                          };
 
         template 'accounts/edit_account.tt',   {
                                                     data => {
-                                                                caterer   => $new_account,
+                                                                account   => $new_account,
                                                                 countries => \@countries,
                                                             },
                                                     msgs => {
@@ -1001,29 +1041,14 @@ post '/account/save' => sub
 
     $SCHEMA->txn_do( sub
                         {
-                            $account->update(
-                                    {
-                                        company    => body_parameters->{'company'},
-                                        email      => body_parameters->{'email'},
-                                        phone      => body_parameters->{'phone'},
-                                        street1    => body_parameters->{'street1'},
-                                        street2    => body_parameters->{'street2'},
-                                        city       => body_parameters->{'city'},
-                                        state      => body_parameters->{'state'},
-                                        country    => body_parameters->{'country'},
-                                        zip        => body_parameters->{'zip'},
-                                        poc_name   => body_parameters->{'poc_name'},
-                                        username   => body_parameters->{'username'},
-                                        updated_on => DateTime->now( time_zone => 'UTC' )->datetime,
-                                    }
-                            )
+                            $account->update( $new_account )
                         }
     );
 
     # Let's make easy hashes from the objects so that we can leave out the cruft.
     my %old_data = ();
     my %new_data = ();
-    foreach my $key ( qw/ company email phone street1 street2 city state country zip poc_name username confirmed / )
+    foreach my $key ( @{ $account_keys{session('user_type')} } )
     {
         $old_data{$key} = $orig_account->$key;
         $new_data{$key} = $account->$key;
@@ -1320,6 +1345,55 @@ post '/account/advert/:id/save' => sub
                                       );
 
     deferred success => "Successfully updated your advertisement <strong>$new_advert->{'headline'}</strong>.";
+    redirect '/account';
+};
+
+
+=head2 GET '/account/advert/<id>/delete'
+
+Route to delete a marketer advertisement.
+
+=cut
+
+get '/account/advert/:id/delete' => sub
+{
+    if ( lc( session( 'user_type' ) ) ne 'marketer' )
+    {
+        redirect '/account';
+    }
+
+    my $user = Cater::Account->find_account(
+                                            {
+                                                username => session('user'),
+                                            },
+                                            user_type => session('user_type'),
+                                           );
+
+    my $account = $user->{'account'};
+    my @adverts = $account->advertisements( { id => route_parameters->{'id'} } );
+
+    if ( scalar( @adverts ) < 1 )
+    {
+        redirect '/account';
+    }
+
+    my $advert_to_delete = $adverts[0];
+    my $advert_headline = $advert_to_delete->headline;
+
+    $SCHEMA->txn_do( sub
+                        {
+                            $advert_to_delete->delete;
+                        }
+    );
+
+    my $logged = Cater::Log->user_log(
+                                        user        => session( "user" ) . ' (' . session("user_type") . ')',
+                                        ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                        log_level   => 'Info',
+                                        log_message => 'Deleted Advertisement &gt;' . $advert_headline . '&lt;',
+                                      );
+
+    deferred success => "Successfully deleted your advertisement <strong>$advert_headline</strong>.";
     redirect '/account';
 };
 

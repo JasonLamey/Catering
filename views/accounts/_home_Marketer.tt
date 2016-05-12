@@ -1,7 +1,8 @@
 [% USE LocaleCountry %]
+[% USE Date %]
 <!-- BEGIN MARKETER HOME PAGE CONTENT -->
 <div class="row">
-    <div class="medium-7 columns">
+    <div class="small-12 medium-7 columns">
         <h3>Account Management</h3>
         <form action="/account/save" method="post" data-abide novalidate>
             <div class="row">
@@ -15,6 +16,20 @@
                 <div class="small-12 columns callout">
                     <div class="row">
                         <div class="medium-6 columns">
+                            <label for="username">User Name <span style="color: red;"><i class="fi-asterisk"></i></span>
+                                <input type="text" name="username" value="[% data.user.username %]" placeholder="bjones" readonly required>
+                                <span class="form-error">
+                                    A Username is required.
+                                </span>
+                            </label>
+
+                            <label for="poc_name">Point of Contact Name <span style="color: red;"><i class="fi-asterisk"></i></span>
+                                <input type="text" name="poc_name" value="[% data.user.poc_name %]" placeholder="Bob Jones" required>
+                                <span class="form-error">
+                                    A Point of Contact Name is required.
+                                </span>
+                            </label>
+
                             <label for="company">Company Name <span style="color: red;"><i class="fi-asterisk"></i></span>
                                 <input type="text" name="company" value="[% data.user.company %]" placeholder="Company Name" required>
                                 <span class="form-error">
@@ -33,11 +48,8 @@
                                 <input type="tel" name="phone" value="[% data.user.phone %]" placeholder="123 456-7890" data-abide-ignore>
                             </label>
 
-                            <label for="poc_name">Point of Contact Name <span style="color: red;"><i class="fi-asterisk"></i></span>
-                                <input type="text" name="poc_name" value="[% data.user.poc_name %]" placeholder="Bob Jones" required>
-                                <span class="form-error">
-                                    A Point of Contact Name is required.
-                                </span>
+                            <label for="updated_on">Last Updated
+                                <input type="text" name="updated_on" value="[% Date.format( data.user.updated_on, '%d %B, %Y %I:%M %p %Z' ) %]" placeholder="Never" readonly disabled>
                             </label>
 
                         </div>
@@ -100,7 +112,7 @@
         </form>
     </div>
 
-    <div class="medium-5 columns">
+    <div class="small-12 medium-5 columns">
         <div class="row">
             <div class="small-12 columns">
                 <h3>Your Advertisements</h3>
