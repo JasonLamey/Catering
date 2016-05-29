@@ -83,7 +83,7 @@ __PACKAGE__->add_columns(
                         );
 
 __PACKAGE__->set_primary_key( 'id' );
-__PACKAGE__->belongs_to( 'client' => 'Cater::DBSchema::Result::Marketer', 'marketer_id' );
+__PACKAGE__->belongs_to( 'marketer' => 'Cater::DBSchema::Result::Marketer', 'marketer_id' );
 
 
 =head1 AUTHOR

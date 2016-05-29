@@ -50,6 +50,25 @@
                             [% IF data.listing.updated_on %] &nbsp; <strong>Last Updated:</strong> [% date.format( data.listing.updated_on, format => '%d %b %Y' ) %][% END %]</span>
     </div>
     <div class="medium-3 columns callout secondary">
-        <h5>Marketer Listings</h5>
+        <div class="row">
+             <div class="small-12 columns">
+             [% IF data.adverts.defined && data.adverts.size > 0 %]
+                 [% count = 0 %]
+                 [% FOREACH advert IN data.adverts %]
+                     [% PROCESS 'views/accounts/_marketer_ads.tt' %]
+                     [% UNLESS count == data.adverts.size %]
+                     <div class="row">
+                         <div class="small-12 columns">
+                         <hr>
+                         </div>
+                     </div>
+                     [% END %]
+                     [% count = count + 1 %]
+                 [% END %]
+             [% ELSE %]
+                 <h5>No Marketer Ads Found In Your Area</h5>
+             [% END %]
+             </div>
+         </div>
     </div>
 </div>

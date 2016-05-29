@@ -1,50 +1,50 @@
         <div class="row align-stretch">
-            <div class="small-12 medium-3 columns callout">
+            <div class="small-12 medium-2 columns callout">
                 <h3>Quick Info</h3>
                 <h4>Performance</h4>
                 <div class="row">
-                    <div class="medium-6 large-5 columns text-right">
+                    <div class="small-6 medium-6 large-9 columns text-right">
                         Views:
                     </div>
-                    <div class="medium-6 large-7 columns">
+                    <div class="small-6 medium-6 large-3 columns">
                         [% data.performance.ad_views || 0 %]
                     </div>
                 </div>
                 <div class="row">
-                    <div class="medium-6 large-5 columns text-right">
+                    <div class="small-6 medium-6 large-9 columns text-right">
                         Bookmarks:
                     </div>
-                    <div class="medium-6 large-7 columns">
+                    <div class="small-6 medium-6 large-3 columns">
                         [% data.performance.bookmarks || 0 %]
                     </div>
                 </div>
                 <h4>Leads</h4>
                 <div class="row">
-                    <div class="medium-6 large-5 columns text-right">
+                    <div class="small-6 medium-6 large-9 columns text-right">
                         Today:
                     </div>
-                    <div class="medium-6 large-7 columns">
+                    <div class="small-6 medium-6 large-3 columns">
                         [% data.leads.total_today || 0 %]
                     </div>
                 </div>
                 <div class="row">
-                    <div class="medium-6 large-5 columns text-right">
+                    <div class="small-6 medium-6 large-9 columns text-right">
                         This Week:
                     </div>
-                    <div class="medium-6 large-7 columns">
+                    <div class="small-6 medium-6 large-3 columns">
                         [% data.leads.total_week || 0 %]
                     </div>
                 </div>
                 <div class="row">
-                    <div class="medium-6 large-5 columns text-right">
+                    <div class="small-6 medium-6 large-9 columns text-right">
                         This Month:
                     </div>
-                    <div class="medium-6 large-7 columns">
+                    <div class="small-6 medium-6 large-3 columns">
                         [% data.leads.total_month || 0 %]
                     </div>
                 </div>
             </div>
-            <div class="small-12 medium-6 columns">
+            <div class="small-12 medium-7 columns">
                 <h3>Manage Your Profile</h3>
                 <a href="/account/listing" class="button"><i class="fi-layout"></i> Your Ad Listing</a>
                 <a href="/account/locations" class="button"><i class="fi-map"></i> Your Business Locations</a>
@@ -59,7 +59,22 @@
             <div class="small-12 medium-3 columns secondary callout">
                 <div class="row">
                     <div class="small-12 columns">
-                        <h5>Marketer Listings</h5>
+                    [% IF data.adverts.defined && data.adverts.size > 0 %]
+                        [% count = 0 %]
+                        [% FOREACH advert IN data.adverts %]
+                            [% PROCESS 'views/accounts/_marketer_ads.tt' %]
+                            [% UNLESS count == data.adverts.size %]
+                            <div class="row">
+                                <div class="small-12 columns">
+                                <hr>
+                                </div>
+                            </div>
+                            [% END %]
+                            [% count = count + 1 %]
+                        [% END %]
+                    [% ELSE %]
+                        <h5>No Marketer Ads Found In Your Area</h5>
+                    [% END %]
                     </div>
                 </div>
             </div>

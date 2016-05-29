@@ -32,6 +32,7 @@ use Cater::DBSchema;
 use Cater::Login;
 use Cater::Email;
 use Cater::Caterer;
+use Cater::Marketer;
 use Cater::Admin;
 use Cater::Log;
 use Cater::Utils;
@@ -163,10 +164,28 @@ post '/login' => sub
         session->expires( $USER_SESSION_EXPIRE_TIME ); # User session auto-expires after 48 hours of inactivity.
 
         deferred success => 'Successfully logged in.  Welcome back, <b>' . session( "user" ) . '</b>!';
+        my $logged = Cater::Log->user_log(
+                                            user        => session( 'user' ) . ' (' . session( 'user_type' ) . ')',
+                                            ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                            log_level   => 'Info',
+                                            log_message => 'Successful Login',
+                                          );
+
         redirect ( body_parameters->get('requested_path') || '/account' );
     }
     else
     {
+        my $logged = Cater::Log->user_log(
+                                            user        => 'Unknown',
+                                            ip_address  => request->remote_address . ' - ' . request->remote_host,
+                                            log_level   => 'Warning',
+                                            log_message => 'Failed Login Attempt - Entered Credentials: Username=&gt;'
+                                                            . body_parameters->get('username') . '&lt;, Password=&gt;'
+                                                            . body_parameters->get('password') . '&lt;, Usertype=&gt;'
+                                                            . body_parameters->get('user_type') . '&lt;, Error - '
+                                                            . $login_result->{'log_message'},
+                                          );
+
         warning $login_result->{'log_message'};
         forward '/login',
                         {
@@ -363,13 +382,17 @@ get '/account' => sub
     my @countries = Locale::Country::all_country_names();
     my $cuisines  = Cater::Caterer->get_all_cuisine_types();
 
-    warning( Data::Dumper::Dumper( $user->{'account'} ) );
-
     my @adverts = ();
     if ( session('user_type') eq 'Marketer' )
     {
         @adverts = $user->{'account'}->advertisements( undef, { ordery_by => { -asc => 'created_on' } } );
     }
+    elsif ( session('user_type') eq 'Client' )
+    {
+        @adverts = Cater::Marketer->get_random_marketer_ads();
+    }
+
+    warning Data::Dumper::Dumper( @adverts );
 
     template 'accounts/home.tt', {
                                     data => {
@@ -407,10 +430,12 @@ get '/account/locations' => sub
                                            );
 
     my @locations = $user->{'account'}->locations( undef, { order_by => { -asc => 'name' } } );
+    my @adverts = Cater::Marketer->get_random_marketer_ads();
 
     template 'accounts/caterer_locations.tt', {
                                                 data => {
                                                             locations => \@locations,
+                                                            adverts   => \@adverts,
                                                         },
                                                 breadcrumbs => [
                                                                 { link => '/account', name => 'Account' },
@@ -434,9 +459,11 @@ get '/account/location/add' => sub
     }
 
     my @countries = Locale::Country::all_country_names();
+    my @adverts = Cater::Marketer->get_random_marketer_ads();
 
     template 'accounts/caterer_add_location.tt', {
                                     data        => {
+                                                    adverts => \@adverts,
                                                     form => {
                                                                 name    => ( param 'name'    // '' ),
                                                                 phone   => ( param 'phone'   // '' ),
@@ -523,11 +550,13 @@ post '/account/location/create' => sub
         warning $error_message;
 
         my @countries = Locale::Country::all_country_names();
+        my @adverts = Cater::Marketer->get_random_marketer_ads();
 
         template 'accounts/caterer_add_location.tt',   {
                                                     data => {
                                                                 form   => $new_location,
                                                                 countries => \@countries,
+                                                                adverts   => \@adverts,
                                                             },
                                                     msgs => {
                                                                 error_message => $error_message,
@@ -586,11 +615,13 @@ get '/account/location/:id/edit' => sub
 
     my @location = $user->{'account'}->locations( { id => route_parameters->{'id'} } );
     my @countries = Locale::Country::all_country_names();
+    my @adverts = Cater::Marketer->get_random_marketer_ads();
 
     template 'accounts/caterer_edit_location.tt', {
                                                     data => {
                                                                 location  => $location[0],
                                                                 countries => \@countries,
+                                                                adverts   => \@adverts,
                                                             },
                                                     breadcrumbs => [
                                                                     { link => '/account', name => 'Account' },
@@ -666,11 +697,13 @@ post '/account/location/:id/save' => sub
         warning $error_message;
 
         my @countries = Locale::Country::all_country_names();
+        my @adverts = Cater::Marketer->get_random_marketer_ads();
 
         template 'accounts/caterer_edit_location.tt',   {
                                                     data => {
                                                                 form   => $new_location,
                                                                 countries => \@countries,
+                                                                adverts   => \@adverts,
                                                             },
                                                     msgs => {
                                                                 error_message => $error_message,
@@ -778,6 +811,7 @@ get '/account/listing' => sub
 
     my @listing = $user->{'account'}->listing();
     my $cuisines  = Cater::Caterer->get_all_cuisine_types();
+    my @adverts = Cater::Marketer->get_random_marketer_ads();
 
     template 'accounts/caterer_edit_listing.tt',
                                                 {
@@ -785,6 +819,7 @@ get '/account/listing' => sub
                                                     data => {
                                                                 listing       => $listing[0],
                                                                 cuisine_types => $cuisines,
+                                                                adverts       => \@adverts,
                                                             },
                                                     breadcrumbs => [
                                                                     { link => '/account', name => 'Account' },
@@ -845,6 +880,7 @@ post '/account/listing/save' => sub
         }
         my $error_message = "The following fields had errors:\n";
         $error_message    .= "<ul>\n$bad_fields</ul>\n";
+        my @adverts = Cater::Marketer->get_random_marketer_ads();
 
         warning $error_message;
 
@@ -854,6 +890,7 @@ post '/account/listing/save' => sub
                                                         data => {
                                                                     listing       => $new_listing,
                                                                     cuisine_types => $cuisines,
+                                                                    adverts       => \@adverts,
                                                                 },
                                                         msgs => {
                                                                     error_message => $error_message,
@@ -919,11 +956,14 @@ get '/account/edit' => sub
                                            );
 
     my @countries = Locale::Country::all_country_names();
+    my @adverts = ( session('user_type') eq 'Client' ) ? Cater::Marketer->get_random_marketer_ads()
+                                                       : ();
     template '/accounts/edit_account.tt',
                                             {
                                                 data => {
                                                             account   => $user->{'account'},
                                                             countries => \@countries,
+                                                            adverts   => \@adverts,
                                                         },
                                                 user_type => session('user_type'),
                                                 breadcrumbs => [
@@ -1003,7 +1043,7 @@ post '/account/save' => sub
     }
     $new_account->{'updated_on'} = DateTime->now( time_zone => 'UTC' )->datetime,
 
-    warn( Data::Dumper::Dumper( $new_account ) );
+    #warn( Data::Dumper::Dumper( $new_account ) );
 
     my $input_params = body_parameters->as_hashref;
     my $results = FormValidator::Simple->check(

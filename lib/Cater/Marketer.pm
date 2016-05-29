@@ -1,10 +1,17 @@
 package Cater::Marketer;
 
-use base 'Cater::DBI';
-use Dancer2 appname => 'Cater';
-
 use strict;
 use warnings;
+
+use Dancer2 appname => 'Cater';
+use Const::Fast;
+use Data::Dumper;
+
+use Cater::DBSchema;
+
+use version; our $VERSION = qv( "v0.1.0" );
+
+const my $SCHEMA => Cater::DBSchema->get_schema_connection();
 
 
 =head1 NAME
@@ -12,31 +19,48 @@ use warnings;
 Cater::Marketer
 
 
-=head1 DESCRIPTION AND USAGE
+=head1 DESCRIPTION AND SYNOPSIS
 
-Database object representing a marketer within the web app.
+Module provides a library of marketer-related functionality for use throughout the whole site.
+
+
+=head1 METHODS
+
+
+=head2 get_random_marketer_ads()
+
+Returns an array of up to n number of marketer advertisements from the database.
+
+=over 4
+
+=item Input: A hash containing [ C<zip>, C<max_ads> ], where both values are optional. C<zip> defaults to undef. C<max_ads> defaults to 3.
+
+=item Output: An array containing the advertisement objects requested.
+
+=back
+
+    my $ads = Cater::Marketer->get_random_marketer_ads( zip => $zip, max_ads => $max_num );
 
 =cut
 
+sub get_random_marketer_ads
+{
+    my ( $self, %params ) = @_;
+    my $zip     = delete $params{'zip'}     // undef;
+    my $max_ads = delete $params{'max_ads'} // 3;
 
-__PACKAGE__->table( 'marketers' );
-__PACKAGE__->columns(
-                            All => qw/
-                                        id username password poc_name company email
-                                        phone street1 street2 city state zip country
-                                        website created_on updated_on
-                                     /
-                    );
-__PACKAGE__->has_a(
-                        created_on => 'Time::Piece',
-                        inflate    => sub { Time::Piece->strptime( shift, "%Y-%m-%d" ) },
-                        deflate    => 'ymd',
-);
-__PACKAGE__->has_a(
-                        updated_on => 'Time::Piece',
-                        inflate    => sub { Time::Piece->strptime( shift, "%Y-%m-%d" ) },
-                        deflate    => 'ymd',
-);
+    #TODO: Build code to handle zip code-based searching.
+
+    my @ads = $SCHEMA->resultset('MarketerAdvert')->search(
+        undef,
+        {
+            order_by => \"RAND()",
+            rows     => $max_ads,
+        },
+    );
+
+    return @ads;
+}
 
 
 =head1 AUTHOR
@@ -44,6 +68,8 @@ __PACKAGE__->has_a(
 Jason Lamey E<lt>jasonlamey@gmail.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
+
+Copyright 2015-2016 by Jason Lamey
 
 This library is for use by Catering. It is not intended for redistribution
 or use by other parties without express written permission.

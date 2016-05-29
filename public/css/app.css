@@ -365,6 +365,28 @@ td,
 th {
   padding: 0; }
 
+/* Marketer Advertisements
+    =========================================================================== */
+
+.marketer_company_name {
+    font-size: 75%;
+    font-weight: bold;
+}
+
+.marketer_headline {
+  font-size: 70%;
+  font-weight: bold;
+}
+
+.marketer_body {
+    font-size: 60%;
+}
+
+.marketer_subtext {
+    font-size: 55%;
+}
+
+
 .foundation-mq {
   font-family: "small=0em&medium=40em&large=64em&xlarge=75em&xxlarge=90em"; }
 
