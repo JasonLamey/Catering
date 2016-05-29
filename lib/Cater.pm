@@ -1188,7 +1188,7 @@ post '/account/advert/create' => sub
                                         user        => session( "user" ) . ' (' . session("user_type") . ')',
                                         ip_address  => request->remote_address . ' - ' . request->remote_host,
                                         log_level   => 'Info',
-                                        log_message => 'Added New Advertisement'
+                                        log_message => 'Added New Advertisement: '
                                                         . join( '; ', @changes ),
                                       );
 
@@ -1340,7 +1340,7 @@ post '/account/advert/:id/save' => sub
                                         user        => session( "user" ) . ' (' . session("user_type") . ')',
                                         ip_address  => request->remote_address . ' - ' . request->remote_host,
                                         log_level   => 'Info',
-                                        log_message => 'Updated Advertisement'
+                                        log_message => 'Updated Advertisement: '
                                                         . join( '; ', @changes ),
                                       );
 
@@ -2943,6 +2943,38 @@ Route to view admin logs.
                                         breadcrumbs => [
                                                     { link => '/admin/', name => 'ADMIN' },
                                                     { current => 1, name => 'Admin Logs' },
+                                                ],
+                                     },
+                                     { layout => 'admin' };
+    };
+
+
+=head2 'GET /admin/user_logs/?:page?'
+
+Route to view user logs.
+
+=cut
+
+    get '/user_logs/?:page?' => sub
+    {
+        my $logs = Cater::Log->get_user_logs( page => route_parameters->{'page'}, per_page => 50 );
+        warn 'DEBUG: LOG COUNT: ' . $logs->{'row_count'};
+
+        my $pagination = Cater::Utils->calculate_pagination(
+                                                            row_count => $logs->{'row_count'},
+                                                            page      => route_parameters->{'page'},
+                                                            per_page  => 50,
+                                                           );
+
+        template 'admin/user_logs', {
+                                        data => {
+                                                    logs            => $logs->{'logs'},
+                                                    pagination      => $pagination,
+                                                    pagination_link => '/admin/user_logs',
+                                                },
+                                        breadcrumbs => [
+                                                    { link => '/admin/', name => 'ADMIN' },
+                                                    { current => 1, name => 'User Logs' },
                                                 ],
                                      },
                                      { layout => 'admin' };

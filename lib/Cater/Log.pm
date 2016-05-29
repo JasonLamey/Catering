@@ -219,4 +219,43 @@ sub get_admin_logs
 }
 
 
+=head2 get_user_logs()
+
+=over 4
+
+=item Input: hash of two items [C<page>, C<per_page>].
+
+=item Output: An hashref containing a count of all records, and an array of all records to return.
+
+=back
+
+    my $logs = Cater::Log->get_user_logs( page => 1, per_page => 50 );
+
+=cut
+
+sub get_user_logs
+{
+    my ( $self, %params ) = @_;
+
+    my $page     = delete $params{'page'}     // 1;
+    my $per_page = delete $params{'per_page'} // 50;
+    my $order_by = delete $params{'order_by'} // 'created_on'; # field_name(s)
+
+    my $log_count = $SCHEMA->resultset( 'UserLog' )->search( undef )->count;
+
+    my @logs = $SCHEMA->resultset( 'UserLog' )->search(
+                                                            undef,
+                                                            {
+                                                                order_by => { -desc => $order_by },
+                                                                page     => $page,
+                                                                rows     => $per_page,
+                                                            },
+                                                       );
+
+    my %log_records = ( row_count => $log_count, logs => \@logs );
+
+    return \%log_records;
+}
+
+
 1;

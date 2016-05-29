@@ -69,6 +69,7 @@
                         <a href="#"><i class="fi-widget"></i> System Details</a>
                         <ul class="submenu menu vertical" data-submenu>
                             <li><a href="/admin/admin_logs"><i class="fi-results-demographics"></i> Admin Logs</a></li>
+                            <li><a href="/admin/user_logs"><i class="fi-results-demographics"></i> User Logs</a></li>
                             <li><a href="/admin/system_stats"><i class="fi-graph-trend"></i> System Status</a></li>
                         </ul>
                     </li>
