@@ -1,0 +1,20 @@
+[% USE HTML %] [% USE HTMLStrip %] [% USE CaterImage %]
+[% IF ( caterer.listing.image.defined && caterer.listing.image != '' ) %]
+    [% thumbnail_path = CaterImage.get_image_thumbnail( original => caterer.listing.image, size => 'large' ) %]
+[% ELSE %]
+    [% thumbnail_path = CaterImage.get_random_default_thumbnail( type => 'caterer', size => 'large' ) %]
+[% END %]
+[% IF thumbnail_path == '' %]
+    [% thumbnail_path = CaterImage.get_random_default_thumbnail( type => 'caterer', size => 'large' ) %]
+[% END %]
+[% IF thumbnail_path == '' %]
+    [% thumbnail_path = 'http://placehold.it/400x300&text=[Image Not Found]' %]
+[% END %]
+[% caterer_about  = HTMLStrip.strip_html( caterer.listing.about ) %]
+            <div class="medium-4 column callout">
+                <a href="/caterer/[% caterer.id %]/view"><img src="[% thumbnail_path %]" border="0" alt="[% caterer.listing.company %]" title="[% caterer.listing.company %]" /></a>
+                <h4><a href="/caterer/[% caterer.id %]/view">[% caterer.listing.company %]</a></h4>
+                <h5>[% caterer.listing.slogan %]</h5>
+                <p>[% caterer_about.substr(0, 100) %]...<br>
+                [ <a href="/caterer/[% caterer.id %]/view">See more</a> ]</p>
+            </div>

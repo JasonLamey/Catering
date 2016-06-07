@@ -38,9 +38,10 @@
                         [% IF location.country.defined && location.country != '' %]<br>[% location.country.upper %][% END %]
                     </td>
                     <td>
+                        [% regex = '(?i)^https?://' %]
                         [% location.phone %]
                         [% IF location.email.defined && location.email != '' %]<br>[% location.email %][% END %]
-                        [% IF location.website.defined && location.website != '' %]<br><a href="[% location.website %]" target="_blank">[% location.website %] <i class="fa fa-external-link"></i></a>[% END %]
+                        [% IF location.website.defined && location.website != '' %]<br><a href="[% UNLESS ( matched = location.website.match(regex)) %]http://[% END %][% location.website %]" target="_blank">[% location.website %] <i class="fa fa-external-link"></i></a>[% END %]
                     </td>
                     <td>
                         A: [% date.format( location.created_on, format => '%d-%b-%Y' ) %]

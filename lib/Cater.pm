@@ -111,7 +111,13 @@ Root route. Presents user with main landing page.
 
 get '/' => sub
 {
-    template 'index';
+    my @caterers = Cater::Caterer->get_random_caterers();
+
+    template 'index', {
+                        data => {
+                                    featured_caterers => \@caterers,
+                                },
+                      };
 };
 
 

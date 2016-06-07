@@ -58,6 +58,43 @@ sub get_all_cuisine_types
 }
 
 
+=head2 get_random_caterers()
+
+Returns an array of Clients, either matched to a zip, or chosen at random if a zip is unavailable or undetectable.
+
+=over 4
+
+=item Input: A hash containing [ C<zip>, C<max_caterers> ], where zip is the zipcode (default undef), and max_caterers is the max caterers returned (default 3).
+
+=item Output: An array containing Client objects.
+
+=back
+
+    my @caterers = Cater::Caterer->get_random_caterers( zip => $zip, max_caterers => $max_caterers );
+
+=cut
+
+sub get_random_caterers
+{
+    my ( $self, %params ) = @_;
+
+    my $zip          = delete $params{'zip'}          // undef;
+    my $max_caterers = delete $params{'max_caterers'} // 3;
+
+    # TODO: write logic for handling zip code-based searching.
+
+    my @caterers = $SCHEMA->resultset('Client')->search(
+        undef,
+        {
+            order_by => \"RAND()",
+            rows     => $max_caterers,
+        },
+    );
+
+    return @caterers;
+}
+
+
 =head1 AUTHOR
 
 Jason Lamey E<lt>jasonlamey@gmail.comE<gt>

@@ -30,6 +30,8 @@ requires 'DateTime',                    '1.21';
 requires 'Emailesque',                  '1.26';
 requires 'GeoIP2',                      '2.002000';
 requires 'Clone',                       '0.38';
+requires 'HTML::Restrict',              '2.2.2';
+requires 'File::DirList',               '0.04';
 
 on 'develop' => sub
 {

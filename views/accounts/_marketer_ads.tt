@@ -10,13 +10,14 @@
                             <div class="row align-center">
                                 [% IF advert.website || advert.phone || advert.email %]
                                     [% IF advert.website %]
-                                <div class="small-4 text-center marketer_subtext"><a href="[% advert.website %]" target="_blank">Website</a></div>
+                                    [% regex = '(?i)^https?://' %]
+                                <div class="small-4 text-center marketer_subtext"><a href="[% UNLESS (matched = advert.website.match(regex)) %]http://[% END %][% advert.website %]" target="_blank"><i class="fi-home"></i> Website</a></div>
                                     [% END %]
                                     [% IF advert.phone %]
-                                <div class="small-4 text-center marketer_subtext">[% advert.phone %]</div>
+                                <div class="small-4 text-center marketer_subtext"><i class="fi-telephone"></i> [% advert.phone %]</div>
                                     [% END %]
                                     [% IF advert.email %]
-                                <div class="small-4 text-center marketer_subtext"><a href="mailto=[% advert.email %]">Email Us</a></div>
+                                <div class="small-4 text-center marketer_subtext"><a href="mailto:[% advert.email %]"><i class="fi-mail"></i> Email Us</a></div>
                                     [% END %]
                                 [% END %]
                             </div>
