@@ -32,6 +32,10 @@ requires 'GeoIP2',                      '2.002000';
 requires 'Clone',                       '0.38';
 requires 'HTML::Restrict',              '2.2.2';
 requires 'File::DirList',               '0.04';
+requires 'BerkeleyDB',                  '0.55';
+requires 'CHI',                         '0.60';
+requires 'CHI::Driver::BerkeleyDB',     '0.03';
+requires 'List::Util',                  '1.45';
 
 on 'develop' => sub
 {

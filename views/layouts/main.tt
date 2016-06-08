@@ -141,35 +141,30 @@
         [% END %]
     </head>
     <body>
-        <div class="top-bar">
-            <div class="top-bar-left">
+        <div class="top-bar" data-equalizer>
+            <div class="top-bar-left" data-equalizer-watch>
                 <ul class="dropdown menu" data-dropdown-menu>
                     <li class="menu-text">
                         <a href="/"><img src="http://placehold.it/250x50&text=That's Catering!"></a></li>
-                    <li class="has-submenu">
+                    <li class="menu-text has-submenu">
                         <a href="#"><i class="fi-magnifying-glass"></i> Browse Caterers</a>
                         <ul class="submenu menu vertical" data-submenu>
                             <li><a href="#"><i class="fi-map"></i> By Location</a></li>
                             <li><a href="#"><i class="fi-heart"></i> By Cuisine</a></li>
                         </ul>
                     </li>
-                    <li><a href="#"><i class="fi-megaphone"></i> FAQ</a></li>
-                    [% IF session.user %]
-                    <li><a href="#">&middot;</a></li>
-                    <li><a href="/account"><i class="fi-home"></i> [% session.user %]</a></li>
-                    <li><a href="/logout"><i class="fi-power"></i> Log Out</a></li>
-                    [% ELSE %]
-                    <li><a href="/login"><i class="fi-key"></i> Sign In / Register</a></li>
-                    [% END %]
+                    <li class="menu-text"><a href="#"><i class="fi-megaphone"></i> FAQ</a></li>
                 </ul>
             </div>
-            <div class="top-bar-right">
-                <form action="/search" method="post" style="display: inline;">
-                <ul class="menu">
-                    <li class="menu-text"><input type="search" placeholder="Search"></li>
-                    <li class="menu-text"><input type="submit" value="Search" class="button"></li>
+            <div class="top-bar-right align-middle" data-equalizer-watch>
+                <ul class="menu" data-dropdown-menu>
+                    [% IF session.user %]
+                    <li class="menu-text"><a href="/account"><i class="fi-home"></i> [% session.user %]</a></li>
+                    <li class="menu-text"><a href="/logout"><i class="fi-power"></i> Log Out</a></li>
+                    [% ELSE %]
+                    <li class="menu-text"><a href="/login"><i class="fi-key"></i> Sign In / Register</a></li>
+                    [% END %]
                 </ul>
-                </form>
             </div>
         </div>
         [% IF breadcrumbs %]

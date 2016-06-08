@@ -64,7 +64,7 @@ Returns an array of Clients, either matched to a zip, or chosen at random if a z
 
 =over 4
 
-=item Input: A hash containing [ C<zip>, C<max_caterers> ], where zip is the zipcode (default undef), and max_caterers is the max caterers returned (default 3).
+=item Input: A hash containing [ C<zipcodes>, C<max_caterers> ], where C<zipcodes> is an arrayref of zipcodes (default undef), and C<max_caterers> is the max caterers returned (default 3).
 
 =item Output: An array containing Client objects.
 
@@ -78,13 +78,17 @@ sub get_random_caterers
 {
     my ( $self, %params ) = @_;
 
-    my $zip          = delete $params{'zip'}          // undef;
+    my $zipcodes     = delete $params{'zipcodes'}     // undef;
     my $max_caterers = delete $params{'max_caterers'} // 3;
 
-    # TODO: write logic for handling zip code-based searching.
+    my %where = ();
+    if ( defined $zipcodes )
+    {
+        $where{zip}{'-in'} = $zipcodes;
+    }
 
     my @caterers = $SCHEMA->resultset('Client')->search(
-        undef,
+        \%where,
         {
             order_by => \"RAND()",
             rows     => $max_caterers,

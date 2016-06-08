@@ -25,6 +25,8 @@ session: YAML
 
 auto_page: 1
 
+ZipCodeAPI: "RzaHPYPmoy5Vi5fmch8IKwX9GyqlrZqjyA0oyQKXpQSHV838pcQ9INipmILOIb7h"
+
 engines:
   template:
     template_toolkit:

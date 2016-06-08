@@ -36,6 +36,7 @@ use Cater::Marketer;
 use Cater::Admin;
 use Cater::Log;
 use Cater::Utils;
+use Cater::ZipCode;
 
 const my $SCHEMA                    => Cater::DBSchema->get_schema_connection();
 const my $COUNTRY_CODE_SET          => 'LOCALE_CODE_ALPHA_2';
@@ -111,13 +112,39 @@ Root route. Presents user with main landing page.
 
 get '/' => sub
 {
-    my @caterers = Cater::Caterer->get_random_caterers();
+    my $zips = Cater::ZipCode->get_zipcodes_by_radius(
+                                                        zipcode   => vars->{guest_postal},
+                                                        distance  => 25,
+                                                        units     => 'mile',
+                                                        zips_only => 1
+                                                     );
+
+    my @caterers = Cater::Caterer->get_random_caterers( zipcodes => $zips, max_caterers => 3 );
+
+    # make sure we have 3 caterers.
+    if ( scalar( @caterers ) < 3 )
+    {
+        my $remaining = ( 3 - scalar( @caterers ) );
+        my @remaining = Cater::Caterer->get_random_caterers( max_caterers => $remaining );
+        push( @caterers, @remaining );
+    }
 
     template 'index', {
                         data => {
                                     featured_caterers => \@caterers,
                                 },
                       };
+};
+
+
+=head2 'GET /caterer/<id>/view'
+
+Route to view a Caterer's profile page.
+
+=cut
+
+get '/caterer/:id/view' => sub
+{
 };
 
 
@@ -397,8 +424,6 @@ get '/account' => sub
     {
         @adverts = Cater::Marketer->get_random_marketer_ads();
     }
-
-    warning Data::Dumper::Dumper( @adverts );
 
     template 'accounts/home.tt', {
                                     data => {
@@ -1048,8 +1073,6 @@ post '/account/save' => sub
         $new_account->{$key} = body_parameters->{$key} // '';
     }
     $new_account->{'updated_on'} = DateTime->now( time_zone => 'UTC' )->datetime,
-
-    #warn( Data::Dumper::Dumper( $new_account ) );
 
     my $input_params = body_parameters->as_hashref;
     my $results = FormValidator::Simple->check(
