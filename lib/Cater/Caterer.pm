@@ -6,6 +6,7 @@ use warnings;
 use Dancer2 appname => 'Cater';
 use Const::Fast;
 use Data::Dumper;
+use DateTime;
 
 use Cater::DBSchema;
 
@@ -96,6 +97,197 @@ sub get_random_caterers
     );
 
     return @caterers;
+}
+
+
+=head2 get_caterer_by_id()
+
+Return a Cater::Client object for the specified ID.  Returns C<undef> if none are found.
+
+=over 4
+
+=item Input: An integer containing the ID to search for.
+
+=item Output: A Cater::Client object, or C<undef> if nothing is found.
+
+=back
+
+    my $caterer = Cater::Caterer->get_caterer_by_id( $id );
+
+=cut
+
+sub get_caterer_by_id
+{
+    my ( $self, $user_id ) = @_;
+
+    return undef if not defined $user_id;
+    return undef if $user_id !~ /^\d+$/;
+
+    my $caterer = $SCHEMA->resultset('Client')->find( $user_id );
+
+    return $caterer;
+}
+
+
+=head2 add_view()
+
+Increment a Client's view count for the current date.
+
+=over 4
+
+=item Input: An integer containing the ID to search for.
+
+=item Output: Boolean denoting success.
+
+=back
+
+    my $counted = Cater::Caterer->add_view( $id );
+
+=cut
+
+sub add_view
+{
+    my ( $self, $user_id ) = @_;
+
+    return undef if not defined $user_id;
+    return undef if $user_id !~ /^\d+$/;
+
+    my $view_count = $SCHEMA->resultset('CatererView')->find_or_create(
+                                                                        {
+                                                                            client_id => $user_id,
+                                                                            date      => DateTime->now( time_zone => 'UTC' )->date,
+                                                                        }
+                                                                      );
+    $view_count->update( { count => \'count + 1' } );
+
+    return 1;
+}
+
+
+=head2 get_account_stats()
+
+Fetches all pertinent account performance statistics.
+
+=over 4
+
+=item Input: An integer containing the ID for the user.
+
+=item Output: A hashref, keyed on each stat [ C<total_views>, C<week_views>, C<total_bookmarks>, C<week_bookmarks>, C<today_leads>, C<week_leads>, C<month_leads> ].
+
+=back
+
+    my $stats = Cater::Caterer->get_account_stats( $id );
+
+=cut
+
+sub get_account_stats
+{
+    my ( $self, $user_id ) = @_;
+
+    return undef if not defined $user_id;
+    return undef if $user_id !~ /^\d+$/;
+
+    my %stats = ();
+
+    # Create relative dates.
+    my $today       = DateTime->now( time_zone => 'UTC' );
+    my $week_begin  = $today->clone();
+    my $month_begin = $today->clone();
+
+    $today = $today->date();
+
+    # Calculate beginning of the week.
+    my $day_of_week = $week_begin->day_of_week();
+    $week_begin->subtract( days => $day_of_week % 7 );
+    $week_begin = $week_begin->date();
+
+    # Calculate the beginning of the month.
+    $month_begin->set_day( 1 );
+    $month_begin = $month_begin->date();
+
+    my $total_views = $SCHEMA->resultset('CatererView')->search(
+                                                                { client_id => $user_id },
+                                                                {
+                                                                    select => [ { sum => 'count' } ],
+                                                                    as     => [ 'total_views' ],
+                                                                }
+                                                               );
+    $stats{total_views} = $total_views->first->get_column('total_views');
+
+    my $week_views = $SCHEMA->resultset('CatererView')->search(
+                                                                {
+                                                                    client_id => $user_id,
+                                                                    date => [ -and => { '>=', $week_begin }, { '<=', $today } ]
+                                                                },
+                                                                {
+                                                                    select => [ { sum => 'count' } ],
+                                                                    as     => [ 'total_views' ],
+                                                                }
+                                                              );
+    $stats{week_views} = $week_views->first->get_column('total_views');
+
+    return \%stats;
+}
+
+
+=head2 bookmark_caterer()
+
+Adds or removes a bookmark record for a User/Caterer.
+
+=over 4
+
+=item Input: Takes a hash containing [ C<caterer_id>, C<user_id>, and C<toggle> ]. Toggle is a 1 or -1, with 1 meaning add, and -1 meaning remove.
+
+=item Output: A success boolean.
+
+=back
+
+    my $bookmarked = Cater::Caterer->bookmark_caterer( caterer_id => $caterer_id, user_id => $user_id, toggle => $toggle );
+
+=cut
+
+sub bookmark_caterer
+{
+    my ( $self, %params ) = @_;
+
+    my $caterer_id = delete $params{'caterer_id'} // undef;
+    my $user_id    = delete $params{'user_id'}    // undef;
+    my $toggle     = delete $params{'toggle'}     // undef;
+
+    if (
+        not defined $caterer_id
+        or
+        not defined $user_id
+        or
+        not defined $toggle
+    )
+    {
+        return 0;
+    }
+
+    if ( $toggle == 1 )
+    {
+        my $bookmark = $SCHEMA->resultset('UserBookmark')->create(
+                                                                    {
+                                                                        user_id    => $user_id,
+                                                                        client_id  => $caterer_id,
+                                                                        created_on => DateTime->now( time_zone => 'UTC' ),
+                                                                    }
+                                                                 );
+        return 1;
+    }
+    else
+    {
+        $SCHEMA->resultset('UserBookmark')->search(
+                                                    {
+                                                        user_id   => $user_id,
+                                                        client_id => $caterer_id,
+                                                    }
+                                                  )->delete;
+        return 1;
+    }
+
+    return 0;
 }
 
 

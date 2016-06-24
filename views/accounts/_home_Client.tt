@@ -4,10 +4,18 @@
                 <h4>Performance</h4>
                 <div class="row">
                     <div class="small-6 medium-6 large-9 columns text-right">
-                        Views:
+                        Total Views:
                     </div>
                     <div class="small-6 medium-6 large-3 columns">
-                        [% data.performance.ad_views || 0 %]
+                        [% data.performance.total_views || 0 %]
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="small-6 medium-6 large-9 columns text-right">
+                        Views This Week:
+                    </div>
+                    <div class="small-6 medium-6 large-3 columns">
+                        [% data.performance.week_views || 0 %]
                     </div>
                 </div>
                 <div class="row">

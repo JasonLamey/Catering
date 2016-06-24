@@ -27,7 +27,7 @@
                 <label for="cuisine_types">What types of cuisine do you serve or specialize in: <span style="color: red;"><i class="fi-asterisk"></i></span>
                     <select name="cuisine_types" multiple rows="5">
                         [% FOREACH cuisine IN data.cuisine_types %]
-                        <option value='[% cuisine.name %]'>[% cuisine.name %]</option>
+                        <option value='[% cuisine.name %]'[% IF data.listing.cuisine_types.grep(cuisine.name).size == 1 %] selected[% END %]>[% cuisine.name %]</option>
                         [% END %]
                     </select>
                 </label>

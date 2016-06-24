@@ -8,6 +8,7 @@ use Dancer2::Session::Cookie;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Deferred;
 use Dancer2::Plugin::Passphrase;
+use Dancer2::Plugin::Ajax;
 
 use Locale::Country;
 use Const::Fast;
@@ -145,6 +146,114 @@ Route to view a Caterer's profile page.
 
 get '/caterer/:id/view' => sub
 {
+
+    my $user = {};
+    if ( session( 'user' ) )
+    {
+        $user = Cater::Account->find_account(
+                                                {
+                                                    username => session('user'),
+                                                },
+                                                user_type => session('user_type'),
+                                            );
+    }
+
+    my $caterer = Cater::Caterer->get_caterer_by_id( route_parameters->get('id') );
+
+    # Don't increment views if the user is the caterer.
+    unless ( session( 'user' ) and route_parameters->get('id') == $user->{'account'}->id )
+    {
+        my $counted = Cater::Caterer->add_view( route_parameters->get('id') );
+    }
+
+    template 'caterer_view',
+                            {
+                                data => {
+                                            caterer => $caterer,
+                                            user    => $user->{'account'},
+                                        },
+                                breadcrumbs => [
+                                                { disabled => 1, name => 'Caterer Profile' },
+                                                { current => 1,  name => $caterer->listing->company },
+                                               ],
+                            };
+};
+
+
+=head2 'AJAX /bookmark_caterer/<caterer_id>/user/<user_id>/<toggle>'
+
+Route to toggle bookmark on a caterer.
+
+=cut
+
+ajax '/bookmark_caterer/:client_id/user/:user_id/:toggle' => sub
+{
+
+    debug ( 'IN AJAX: CLIENT: ' . route_parameters->get('client_id') . ' / USER: ' . route_parameters->get('user_id') . ' / TOGGLE: ' . route_parameters->get('toggle') );
+    my $user = Cater::Account->find_account(
+                                            {
+                                                username => session('user'),
+                                            },
+                                            user_type => session('user_type'),
+                                           );
+
+    my @json = ();
+
+    if ( not defined $user->{'account'} )
+    {
+        push ( @json,
+                        {
+                            message => 'Could not bookmark Caterer. You must be logged in.',
+                            success => 0
+                        }
+             );
+        to_json( \@json );
+    }
+
+    if ( $user->{'account'}->id != route_parameters->get('user_id') )
+    {
+        push ( @json,
+                        {
+                            message => 'Could not bookmark Caterer. Bookmarking for other accounts is prohibited.',
+                            success => 0
+                        }
+             );
+        to_json( \@json );
+    }
+
+    my $caterer = Cater::Caterer->get_caterer_by_id( route_parameters->get('client_id') );
+
+    if ( not defined $caterer )
+    {
+        push ( @json,
+                        {
+                            message => 'Could not bookmark Caterer. Invalid Caterer.',
+                            success => 0
+                        }
+             );
+        to_json( \@json );
+    }
+
+    my $success = Cater::Caterer->bookmark_caterer(
+                                                    caterer_id => route_parameters->get('client_id'),
+                                                    user_id    => route_parameters->get('user_id'),
+                                                    toggle     => route_parameters->get('toggle'),
+                                                  );
+
+    if ( $success )
+    {
+        my $action = ( route_parameters->get('toggle') == -1 ) ? ' bookmark successfully removed.'
+                                                               : ' successfully bookmarked.';
+
+        push ( @json,
+                        {
+                            message => $caterer->company . $action,
+                            success => 1
+                        }
+             );
+    }
+
+    to_json( \@json );
 };
 
 
@@ -416,6 +525,7 @@ get '/account' => sub
     my $cuisines  = Cater::Caterer->get_all_cuisine_types();
 
     my @adverts = ();
+    my %client_stats = ();
     if ( session('user_type') eq 'Marketer' )
     {
         @adverts = $user->{'account'}->advertisements( undef, { ordery_by => { -asc => 'created_on' } } );
@@ -423,6 +533,8 @@ get '/account' => sub
     elsif ( session('user_type') eq 'Client' )
     {
         @adverts = Cater::Marketer->get_random_marketer_ads();
+        my $stats = Cater::Caterer->get_account_stats( $user->{'account'}->id );
+        %client_stats = %{ $stats };
     }
 
     template 'accounts/home.tt', {
@@ -431,6 +543,10 @@ get '/account' => sub
                                                 countries     => \@countries,
                                                 cuisine_types => $cuisines,
                                                 adverts       => \@adverts,
+                                                performance   => {
+                                                                    total_views => $client_stats{'total_views'},
+                                                                    week_views  => $client_stats{'week_views'},
+                                                                 },
                                             },
                                     breadcrumbs => [
                                                     { link => '/account', name => 'Account' },
@@ -893,11 +1009,13 @@ post '/account/listing/save' => sub
                                                                ]
                                               );
 
+    my @cuisine_types = body_parameters->get_all('cuisine_types');
+
     my $new_listing = {
                             company       => body_parameters->{'company'},
                             slogan        => body_parameters->{'slogan'},
                             about         => body_parameters->{'about'},
-                            cuisine_types => body_parameters->{'cuisine_types'},
+                            cuisine_types => join( ';', @cuisine_types ),
                             special_offer => body_parameters->{'special_offer'},
                             updated_on    => DateTime->now( time_zone => 'UTC' )->datetime,
                       };

@@ -78,6 +78,7 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key( 'id' );
 
 # Cater::User->has_many( somethings => 'Object::Package' );
+__PACKAGE__->has_many( 'bookmarks', 'Cater::DBSchema::Result::UserBookmark', 'user_id' );
 
 
 =head1 AUTHOR

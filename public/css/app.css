@@ -386,6 +386,49 @@ th {
     font-size: 65%;
 }
 
+.caterer_loc_subtext {
+    font-size: 85%;
+}
+
+/* Blurred Image Header Backgrounds
+   ============================================================================= */
+
+.blur_header {
+  position: relative;
+  width: 100%;
+  padding: 2em 0;
+  overflow: hidden; // Hide overflow to contain the background
+}
+
+.blur_header__background {
+    position: absolute;
+    top: -50%;
+    left: 0;
+    width: 200%;
+    // Where the magic happens
+    -webkit-filter: blur(5px);
+    -webkit-transform: translate3d(0, 0, 0);
+    filter: blur(5px);
+}
+
+.blur_header__title {
+    position: relative;
+    text-align: center;
+    font-variant: small-caps;
+    font-size: 5em;
+    font-weight: bolder;
+    -webkit-text-stroke: 1px black;
+    color: white;
+    text-shadow:
+       3px 3px 0 #000,
+     -1px -1px 0 #000,
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+       1px 1px 0 #000;
+}
+
+/* Foundation CSS Code
+   =========================================================================== */
 
 .foundation-mq {
   font-family: "small=0em&medium=40em&large=64em&xlarge=75em&xxlarge=90em"; }

@@ -1,0 +1,109 @@
+[% USE CaterImage %]
+[% IF ( data.caterer.listing.image.defined && data.caterer.listing.image != '' ) %]
+    [% thumbnail_path = CaterImage.get_image_thumbnail( original => data.caterer.listing.image, size => 'large' ) %]
+[% ELSE %]
+    [% thumbnail_path = CaterImage.get_random_default_thumbnail( type => 'caterer', size => 'large' ) %]
+[% END %]
+[% IF thumbnail_path == '' %]
+    [% thumbnail_path = CaterImage.get_random_default_thumbnail( type => 'caterer', size => 'large' ) %]
+[% END %]
+[% IF thumbnail_path == '' %]
+    [% thumbnail_path = 'http://placehold.it/400x300&text=[Image Not Found]' %]
+[% END %]
+[% tip = "You need to be logged into a User account to use this feature." %]
+<div class="row">
+    <div class="small-12 columns blur_header">
+        <img src="[% thumbnail_path %]" class="radius blur_header__background" />
+        <h3 class="blur_header__title">[% data.caterer.listing.company %]</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 columns text-center">
+        <h3>[% data.caterer.listing.slogan %]</h3>
+    </div>
+</div>
+
+<div class="row align-justify">
+    <div class="small-12 medium-8 columns text-justify callout">
+        [% data.caterer.listing.about %]
+
+        [% IF data.caterer.listing.special_offer %]
+        <div class="row align-center">
+            <div class="small-11 columns callout warning">
+                <h4>Special Offer</h4>
+                [% data.caterer.listing.special_offer %]
+            </div>
+        </div>
+        [% END %]
+    </div>
+
+    <div class="small-12 medium-4 columns">
+
+        <div class="row">
+            [% IF data.user.id.defined && data.user.id > 0 && session.user_type == 'User' %]
+                [% IF data.is_bookmarked %]
+            <div class="small-4 text-right caterer_loc_subtext" id="bookmark_caterer"><a href="#" onClick="catererBookmarkToggle( [% data.caterer.id %], [% data.user.id %], -1 )"><i class="fa fa-bookmark-o"></i> Unbookmark Caterer</a></div>
+                [% ELSE %]
+            <div class="small-4 text-right caterer_loc_subtext" id="bookmark_caterer"><a href="#" onClick="catererBookmarkToggle( [% data.caterer.id %], [% data.user.id %], 1 )"><i class="fa fa-bookmark"></i> Bookmark Caterer</a></div>
+                [% END %]
+            <div class="small-4 text-center caterer_loc_subtext"><a href="#" target="_blank"><i class="fa fa-question-circle-o" aria-hidden="true"></i> Make Inquiry</a></div>
+            <div class="small-4 text-left caterer_loc_subtext"><a href="#" target="_blank"><i class="fa fa-bullhorn" aria-hidden="true"></i> Leave Review</a></div>
+            [% ELSE %]
+            <div class="small-4 text-right caterer_loc_subtext"><span data-tooltip aria-haspopup="true" class="has-tip top" data-disable-hover='false' tabindex="1" title="[% tip %]"><i class="fa fa-bookmark"></i> Bookmark Caterer</span></div>
+            <div class="small-4 text-center caterer_loc_subtext"><span data-tooltip aria-haspopup="true" class="has-tip top" data-disable-hover='false' tabindex="2" title="[% tip %]"><i class="fa fa-question-circle-o" aria-hidden="true"></i> Make Inquiry</span></div>
+            <div class="small-4 text-left caterer_loc_subtext"><span data-tooltip aria-haspopup="true" class="has-tip top" data-disable-hover='false' tabindex="3" title="[% tip %]"><i class="fa fa-bullhorn" aria-hidden="true"></i> Leave Review</span></div>
+            [% END %]
+        </div>
+
+        [% IF data.caterer.listing.cuisine_types %]
+        <div class="row">
+            <div class="small-12 columns">
+                <h4>Cuisine Specialties</h4>
+                <ul>
+                [% FOREACH cuisine IN data.caterer.listing.cuisine_types.split(';') %]
+                    <li class="button"><i class="fa fa-cutlery" aria-hidden="true"></i> [% cuisine %]</li>
+                [% END %]
+                </ul>
+            </div>
+        </div>
+        [% END %]
+
+        <div class="row">
+            <div class="small-12 columns">
+                <h4>Our Locations</h4>[% location_count = 0 %]
+                [% FOREACH location IN data.caterer.locations.sort( 'name' ) %]
+                [% PROCESS catering_location %]
+                [% IF location_count < data.caterer.locations.max %]<hr>[% END %]
+                [% location_count = location_count + 1 %]
+                [% END %]
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+[% BLOCK catering_location %]
+                <div class="row">
+                    <div class="small-12 columns">
+                        <b>[% location.name %]</b><br>
+                        [% location.street1 %]<br>
+                        [% IF location.street2 != '' %][% location.street2 %]<br>[% END %]
+                        [% location.city %], [% location.state %] [% location.postal %], [% location.country.upper %]
+                        [% IF location.website || location.phone || location.email %]
+                        <div class="row align-middle">
+                            [% IF location.website %]
+                            [% regex = '(?i)^https?://' %]
+                        <div class="small-4 text-center caterer_loc_subtext"><a href="[% UNLESS (matched = location.website.match(regex)) %]http://[% END %][% location.website %]" target="_blank"><i class="fa fa-external-link-square" aria-hidden="true"></i> Website</a></div>
+                            [% END %]
+                            [% IF location.phone %]
+                        <div class="small-4 text-center caterer_loc_subtext"><i class="fa fa-phone-square" aria-hidden="true"></i> [% location.phone %]</div>
+                            [% END %]
+                            [% IF location.email %]
+                        <div class="small-4 text-center caterer_loc_subtext"><a href="mailto:[% location.email %]"><i class="fa fa-envelope-square" aria-hidden="true"></i> Email Us</a></div>
+                            [% END %]
+                        </div>
+                        [% END %]
+                    </div>
+                </div>
+[% END %]
