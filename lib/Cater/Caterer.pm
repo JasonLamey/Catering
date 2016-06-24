@@ -226,6 +226,11 @@ sub get_account_stats
                                                               );
     $stats{week_views} = $week_views->first->get_column('total_views');
 
+    my $total_bookmarks = $SCHEMA->resultset('UserBookmark')->search(
+                                                                { client_id => $user_id },
+                                                               )->count;
+    $stats{total_bookmarks} = $total_bookmarks;
+
     return \%stats;
 }
 

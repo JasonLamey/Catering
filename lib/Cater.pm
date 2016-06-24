@@ -543,10 +543,7 @@ get '/account' => sub
                                                 countries     => \@countries,
                                                 cuisine_types => $cuisines,
                                                 adverts       => \@adverts,
-                                                performance   => {
-                                                                    total_views => $client_stats{'total_views'},
-                                                                    week_views  => $client_stats{'week_views'},
-                                                                 },
+                                                performance   => \%client_stats,
                                             },
                                     breadcrumbs => [
                                                     { link => '/account', name => 'Account' },

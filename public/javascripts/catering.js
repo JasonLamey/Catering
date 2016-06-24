@@ -39,3 +39,23 @@ function catererBookmarkToggle( caterer_id, user_id, action )
             }
     );
 }
+
+$( function()
+    {
+        $(".caterer_review_rating").starRating(
+            {
+                totalStars: 5,
+                starSize: 30,
+                useGradient: true,
+                strokeWidth: 2,
+                strokeColor: 'black',
+                disableAfterRate: false,
+                callback: function( currentRating, $el )
+                {
+                    document.getElementById("caterer_rating_value").value = currentRating;
+                },
+            }
+        );
+    }
+);
+

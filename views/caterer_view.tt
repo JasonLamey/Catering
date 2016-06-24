@@ -46,8 +46,8 @@
                 [% ELSE %]
             <div class="small-4 text-right caterer_loc_subtext" id="bookmark_caterer"><a href="#" onClick="catererBookmarkToggle( [% data.caterer.id %], [% data.user.id %], 1 )"><i class="fa fa-bookmark"></i> Bookmark Caterer</a></div>
                 [% END %]
-            <div class="small-4 text-center caterer_loc_subtext"><a href="#" target="_blank"><i class="fa fa-question-circle-o" aria-hidden="true"></i> Make Inquiry</a></div>
-            <div class="small-4 text-left caterer_loc_subtext"><a href="#" target="_blank"><i class="fa fa-bullhorn" aria-hidden="true"></i> Leave Review</a></div>
+            <div class="small-4 text-center caterer_loc_subtext"><a data-toggle="sendInquiry"><i class="fa fa-question-circle-o" aria-hidden="true"></i> Make Inquiry</a></div>
+            <div class="small-4 text-left caterer_loc_subtext"><a data-toggle="leaveReview"><i class="fa fa-bullhorn" aria-hidden="true"></i> Leave Review</a></div>
             [% ELSE %]
             <div class="small-4 text-right caterer_loc_subtext"><span data-tooltip aria-haspopup="true" class="has-tip top" data-disable-hover='false' tabindex="1" title="[% tip %]"><i class="fa fa-bookmark"></i> Bookmark Caterer</span></div>
             <div class="small-4 text-center caterer_loc_subtext"><span data-tooltip aria-haspopup="true" class="has-tip top" data-disable-hover='false' tabindex="2" title="[% tip %]"><i class="fa fa-question-circle-o" aria-hidden="true"></i> Make Inquiry</span></div>
@@ -81,6 +81,49 @@
 
     </div>
 
+</div>
+
+<div class="small reveal" id="sendInquiry" data-reveal data-animation-in="fade-in" data-animation-out="fade-out">
+    <h2>Send [% data.caterer.listing.company %] An Inquiry</h2>
+    <div class="row">
+        <div class="small-12 columns">
+            <form action="post" method="/inquiry/caterer/[% data.caterer.id %]/create">
+                <label for="subject">Subject: <span style="color: red;"><i class="fi-asterisk"></i></span>
+                    <input type="text" name="subject" maxlength="255" size="40" value="" placeholder="Do you do weddings?">
+                </label>
+                <label for="body">Message: <span style="color: red;"><i class="fi-asterisk"></i></span>
+                    <textarea name="body" rows="6"></textarea>
+                </label>
+                <input type="submit" value="Send Inquiry" class="button">
+            </form>
+        </div>
+    </div>
+    <button class="close-button" data-close aria-label="Close modal" type="button">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="small reveal" id="leaveReview" data-reveal data-animation-in="fade-in" data-animation-out="fade-out">
+    <h2>Leave A Review For [% data.caterer.listing.company %]</h2>
+    <div class="row">
+        <div class="small-12 columns">
+            <form action="post" method="/review/caterer/[% data.caterer.id %]/create">
+                <label for="rating">Rating: <span style="color: red;"><i class="fi-asterisk"></i></span>
+                    <div class="caterer_review_rating"></div>
+                    <input type="hidden" name="rating" value="" id="caterer_rating_value">
+                </label>
+                <label for="title">Review Title:
+                    <input type="text" name="title" maxlength="255" size="40" value="" placeholder="Fantastic caterers!">
+                </label>
+                <label for="details">Additional Details:
+                    <textarea name="details" rows="6"></textarea>
+                </label>
+            </form>
+        </div>
+    </div>
+    <button class="close-button" data-close aria-label="Close modal" type="button">
+        <span aria-hidden="true">&times;</span>
+    </button>
 </div>
 
 [% BLOCK catering_location %]
